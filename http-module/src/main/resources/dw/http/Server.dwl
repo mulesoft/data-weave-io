@@ -1,9 +1,15 @@
+/**
+* This module contains all the functions required for declaring and using an HTTP Server
+*/
 %dw 2.0
 
 import * from dw::core::Objects
 import * from dw::http::BodyUtils
 import * from dw::http::Types
 
+/**
+* Type for an API Definition
+*/
 type APIDefinition = {
     _ ?: {
         GET?: HttpHandler,
@@ -17,9 +23,16 @@ type APIDefinition = {
     }
 }
 
+/**
+* The type for an Interceptor
+*/
 type InterceptorCapable = { interceptors?:  Array<HttpInterceptor> }
 
+/**
+* The type for a Api Config
+*/
 type ApiConfig = HttpServerOptions & InterceptorCapable
+
 
 type InterceptedHttpRequest = {
     /**
@@ -29,14 +42,83 @@ type InterceptedHttpRequest = {
     request?: HttpServerRequest
 }
 
+/**
+* Interceptors of the incoming http response
+*/
 type HttpInterceptor = {onRequest?: (HttpServerRequest) -> InterceptedHttpRequest, onResponse?: (HttpServerRequest, HttpServerResponse) -> HttpServerResponse  }
 
 /**
 * Starts an http server at with the specified config.
 * The handler with attend all the requests.
 * Returns true if the server was initialized correctly
-*/
+*
+* === Parameters
+*
+* [%header, cols="1,3"]
+* |===
+* | Name   | Description
+* | configuration | The server configuration
+* | handler | The request handler
+* |===
+*
+* === Example
+*
+* This example shows how the `server` behaves under different inputs.
+*
+* ==== Source
+*
+* [source,DataWeave,linenums]
+* ----
+* %dw 2.0
+* output application/json
+* ---
+* import server from dw::http::Server
+* ---
+* server({port: 8081, host:"localhost"}, (request) -> {body: "Hello World"} )
+* ----
+*
+**/
 fun server(configuration: HttpServerOptions, handler: HttpHandler): HttpServer = native("http::HttpServerFunction")
+
+
+/**
+* The entry point for defining an HTTP Api. This method will receive the configuration and the api definition.
+*
+* === Parameters
+*
+* [%header, cols="1,3"]
+* |===
+* | Name   | Description
+* | config | The configuration of an api
+* | apiDefinition | The object with the api definition
+* |===
+*
+* === Example
+*
+* This example shows how the `api` behaves under different inputs.
+*
+* ==== Source
+*
+* [source,DataWeave,linenums]
+* ----
+* %dw 2.0
+* import api from dw::http::Server
+* output application/json
+* ---
+* api(
+*     {port: 8081, host: "localhost"}, {
+*       "/test": {
+*         GET: (request) -> {
+*           body: {
+*             name: "Mariano"
+*           }
+*         }
+*     }
+*   )
+* ----
+*
+**/
+fun api(config: ApiConfig = {port: 8081, host:"localhost"}, apiDefinition: APIDefinition): HttpServer = do {
 
 fun handleRequestInterceptors(req: HttpServerRequest, interceptors: Array<HttpInterceptor>): InterceptedHttpRequest =
   interceptors match {
@@ -61,13 +143,7 @@ fun handleResponseInterceptors(req: HttpServerRequest, resp: HttpServerResponse,
       else
         handleResponseInterceptors(req, resp, tail)
   }
-
-
-
-/**
-* Initialize an api with the specified APIDefinition
-*/
-fun api(config: ApiConfig = {port: 8081, host:"localhost"}, apiDefinition: APIDefinition): HttpServer =
+ ---
   server(config, (request) -> do {
     var matchingHandler = apiDefinition[?(request.path matches ($$ as String))][0]
     var methodHandler = matchingHandler[(request.method)]
@@ -99,8 +175,37 @@ fun api(config: ApiConfig = {port: 8081, host:"localhost"}, apiDefinition: APIDe
       )
     }
   })
+}
 
 /**
-* Returns a static resoure respone using the specified path. Use this method to serve static content
-*/
-fun serveResource(path: String): HttpServerResponse = native("http::ServeResourceFunction")
+* Helper method to serve a static resource from the given
+*
+* === Parameters
+*
+* [%header, cols="1,3"]
+* |===
+* | Name   | Description
+* | path | The path of the resource to lookup
+* |===
+*
+* === Example
+*
+* This example shows how the `staticResponse` behaves under different inputs.
+*
+* ==== Source
+*
+* [source,DataWeave,linenums]
+* ----
+* %dw 2.0
+* import api from dw::http::Server
+* output application/json
+* ---
+* api(
+*     {port: 8081, host: "localhost"}, {
+*       "/test": {
+*         GET: (request) -> staticResponse("index.html")
+*     }
+*   )
+* ----
+**/
+fun staticResponse(path: String): HttpServerResponse = native("http::ServeResourceFunction")
