@@ -1,0 +1,17 @@
+{
+  "resources":[
+
+    {"pattern":"dw/http/BodyUtils.dwl"},
+    {"pattern":"dw/http/Client.dwl"},
+    {"pattern":"dw/http/Interceptors.dwl"},
+    {"pattern":"dw/http/Server.dwl"},
+    {"pattern":"dw/http/Types.dwl"},
+    {"pattern":"dw/io/IO.dwl"},
+
+    {"pattern":"META-INF/services/ch.qos.logback.classic.spi.Configurator"},
+    {"pattern":"META-INF/services/org.xnio.XnioProvider"},
+    {"pattern":"org/xnio/Version.properties"},
+    {"pattern":"sun/net/idn/uidna.spp"},
+    {"pattern":"sun/text/resources/unorm.icu"}
+  ]
+}

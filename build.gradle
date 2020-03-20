@@ -1,0 +1,148 @@
+import static java.lang.String.valueOf
+
+subprojects {
+
+    apply plugin: 'maven'
+    apply plugin: 'maven-publish'
+    apply plugin: 'scala'
+    apply plugin: 'distribution'
+    apply plugin: 'net.linguica.maven-settings'
+    apply plugin: "com.github.hierynomus.scalariform"
+    apply plugin: 'dataweave'
+
+
+    group = "org.mule.weave"
+    version = version
+
+    repositories {
+        mavenLocal()
+        mavenCentral()        
+        maven {
+            name "mule-releases"
+            url "http://repository.mulesoft.org/nexus/content/repositories/releases/"
+        }
+        maven {
+            name "mule-snapshots"
+            url "http://repository.mulesoft.org/nexus/content/repositories/snapshots/"
+        }         
+    }
+
+    dependencies {        
+        compile group: 'org.mule.weave', name: 'wlang', version: weaveVersion
+    }       
+
+    publishing {
+        publications.all {
+            pom.withXml {
+                asNode().dependencies.'*'.findAll() {
+                    it.scope.text() == 'runtime' && project.configurations.compile.allDependencies.find { dep ->
+                        dep.name == it.artifactId.text()
+                    }
+                }.each { it.scope*.value = 'compile' }
+            }
+        }
+        publications {
+            mavenJava(MavenPublication) {
+                from components.java
+                artifact docs
+            }
+        }
+        repositories {
+            maven {
+                name "mule-ee-releases"
+                url "https://repository-master.mulesoft.org/nexus/content/repositories/${project.version.endsWith('-SNAPSHOT') ? 'snapshots/' : 'releases/'}"
+            }
+        }
+    }
+
+    jar {
+        into("META-INF/maven/$project.group/$project.name") {
+            from "$project.buildDir/publications/mavenJava"
+            include "*.pom"
+            include "*.xml"
+        }
+        into("META-INF/maven/$project.group/$project.name") {
+            from "$project.buildDir/publications/mavenJava"
+            include "*.properties"
+        }
+    }
+
+    scalariform {
+        alignSingleLineCaseStatements = true
+        doubleIndentClassDeclaration = true
+        preserveDanglingCloseParenthesis = true
+        placeScaladocAsterisksBeneathSecondAsterisk = true
+    }
+
+
+    project.afterEvaluate {
+        project.tasks.matching { it.name == 'generatePomFileForMavenJavaPublication' }.all {
+            it.dependsOn 'pomProperties'
+        }
+        project.tasks.jar.dependsOn 'generatePomFileForMavenJavaPublication'
+    }
+    task pomProperties() {
+        Properties props = new Properties();
+        File propertiesFile = new File("$project.buildDir/publications/mavenJava/pom.properties")
+        if (!propertiesFile.exists()) {
+            propertiesFile.getParentFile().mkdirs()
+            propertiesFile.createNewFile()
+        }
+        props.load(propertiesFile.newDataInputStream())
+        props.setProperty('version', valueOf(project.version))
+        props.setProperty('groupId', valueOf(project.group))
+        props.setProperty('artifactId', project.name)
+        props.store(propertiesFile.newWriter(), null)
+    }
+
+    dataweave {
+        template = "mule_docs,assciidoc"
+    }
+
+    task docs(dependsOn: weavedoc, type: Zip) {
+        classifier = "weavedocs"
+        from 'build/docs/weavedocs/'
+    }
+
+
+    compileScala.dependsOn(formatScala)
+    build.dependsOn("weavedoc")
+    
+}
+
+
+buildscript {
+    repositories {
+        mavenCentral()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+        maven {
+            name "mule-ee-releases"
+            url "https://repository.mulesoft.org/nexus/content/repositories/ci-releases/"
+        }
+        maven {
+            name "mule-ee-snapshots"
+            url "https://repository.mulesoft.org/nexus/content/repositories/ci-snapshots/"
+        }
+        maven {
+            name "mule-releases"
+            url "https://repository.mulesoft.org/nexus/content/repositories/releases/"
+        }
+        maven {
+            name "mule-snapshots"
+            url "http://repository.mulesoft.org/nexus/content/repositories/snapshots/"
+        }
+    }
+    dependencies {        
+        classpath 'net.linguica.gradle:maven-settings-plugin:0.5', {
+            exclude module: "sisu-guava"
+        }
+        classpath "gradle.plugin.com.hierynomus.gradle.plugins:scalariform-gradle-plugin:0.2.0"
+        classpath "org.mule.weave:weave-gradle-plugin:" + weavedocVersion        
+    }
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.1'
+}

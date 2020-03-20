@@ -1,0 +1,2 @@
+org.mule.weave.v2.module.http.undertow.HttpServerServiceRegistration
+org.mule.weave.v2.module.http.client.HttpClientServiceRegistration

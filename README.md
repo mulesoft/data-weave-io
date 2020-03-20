@@ -1,2 +1,2 @@
-# data-weave-http
-A repo that will handle http integration for DataWeave.
+# Data Weave HTTP
+This repo will contain everything that is releated to http support for data weave
