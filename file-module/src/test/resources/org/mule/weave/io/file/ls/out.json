@@ -1,0 +1,10 @@
+{
+  "a": [
+    "test1.txt",
+    "test3.unknown",
+    "test2.json"
+  ],
+  "b": [
+    "test1.txt"
+  ]
+} 

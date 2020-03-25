@@ -4,8 +4,12 @@
 %dw 2.0
 
 import * from dw::core::Objects
-import * from dw::http::BodyUtils
-import * from dw::http::Types
+import * from dw::io::http::BodyUtils
+import * from dw::io::http::Types
+import * from dw::io::http::utils::HttpHeaders
+import dw::io::file::FileSystem
+import * from dw::Runtime
+
 
 /**
 * Type for an API Definition
@@ -72,7 +76,7 @@ type HttpInterceptor = {onRequest?: (HttpServerRequest) -> InterceptedHttpReques
 * %dw 2.0
 * output application/json
 * ---
-* import server from dw::http::Server
+* import server from dw::io::http::Server
 * ---
 * server({port: 8081, host:"localhost"}, (request) -> {body: "Hello World"} )
 * ----
@@ -102,7 +106,7 @@ fun server(configuration: HttpServerOptions, handler: HttpHandler): HttpServer =
 * [source,DataWeave,linenums]
 * ----
 * %dw 2.0
-* import api from dw::http::Server
+* import api from dw::io::http::Server
 * output application/json
 * ---
 * api(
@@ -158,7 +162,7 @@ fun handleResponseInterceptors(req: HttpServerRequest, resp: HttpServerResponse,
       }
     else do {
       var response = methodHandler(interseptedRequest.request!)
-      var headers = normalizeHeaders(response.headers default {})
+      var headers = normalizeHeaders(response.headers)
       ---
       handleResponseInterceptors(
         interseptedRequest.request!,
@@ -178,7 +182,7 @@ fun handleResponseInterceptors(req: HttpServerRequest, resp: HttpServerResponse,
 }
 
 /**
-* Helper method to serve a static resource from the given
+* Helper method to serve a static resource from the given classpath path.
 *
 * === Parameters
 *
@@ -197,7 +201,7 @@ fun handleResponseInterceptors(req: HttpServerRequest, resp: HttpServerResponse,
 * [source,DataWeave,linenums]
 * ----
 * %dw 2.0
-* import api from dw::http::Server
+* import api from dw::io::http::Server
 * output application/json
 * ---
 * api(
@@ -208,4 +212,21 @@ fun handleResponseInterceptors(req: HttpServerRequest, resp: HttpServerResponse,
 *   )
 * ----
 **/
-fun staticResponse(path: String): HttpServerResponse = native("http::ServeResourceFunction")
+fun staticResponse(path: String): HttpServerResponse = do {
+    var content: TryResult<Binary> = try(() -> readUrl("classpath://" ++ path, "binary") as Binary)
+    ---
+    if(content.success)
+        {
+            headers: {
+                (CONTENT_TYPE_HEADER): FileSystem::mimeTypeOf(path) default "application/octet-stream",
+                (CONTENT_LENGTH_HEADER): sizeOf(content.result!),
+            },
+            body: content.result!,
+            status: 200
+        }
+    else
+        {
+          status: 404
+        }
+
+}

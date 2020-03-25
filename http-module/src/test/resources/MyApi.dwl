@@ -1,4 +1,4 @@
-import * from dw::http::Server
+import * from dw::io::http::Server
 
 var serverConfig = {host:"localhost", port: 8081, "Content-Type": "application/xml"}
 

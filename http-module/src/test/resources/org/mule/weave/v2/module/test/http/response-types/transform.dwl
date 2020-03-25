@@ -1,4 +1,4 @@
-import * from dw::http::Client
+import * from dw::io::http::Client
 import form, field from dw::module::Multipart
 
 var result = {
@@ -83,9 +83,9 @@ var result = {
 
 
 
-fun xx(r: dw::http::Types::HttpClientResult) = false
+fun xx(r: dw::io::http::Types::HttpClientResult) = false
 ---
 result match {
   case is Null -> false
-  case is dw::http::Types::HttpClientResult -> true // This should break if the types are not assignable in runtime
+  case is dw::io::http::Types::HttpClientResult -> true // This should break if the types are not assignable in runtime
 }

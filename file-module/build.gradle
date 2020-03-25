@@ -3,7 +3,6 @@ plugins {
 }
 
 dependencies {
-    compile project(":file-module")
     compile group: 'org.mule.weave', name: 'runtime', version: weaveVersion
     compile group: 'org.mule.weave', name: 'parser', version: weaveVersion
     compile group: 'org.mule.weave', name: 'core-modules', version: weaveVersion

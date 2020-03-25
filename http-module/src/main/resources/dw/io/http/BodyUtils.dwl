@@ -1,6 +1,6 @@
 %dw 2.0
 
-import dw::http::Types
+import dw::io::http::Types
 import * from dw::core::Objects
 
 fun formatHeader(header: String): String =
@@ -8,12 +8,26 @@ fun formatHeader(header: String): String =
     replace /\b([a-z])/
     with upper($[0])
 
-
+/**
+* Helper method of `normalizeHeaders` to work with Null
+**/
 fun normalizeHeaders(headers: Null): {_?: String} =
   {}
 
-fun normalizeHeaders(headers: { _?: SimpleType }): {_?: String} =
-  headers mapObject {(formatHeader($$)): $ as String}
+/**
+* Normalize the object to be compliant with the http header
+*
+* === Parameters
+*
+* [%header, cols="1,3"]
+* |===
+* | Name   | Description
+* | headers | The headers to normalize
+* |===
+*
+**/
+fun normalizeHeaders(headers: { _?: (SimpleType | Null) }): {_?: String} =
+  headers mapObject {(formatHeader($$ as String)): $ default "" as String}
 
 
 fun generateBody(config: { body?: Any, headers?: Types::HttpHeaders, writerOptions?: Dictionary<Any> }): {

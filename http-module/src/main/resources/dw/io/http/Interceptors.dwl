@@ -1,7 +1,7 @@
 %dw 2.0
 
-import * from dw::http::Types
-import * from dw::http::Server
+import * from dw::io::http::Types
+import * from dw::io::http::Server
 import * from dw::core::Objects
 
 fun isOptions(request: HttpServerRequest) =

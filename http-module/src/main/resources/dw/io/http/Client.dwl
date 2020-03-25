@@ -5,8 +5,8 @@
 
 import dw::core::Objects
 import mergeWith from dw::core::Objects
-import * from dw::http::Types
-import * from dw::http::BodyUtils
+import * from dw::io::http::Types
+import * from dw::io::http::BodyUtils
 
 type HttpCustomOptions = HttpClientOptionalOptions & {
   readerOptions?: Object,

@@ -1,3 +1,4 @@
 include 'http-module'
+include 'file-module'
 // include 'raml-module'
 // include 'graphql-module'
