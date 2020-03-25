@@ -1,0 +1,24 @@
+#%RAML 1.0
+title: My Api
+baseUri: http://httpbin.org/
+
+types:
+  GetResponse:
+    type: object
+    properties:
+      args:
+        type: object
+      headers:
+        type: object
+      origin:
+        type: string
+      url:
+        type: string
+
+
+/get:
+  get:
+    responses:
+      200:
+        body:
+          application/json: GetResponse

@@ -3,9 +3,13 @@ plugins {
 }
 
 dependencies {
+    compile project(':http-module')
     compile group: 'org.mule.weave', name: 'runtime', version: weaveVersion
     compile group: 'org.mule.weave', name: 'parser', version: weaveVersion
     compile group: 'org.mule.weave', name: 'core-modules', version: weaveVersion
+
+    compile group: 'com.github.amlorg', name: 'amf-client_2.12', version: '4.0.5'
+    
 
 
     testCompile group: 'org.mule.weave', name: 'runtime-test-helpers', version: weaveVersion     
