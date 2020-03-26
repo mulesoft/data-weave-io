@@ -1,4 +1,4 @@
-package org.mule.weave.v2.module.test.raml
+package org.mule.weave.v2.module.test.raml.parser
 
 import java.io.File
 
@@ -14,7 +14,7 @@ import org.mule.weave.v2.parser.exception.LocatableException
 import org.mule.weave.v2.parser.phase.ParsingContext
 import org.mule.weave.v2.utils.AstEmitter
 
-class RamlTest extends SimpleTextBasedTest {
+class RamlModuleParserTest extends SimpleTextBasedTest {
 
   val moduleNodeLoader = RuntimeModuleNodeCompiler()
 
@@ -25,7 +25,7 @@ class RamlTest extends SimpleTextBasedTest {
       val baseName = FileHelper.baseName(testFile)
       val context: ParsingContext = createTestParsingContext(testFile)
       val moduleLoader = new RamlModuleLoader()
-      val identifier = NameIdentifier(s"org::mule::weave::v2::module::test::raml::${baseName}", Some("raml"))
+      val identifier = NameIdentifier(s"org::mule::weave::v2::module::test::raml::parser::${baseName}", Some("raml"))
       val result = moduleLoader.loadModule(identifier, context)
       result match {
         case Some(parsingResult) => {

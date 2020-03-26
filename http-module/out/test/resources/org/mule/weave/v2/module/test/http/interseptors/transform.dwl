@@ -1,5 +1,5 @@
-import * from dw::http::Server
-import * from dw::http::Client
+import * from dw::io::http::Server
+import * from dw::io::http::Client
 import dw::core::Assertions
 
 /// MIDDLEWARES

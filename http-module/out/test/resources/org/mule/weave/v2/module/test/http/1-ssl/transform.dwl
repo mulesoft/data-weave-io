@@ -1,7 +1,7 @@
 %dw 2.0
-import * from dw::http::Client
+import * from dw::io::http::Client
 import form, field from dw::module::Multipart
-import HttpClientResult from dw::http::Types
+import HttpClientResult from dw::io::http::Types
 
 output application/java
 

@@ -1,0 +1,19 @@
+#%RAML 1.0
+title: My Api
+baseUri: http://localhost:8081
+
+types:
+  GetResponse:
+    type: object
+    properties:
+      name: string
+      lastName: string
+
+
+
+/user:
+  get:
+    responses:
+      200:
+        body:
+          application/json: GetResponse

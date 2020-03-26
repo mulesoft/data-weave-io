@@ -1,6 +1,6 @@
-import * from dw::http::Server
-import * from dw::http::Client
-import * from dw::http::Interceptors
+import * from dw::io::http::Server
+import * from dw::io::http::Client
+import * from dw::io::http::Interceptors
 import dw::core::Assertions
 
 /// SERVER

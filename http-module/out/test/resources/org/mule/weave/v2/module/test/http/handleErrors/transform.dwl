@@ -1,5 +1,5 @@
 %dw 2.0
-import * from dw::http::Client
+import * from dw::io::http::Client
 import mustEqual from dw::core::Assertions
 ---
 [
