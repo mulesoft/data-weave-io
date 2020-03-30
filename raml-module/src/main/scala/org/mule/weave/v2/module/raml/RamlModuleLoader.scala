@@ -5,6 +5,7 @@ import amf.MessageStyles
 import amf.RamlProfile
 import amf.client.model.StrField
 import amf.client.model.document.Document
+import amf.client.model.domain.AnyShape
 import amf.client.model.domain.ArrayShape
 import amf.client.model.domain.EndPoint
 import amf.client.model.domain.FileShape
@@ -13,6 +14,7 @@ import amf.client.model.domain.NodeShape
 import amf.client.model.domain.Parameter
 import amf.client.model.domain.Payload
 import amf.client.model.domain.ScalarShape
+import amf.client.model.domain.SecurityRequirement
 import amf.client.model.domain.Shape
 import amf.client.model.domain.TupleShape
 import amf.client.model.domain.UnionShape
@@ -123,7 +125,6 @@ class RamlModuleLoader extends ModuleLoader {
         val raml = resource.content()
         val baseUnit = ramlParser.parseStringAsync(raml).get()
         val value = Core.validate(baseUnit, RamlProfile, MessageStyles.RAML).get()
-
         val messages = value.results.asScala
         if (messages.nonEmpty) {
           messages.map((message) => {
@@ -133,13 +134,37 @@ class RamlModuleLoader extends ModuleLoader {
           })
           FailureResult(moduleContext)
         } else {
-
           val input = ParsingContentInput(WeaveResource(resource.url(), ""), nameIdentifier, SafeStringBasedParserInput(""))
           val withPosition = LocationInjectorHelper.injectPosition(buildModule(nameIdentifier, baseUnit.asInstanceOf[Document]))
           val result: ParsingResult[ModuleNode] = ParsingResult(input, withPosition)
           SuccessResult(result, moduleContext)
         }
       })
+  }
+
+  def asObjectSecurityParameter(security: Seq[SecurityRequirement]): Option[KeyValueTypeNode] = {
+    val authsTypes = security.flatMap((sec) => {
+      sec.schemes.asScala.flatMap((scheme) => {
+        val theScheme = Option(scheme.scheme)
+        theScheme.flatMap((s) => {
+          val schemeType = s.`type`.value().toLowerCase
+          if (schemeType.contains("oauth")) {
+            Some("OAuth")
+          } else if (schemeType.contains("basic")) {
+            Some("BasicAuth")
+          } else {
+            None
+          }
+        })
+      })
+    }).distinct
+    val nodes: Seq[WeaveTypeNode] = authsTypes.map((typeName) => TypeReferenceNode(NameIdentifier(s"dw::io::http::Client::${typeName}")))
+    if (nodes.isEmpty) {
+      None
+    } else {
+      val node: WeaveTypeNode = nodes.reduce((v, acc) => UnionTypeNode(v, acc))
+      Some(KeyValueTypeNode(KeyTypeNode(NameTypeNode(Some("auth"))), node, repeated = false, optional = false))
+    }
   }
 
   def buildModule(nameIdentifier: NameIdentifier, unresovledDocument: Document): ModuleNode = {
@@ -151,7 +176,6 @@ class RamlModuleLoader extends ModuleLoader {
     val document: Document = Core.resolver("RAML").resolve(unresovledDocument).asInstanceOf[Document]
     val webApi = document.encodes.asInstanceOf[WebApi]
     val hostVarDirective = VarDirective(NameIdentifier(HOST_VAL), QuotedStringNode(webApi.servers.get(0).url.value()))
-
     val endPoints = webApi.endPoints.asScala
 
     val globalTypes = ArrayBuffer[String]()
@@ -170,7 +194,8 @@ class RamlModuleLoader extends ModuleLoader {
         val request = Option(operation.request)
         val uriParamsList = endpoint.parameters.asScala
         val uriParams = asObjectTypeParameter(if (uriParamsList.isEmpty) None else Some(uriParamsList), URI_PARAM, globalTypes)
-        val headerParam = asObjectTypeParameter(request.map(_.headers.asScala), HEADERS, globalTypes)
+        val headerParam: Option[KeyValueTypeNode] = asObjectTypeParameter(request.map(_.headers.asScala), HEADERS, globalTypes)
+        val securityParam = asObjectSecurityParameter(operation.security.asScala)
         val queryParameters = asObjectTypeParameter(request.map(_.queryParameters.asScala), QUERY_PARAM, globalTypes)
         val payload = request.flatMap((request) => {
           if (request.payloads.size() >= 1) {
@@ -212,18 +237,25 @@ class RamlModuleLoader extends ModuleLoader {
           requestObject.+=(KeyValuePairNode(KeyNode(BODY), VariableReferenceNode(BODY)))
         }
 
-        if (payload.isDefined || headerParam.isDefined) {
-          val headersObject =
-            if (payload.isDefined && headerParam.isEmpty) {
-              createContentTypeNode(payload)
-            } else if (payload.isEmpty && headerParam.isDefined) {
-              directiveNodes.+=(VarDirective(NameIdentifier(HEADERS), select(VariableReferenceNode(OPERATION_PARAM), HEADERS)))
-              VariableReferenceNode(HEADERS)
-            } else {
-              directiveNodes.+=(VarDirective(NameIdentifier(HEADERS), select(VariableReferenceNode(OPERATION_PARAM), HEADERS)))
-              createAppendNode(createContentTypeNode(payload), VariableReferenceNode(HEADERS))
-            }
-          requestObject.+=(KeyValuePairNode(KeyNode(HEADERS), headersObject))
+        if (payload.isDefined || headerParam.isDefined || securityParam.isDefined) {
+          val headerParts = ArrayBuffer[AstNode]()
+          if (payload.isDefined) {
+            headerParts += createContentTypeNode(payload)
+          }
+          if (headerParam.isDefined) {
+            directiveNodes.+=(VarDirective(NameIdentifier(HEADERS), select(VariableReferenceNode(OPERATION_PARAM), HEADERS)))
+            headerParts += VariableReferenceNode(HEADERS)
+          }
+
+          if (securityParam.isDefined) {
+            directiveNodes.+=(VarDirective(NameIdentifier(RamlModuleLoader.AUTH_VAR), select(VariableReferenceNode(OPERATION_PARAM), RamlModuleLoader.AUTH_FIELD)))
+            headerParts += FunctionCallNode(VariableReferenceNode("resolveAuthorizationHeader"), FunctionCallParametersNode(Seq(VariableReferenceNode(RamlModuleLoader.AUTH_VAR))))
+          }
+
+          val headersNode: AstNode = headerParts.reduce((acc, v) => {
+            createAppendNode(acc, v)
+          })
+          requestObject.+=(KeyValuePairNode(KeyNode(HEADERS), headersNode))
         }
 
         var urlToCall = createAppendNode(VariableReferenceNode(NameIdentifier(HOST_PARAM)), QuotedStringNode(endpoint.path.value()))
@@ -238,8 +270,9 @@ class RamlModuleLoader extends ModuleLoader {
           val writeQueryParams = FunctionCallNode(VariableReferenceNode("write"), FunctionCallParametersNode(Seq(VariableReferenceNode(QUERY_PARAM), QuotedStringNode("application/x-www-form-urlencoded"))))
           urlToCall = createAppendNode(urlToCall, createAppendNode(QuotedStringNode("?"), writeQueryParams))
         }
+
         val params = Seq(QuotedStringNode(operation.method.value().toUpperCase), urlToCall, ObjectNode(requestObject))
-        val requestFields = Seq(bodyParam, headerParam, queryParameters, uriParams).flatten
+        val requestFields = Seq(bodyParam, headerParam, queryParameters, uriParams, securityParam).flatten
         val requestParam = ObjectTypeNode(requestFields)
         val operationParameter = if (requestFields.isEmpty) {
           None
@@ -288,7 +321,7 @@ class RamlModuleLoader extends ModuleLoader {
     BinaryOpNode(AsOpId, astNode, weaveType)
   }
 
-  private def asObjectTypeParameter(headersList: Option[Seq[Parameter]], paramName: String, globalTypes: Seq[String]) = {
+  private def asObjectTypeParameter(headersList: Option[Seq[Parameter]], paramName: String, globalTypes: Seq[String]): Option[KeyValueTypeNode] = {
     headersList.map((parameters) => {
       mapToKeyValuePair(parameters, globalTypes)
     })
@@ -329,12 +362,14 @@ class RamlModuleLoader extends ModuleLoader {
       }
       case as: ArrayShape => {
         TypeReferenceNode(NameIdentifier("Array"), Some(Seq(asTypeNode(as.items, canBeLink))))
-
       }
-      case fds: FileShape => {
+      case _: AnyShape => {
+        TypeReferenceNode(NameIdentifier("Any"))
+      }
+      case _: FileShape => {
         TypeReferenceNode(NameIdentifier("Binary"))
       }
-      case ns: NilShape => {
+      case _: NilShape => {
         TypeReferenceNode(NameIdentifier("Null"))
       }
       case ts: TupleShape => {
@@ -408,6 +443,8 @@ object RamlModuleLoader {
   val OPERATION_PARAM = "config"
   val URI_PARAM = "uriParams"
   val QUERY_PARAM = "queryParams"
+  val AUTH_FIELD = "auth"
+  val AUTH_VAR = "authVar"
   val HEADERS = "headers"
   val HttpClientResponse = "HttpClientResponse"
 

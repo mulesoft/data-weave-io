@@ -32,14 +32,16 @@ class RamlModuleParserTest extends SimpleTextBasedTest {
           val module = parsingResult.getResult().astNode
           val cannonicalPhase = ModuleParser.canonicalPhasePhases().call(result.get.getResult(), context)
 
-          val scopePhase = ModuleParser.scopePhasePhases().call(cannonicalPhase.getResult(), context)
-          assert(scopePhase.noErrors(), s"Scope check didn't pass ${scopePhase.errorMessages().map(_._2.message).mkString("\n - ")}")
-
-          val typePhase = ModuleParser.typeCheckPhasePhases().call(scopePhase.getResult(), context)
-          assert(typePhase.noErrors(), s"Typeck check didn't pass ${scopePhase.errorMessages().map(_._2.message).mkString("\n - ")}")
-
           val str = CodeGenerator.generate(module)
           println(str)
+
+          val scopePhase = ModuleParser.scopePhasePhases().call(cannonicalPhase.getResult(), context)
+          assert(scopePhase.noErrors(), s"Scope check didn't pass:\n ${scopePhase.errorMessages().map(_._2.message).mkString("\n - ")} in \n: ${str}")
+
+          val typePhase = ModuleParser.typeCheckPhasePhases().call(scopePhase.getResult(), context)
+          assert(typePhase.noErrors(), s"Typeck check didn't pass:\n ${scopePhase.errorMessages().map(_._2.message).mkString("\n - ")} in  \n: ${str}")
+
+
           AstEmitter(printLocation = false, printComments = false).print(module)
         }
         case None => fail(s"Unable to generated module for ${identifier}")

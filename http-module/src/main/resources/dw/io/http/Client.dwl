@@ -7,11 +7,16 @@ import dw::core::Objects
 import mergeWith from dw::core::Objects
 import * from dw::io::http::Types
 import * from dw::io::http::BodyUtils
+import * from dw::core::Binaries
 
 type HttpCustomOptions = HttpClientOptionalOptions & {
   readerOptions?: Object,
   writerOptions?: Object
 }
+
+type OAuth = {token: String}
+
+type BasicAuth = {username: String, password: String}
 
 fun nativeRequest(req: HttpClientOptions): HttpClientResult = native("http::HttpRequestFunction")
 
@@ -20,6 +25,18 @@ fun nativeRequest(req: HttpClientOptions): HttpClientResult = native("http::Http
 */
 fun resolveTemplateWith(uri: String, context: Object): String =
     uri replace /\{([^\/]+?)\}/ with ((groups, index) -> context[groups[1]] default index[0])
+
+
+fun resolveAuthorizationHeader(kind: OAuth | BasicAuth): {| Authorization: String |} = do {
+    kind  match {
+        case is OAuth -> { Authorization: "Bearer $($.token)"}
+        case is BasicAuth -> do {
+          var base = toBase64("$($.username):$($.password)" as Binary {encoding: "UTF-8"})
+            ---
+            { Authorization: "Basic $(base)"}
+        }
+    }
+}
 
 /**
 * Call the specified url with the given method and configuration
