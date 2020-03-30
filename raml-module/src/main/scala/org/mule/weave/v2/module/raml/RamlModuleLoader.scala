@@ -27,6 +27,7 @@ import amf.client.parse.Raml10Parser
 import amf.client.remote.Content
 import amf.client.resource.ClientResourceLoader
 import amf.core.model.DataType
+import amf.plugins.document.webapi.validation.PayloadValidatorPlugin
 import org.mule.weave.v2.grammar.AsOpId
 import org.mule.weave.v2.grammar.ValueSelectorOpId
 import org.mule.weave.v2.module.raml.RamlModuleLoader.BODY
@@ -95,7 +96,7 @@ import scala.collection.JavaConverters._
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 
-class ClassLoaderResourceLoader(resourceResolver: WeaveResourceResolver) extends ClientResourceLoader {
+class DataWeaveResourceLoader(resourceResolver: WeaveResourceResolver) extends ClientResourceLoader {
   override def fetch(resource: String): CompletableFuture[Content] = {
     CompletableFuture.supplyAsync(() => {
       val maybeResource = ClassLoaderWeaveResourceResolver().lookupResource(resource)
@@ -112,6 +113,7 @@ class RamlModuleLoader extends ModuleLoader {
   amf.plugins.document.WebApi.register()
   amf.plugins.document.Vocabularies.register()
   amf.plugins.features.AMFValidation.register()
+  amf.Core.registerPlugin(PayloadValidatorPlugin)
   amf.Core.init.get
 
   override def loadModule(nameIdentifier: NameIdentifier, moduleContext: ParsingContext): Option[PhaseResult[ParsingResult[ModuleNode]]] = {
@@ -120,7 +122,7 @@ class RamlModuleLoader extends ModuleLoader {
     val maybeResource = resourceResolver.lookupResource(ramlPath)
     maybeResource
       .map((resource) => {
-        val ramlParser = new Raml10Parser(Environment(new ClassLoaderResourceLoader(resourceResolver)))
+        val ramlParser = new Raml10Parser(Environment(new DataWeaveResourceLoader(resourceResolver)))
         val raml = resource.content()
         val baseUnit = ramlParser.parseStringAsync(ramlPath, raml).get()
         val value = Core.validate(baseUnit, RamlProfile, MessageStyles.RAML).get()
