@@ -1,0 +1,89 @@
+|-ModuleNode
+|-VersionDirective Minor='0' Major='2'
+|-ImportDirective
+  |-ImportedElement
+    |-NameIdentifier Name='dw::io::http::Client'
+  |-ImportedElements
+    |-ImportedElement
+      |-NameIdentifier Name='*'
+|-ImportDirective
+  |-ImportedElement
+    |-NameIdentifier Name='dw::io::http::Types'
+  |-ImportedElements
+    |-ImportedElement
+      |-NameIdentifier Name='*'
+|-TypeDirective
+  |-NameIdentifier Name='foo'
+  |-ObjectTypeNode
+    |-KeyValueTypeNode
+      |-KeyTypeNode
+        |-NameTypeNode
+      |-TypeReferenceNode
+        |-NameIdentifier Name='Array'
+        |-TypeReferenceNode
+          |-NameIdentifier Name='foo'
+|-VarDirective
+  |-NameIdentifier Name='defaultHost'
+  |-StringNode Value='foo.com/test'
+|-FunctionDirectiveNode
+  |-NameIdentifier Name='client'
+  |-FunctionNode
+    |-FunctionParameters
+      |-FunctionParameter
+        |-NameIdentifier Name='host'
+        |-VariableReferenceNode
+          |-NameIdentifier Name='defaultHost'
+        |-TypeReferenceNode
+          |-NameIdentifier Name='String'
+    |-ObjectNode
+      |-KeyValuePairNode
+        |-KeyNode
+          |-StringNode Value='/bar'
+        |-ObjectNode
+          |-KeyValuePairNode
+            |-KeyNode
+              |-StringNode Value='get'
+            |-FunctionNode
+              |-FunctionParameters
+              |-DoBlockNode
+                |-HeaderNode
+                |-BinaryOpNode Name='as'
+                  |-NullUnSafeNode
+                    |-BinaryOpNode Name='Value Selector'
+                      |-FunctionCallNode
+                        |-VariableReferenceNode
+                          |-NameIdentifier Name='request'
+                        |-FunctionCallParametersNode
+                          |-StringNode Value='GET'
+                          |-FunctionCallNode
+                            |-VariableReferenceNode
+                              |-NameIdentifier Name='++'
+                            |-FunctionCallParametersNode
+                              |-VariableReferenceNode
+                                |-NameIdentifier Name='host'
+                              |-StringNode Value='/bar'
+                          |-ObjectNode
+                      |-NameNode
+                        |-StringNode Value='response'
+                  |-TypeReferenceNode
+                    |-NameIdentifier Name='HttpClientResponse'
+                    |-TypeReferenceNode
+                      |-NameIdentifier Name='foo'
+                    |-TypeReferenceNode
+                      |-NameIdentifier Name='Dictionary'
+                      |-TypeReferenceNode
+                        |-NameIdentifier Name='String'
+              |-TypeReferenceNode
+                |-NameIdentifier Name='HttpClientResponse'
+                |-TypeReferenceNode
+                  |-NameIdentifier Name='foo'
+                |-TypeReferenceNode
+                  |-NameIdentifier Name='Dictionary'
+                  |-TypeReferenceNode
+                    |-NameIdentifier Name='String'
+|-ImportDirective
+  |-ImportedElement
+    |-NameIdentifier Name='dw::Core'
+  |-ImportedElements
+    |-ImportedElement
+      |-NameIdentifier Name='*'

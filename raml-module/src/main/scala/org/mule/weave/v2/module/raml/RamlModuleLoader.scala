@@ -1,8 +1,11 @@
 package org.mule.weave.v2.module.raml
 
+import java.util.concurrent.CompletableFuture
+
 import amf.Core
 import amf.MessageStyles
 import amf.RamlProfile
+import amf.client.environment.Environment
 import amf.client.model.StrField
 import amf.client.model.document.Document
 import amf.client.model.domain.AnyShape
@@ -13,12 +16,16 @@ import amf.client.model.domain.NilShape
 import amf.client.model.domain.NodeShape
 import amf.client.model.domain.Parameter
 import amf.client.model.domain.Payload
+import amf.client.model.domain.RecursiveShape
 import amf.client.model.domain.ScalarShape
 import amf.client.model.domain.SecurityRequirement
 import amf.client.model.domain.Shape
 import amf.client.model.domain.TupleShape
 import amf.client.model.domain.UnionShape
 import amf.client.model.domain.WebApi
+import amf.client.parse.Raml10Parser
+import amf.client.remote.Content
+import amf.client.resource.ClientResourceLoader
 import amf.core.model.DataType
 import org.mule.weave.v2.grammar.AsOpId
 import org.mule.weave.v2.grammar.ValueSelectorOpId
@@ -82,33 +89,24 @@ import org.mule.weave.v2.parser.phase.PhaseResult
 import org.mule.weave.v2.parser.phase.SuccessResult
 import org.mule.weave.v2.sdk.ClassLoaderWeaveResourceResolver
 import org.mule.weave.v2.sdk.WeaveResource
+import org.mule.weave.v2.sdk.WeaveResourceResolver
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 
-//type HttpClientOptionalOptions = {
-//headers?: HttpHeaders, //Dictionary<Simpletypes>
-//body?: BodyType, //Any
-//
-///** Do we accept header redirections? */
-//allowRedirect?: Boolean,
-//
-///** Accept self signed server certificates */
-//allowUnsafeSSL?: Boolean,
-//
-//readTimeout?: Number, // default 20000ms
-//connnectionTimeout?: Number, // default 10000ms
-//
-///** Should HTTP compression be used?
-//  * If true, Accept-Encoding: gzip,deflate will be sent with request.
-//  * If the server response with Content-Encoding: (gzip|deflate) the client will automatically handle decompression
-//  *
-//  * This is true by default
-//  */
-//allowCompression?: Boolean
-//}
+class ClassLoaderResourceLoader(resourceResolver: WeaveResourceResolver) extends ClientResourceLoader {
+  override def fetch(resource: String): CompletableFuture[Content] = {
+    CompletableFuture.supplyAsync(() => {
+      val maybeResource = ClassLoaderWeaveResourceResolver().lookupResource(resource)
+      maybeResource.map((r) => new Content(r.content, r.url())).getOrElse(throw new RuntimeException(s"Unable to resolve ${resource}"))
+    })
+  }
+}
 
+/**
+  * This module handles the load for any
+  */
 class RamlModuleLoader extends ModuleLoader {
 
   amf.plugins.document.WebApi.register()
@@ -117,13 +115,14 @@ class RamlModuleLoader extends ModuleLoader {
   amf.Core.init.get
 
   override def loadModule(nameIdentifier: NameIdentifier, moduleContext: ParsingContext): Option[PhaseResult[ParsingResult[ModuleNode]]] = {
+    val resourceResolver = ClassLoaderWeaveResourceResolver()
     val ramlPath = nameIdentifier.name.replaceAll(SEPARATOR, "/") + ".raml"
-    val maybeResource = ClassLoaderWeaveResourceResolver().lookupResource(ramlPath)
+    val maybeResource = resourceResolver.lookupResource(ramlPath)
     maybeResource
       .map((resource) => {
-        val ramlParser = Core.parser("RAML 1.0", "application/yaml")
+        val ramlParser = new Raml10Parser(Environment(new ClassLoaderResourceLoader(resourceResolver)))
         val raml = resource.content()
-        val baseUnit = ramlParser.parseStringAsync(raml).get()
+        val baseUnit = ramlParser.parseStringAsync(ramlPath, raml).get()
         val value = Core.validate(baseUnit, RamlProfile, MessageStyles.RAML).get()
         val messages = value.results.asScala
         if (messages.nonEmpty) {
@@ -356,15 +355,15 @@ class RamlModuleLoader extends ModuleLoader {
         })
         ObjectTypeNode(keyValuePairNodes)
       }
+      case rs: RecursiveShape => {
+        TypeReferenceNode(NameIdentifier(rs.name.value()))
+      }
       case ns: ScalarShape => {
         val dataType = ns.dataType
         TypeReferenceNode(NameIdentifier(resolveWeaveType(dataType)))
       }
       case as: ArrayShape => {
         TypeReferenceNode(NameIdentifier("Array"), Some(Seq(asTypeNode(as.items, canBeLink))))
-      }
-      case _: AnyShape => {
-        TypeReferenceNode(NameIdentifier("Any"))
       }
       case _: FileShape => {
         TypeReferenceNode(NameIdentifier("Binary"))
@@ -382,7 +381,9 @@ class RamlModuleLoader extends ModuleLoader {
           .map((shape) => asTypeNode(shape, canBeLink))
         anyOf.reduce((value, acc) => UnionTypeNode(value, acc))
       }
-
+      case _: AnyShape => {
+        TypeReferenceNode(NameIdentifier("Any"))
+      }
     }
   }
 
