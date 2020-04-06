@@ -38,7 +38,7 @@ class NettyHttpServerService extends HttpServerService {
     bootstrap.group(eventLoopGroup)
       .channel(classOf[NioServerSocketChannel])
       .localAddress(new InetSocketAddress(config.host, config.port))
-      .handler(new LoggingHandler(INFO))
+      //      .handler(new LoggingHandler(INFO))
       .childHandler(new NettyHttpServerInitializer(callback))
     val triedUnit = Try(bootstrap.bind.sync)
     triedUnit match {

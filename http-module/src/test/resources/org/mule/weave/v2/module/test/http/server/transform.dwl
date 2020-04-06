@@ -1,6 +1,6 @@
 import * from dw::io::http::Server
 import * from dw::io::http::Client
-import dw::core::Assertions
+import mustEqual from dw::core::Assertions
 
 var serverConfig = { host: "localhost", port: 8081 }
 var LOCALHOST = '$(serverConfig.host):$(serverConfig.port)'
@@ -21,6 +21,16 @@ var server = api(
         status: 302
       }
     },
+    "/properties": {
+            GET: (request) -> {
+              body: {
+                method: request.method,
+                path: request.path,
+                headers: request.headers,
+                params: request.queryParams
+              }
+            }
+          },
     "/testXml": {
           GET: (request) -> {
             body: {
@@ -53,30 +63,53 @@ fun then<A, V>(result: A, assertions: (result: A) -> V): V = assertions(result)
       body: {name: 'Agustin'}
     }
   ) then [
-    Assertions::mustEqual(($).response.body.name, 'Agustin'),
-    Assertions::mustEqual($.response.headers."Content-Type", 'application/json'),
-    Assertions::mustEqual(($).response.status, 302),
+    ($).response.body.name mustEqual 'Agustin',
+    $.response.headers."Content-Type" mustEqual 'application/json',
+    ($).response.status mustEqual 302,
   ],
 
   request('GET', 'http://$LOCALHOST/test', {}) then [
-    Assertions::mustEqual(($).response.body.name, 'Mariano'),
-    Assertions::mustEqual(($).request.httpVersion, 'HTTP/1.1')
+    ($).response.body.name mustEqual 'Mariano',
+    ($).request.httpVersion mustEqual 'HTTP/1.1'
   ],
   request('POST', 'http://$LOCALHOST/testXml',
       {
         body: {name: 'Agustin'}
       }
     ) then [
-      Assertions::mustEqual(($).response.body.name, 'Agustin'),
-      Assertions::mustEqual($.response.headers."Content-Type", 'application/xml'),
-      Assertions::mustEqual(($).response.status, 302),
+      ($).response.body.name mustEqual 'Agustin',
+      $.response.headers."Content-Type" mustEqual 'application/xml',
+      ($).response.status mustEqual 302
     ],
 
     request('GET', 'http://$LOCALHOST/testXml', {}) then [
-      Assertions::mustEqual(($).response.body.name, 'Mariano'),
-      Assertions::mustEqual($.response.headers."Content-Type", 'application/xml'),
-      Assertions::mustEqual(($).request.httpVersion, 'HTTP/1.1')
+      ($).response.body.name mustEqual 'Mariano',
+      $.response.headers."Content-Type" mustEqual 'application/xml',
+      ($).request.httpVersion mustEqual 'HTTP/1.1'
     ],
-
-  Assertions::mustEqual(server.stop(), true)
+    request('GET', 'http://$LOCALHOST/properties?some=query&other=value', {
+        headers : {
+            ("X-Custom"): "headerValue"
+        }
+    }) then [
+      ($).request.httpVersion mustEqual 'HTTP/1.1',
+      ($).response.body.method mustEqual 'GET',
+      ($).response.body.path mustEqual '/properties',
+      ($).response.body.params mustEqual {
+                                            some : "query",
+                                            other : "value"
+                                          },
+      ($).response.body.headers mustEqual {
+                                             "X-Custom": "headerValue",
+                                             "Accept-Encoding": "gzip,deflate",
+                                             Host: "localhost:8081",
+                                             Connection: "close",
+                                             "User-Agent": "DataWeave/2.0",
+                                             Accept: "text/html, image/gif, image/jpeg, *; q=.2, */*; q=.2",
+                                             "Cache-Control": "no-cache",
+                                             Pragma: "no-cache",
+                                             "content-length": "0"
+                                           }
+    ],
+  server.stop() mustEqual true
 ] is Array

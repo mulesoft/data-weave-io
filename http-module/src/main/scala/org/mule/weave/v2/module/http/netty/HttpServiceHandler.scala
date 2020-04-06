@@ -54,7 +54,10 @@ class HttpServiceHandler(callback: HttpServerRequest => HttpServerResponse) exte
   }
 
   def toHttpRequest(request: FullHttpRequest): HttpServerRequest = {
-    HttpServerRequest(new ByteBufInputStream(request.content()), request.uri(), request.method.name, fromHttpHeaders(request.headers()), Seq())
+    val uriParts = request.uri().split('?').iterator
+    val path = uriParts.next()
+    val queryString = if (uriParts.hasNext) uriParts.next() else ""
+    HttpServerRequest(new ByteBufInputStream(request.content()), path, request.method.name, fromHttpHeaders(request.headers()), fromQueryString(queryString))
   }
 
   def toHttpHeaders(headers: Map[String, String]): HttpHeaders = {
@@ -65,9 +68,22 @@ class HttpServiceHandler(callback: HttpServerRequest => HttpServerResponse) exte
   }
 
   def fromHttpHeaders(httpHeaders: HttpHeaders): Seq[(String, String)] = {
-    val headers: ArrayBuffer[(String, String)] = ArrayBuffer[(String, String)]()
+    val headers = ArrayBuffer[(String, String)]()
     httpHeaders.forEach(entry => headers.+=((entry.getKey, entry.getValue)))
     headers
+  }
+
+  def fromQueryString(queryString: String): Seq[(String, String)] = {
+    val queryParams = ArrayBuffer[(String, String)]()
+    queryString.split('&').foreach(query => {
+      val valueIndex = query.indexOf("=")
+      if (valueIndex > 0) {
+        queryParams.+=((query.substring(0, valueIndex), query.substring(valueIndex + 1)))
+      } else {
+        queryParams.+=((query, ""))
+      }
+    })
+    queryParams
   }
 
   @throws[IOException]
