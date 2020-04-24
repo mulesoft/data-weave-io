@@ -1,8 +1,8 @@
 {
   "a": [
     "test1.txt",
-    "test3.unknown",
-    "test2.json"
+    "test2.json",
+    "test3.unknown"
   ],
   "b": [
     "test1.txt"

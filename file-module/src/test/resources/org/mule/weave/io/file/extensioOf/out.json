@@ -1,8 +1,8 @@
 {
   "a": [
     ".txt",
-    ".unknown",
-    ".json"
+    ".json",
+    ".unknown"
   ],
   "b": null
 }

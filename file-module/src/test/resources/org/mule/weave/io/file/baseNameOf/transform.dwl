@@ -4,6 +4,6 @@ output application/json
 var folder = path(tmp(),"dw_io_test")
 ---
 {
-  a: ls(folder) map ((path, index) -> baseNameOf(path)),
+  a: (ls(folder) orderBy $) map ((path, index) -> baseNameOf(path)),
   b: baseNameOf(folder)
 }
