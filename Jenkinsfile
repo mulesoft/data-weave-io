@@ -1,4 +1,6 @@
 Map pipelineParams = [
-        "projectType"     : "Shell"]
+        "slackChannel"                  : "data-weave-bot",
+        "enableAllureTestReportStage"   : false,
+        "projectType"                   : "Shell"]
 
 runtimeBuild(pipelineParams)
