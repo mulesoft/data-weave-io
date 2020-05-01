@@ -30,6 +30,7 @@ import org.mule.weave.v2.module.DataFormatManager
 import org.mule.weave.v2.module.MimeType
 import org.mule.weave.v2.module.http.HttpHeader.CONTENT_TYPE_HEADER
 import org.mule.weave.v2.module.http.functions.HttpServerFunction._
+import org.mule.weave.v2.module.http.netty.NettyHttpServerService
 import org.mule.weave.v2.module.http.service.FailedStatus
 import org.mule.weave.v2.module.http.service.HttpServerConfig
 import org.mule.weave.v2.module.http.service.HttpServerRequest
@@ -37,7 +38,6 @@ import org.mule.weave.v2.module.http.service.HttpServerResponse
 import org.mule.weave.v2.module.http.service.HttpServerService
 import org.mule.weave.v2.module.http.service.HttpServerStatus
 import org.mule.weave.v2.module.http.service.RunningStatus
-import org.mule.weave.v2.module.http.undertow.UndertowHttpServerService
 import org.mule.weave.v2.module.reader.AutoPersistedOutputStream
 import org.mule.weave.v2.module.reader.SourceProvider
 import org.mule.weave.v2.parser.location.Location
@@ -54,7 +54,7 @@ class HttpServerFunction extends BinaryFunctionValue {
     val config = ObjectType.coerce(value1)
     val callBack = FunctionType.coerce(value2)
     val manager: ServiceManager = context.serviceManager
-    val httpServerService = manager.lookupCustomService(classOf[HttpServerService], new UndertowHttpServerService())
+    val httpServerService = manager.lookupCustomService(classOf[HttpServerService], new NettyHttpServerService())
     val configObject = config.materialize.evaluate
     val port = selectInt(configObject, PORT_KEY_NAME).getOrElse(8081)
     val host = selectString(configObject, HOST_KEY_NAME).getOrElse("localhost")
@@ -74,7 +74,7 @@ class HttpServerFunction extends BinaryFunctionValue {
             val exceptionMessage = writer.toString
             context.serviceManager.loggingService.logError(exceptionMessage)
             newThreadContext.close()
-            HttpServerResponse(new ByteArrayInputStream(exceptionMessage.getBytes("UTF-8")), Map(), () => null, 500)
+            HttpServerResponse(new ByteArrayInputStream(exceptionMessage.getBytes("UTF-8")), Map(), () => {}, 500)
           }
         }
       })

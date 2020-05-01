@@ -45,7 +45,6 @@ case class SSLOptions(
   var sslProtocol: String = "TLS")
 
 case class HttpClientRequest(
-
   var method: String,
   var url: String,
   var path: String = "",

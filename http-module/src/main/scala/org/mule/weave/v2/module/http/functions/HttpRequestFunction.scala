@@ -2,9 +2,6 @@ package org.mule.weave.v2.module.http.functions
 
 import java.net.HttpCookie
 
-import io.undertow.server.handlers.Cookie
-import io.undertow.util.Cookies
-import io.undertow.util.HttpString
 import org.mule.weave.v2.core.functions.UnaryFunctionValue
 import org.mule.weave.v2.model.EvaluationContext
 import org.mule.weave.v2.model.capabilities.UnknownLocationCapable
@@ -125,16 +122,8 @@ class HttpRequestFunction extends UnaryFunctionValue {
                     } catch {
                       case e: Throwable => throw new Exception(s"Invalid header value `$keyString`. It must be a String", e)
                     }
-
-                    val headerName = try {
-                      HttpString.tryFromString(keyString)
-                    } catch {
-                      case e: Throwable => throw new Exception(s"Invalid header name: `$keyString`", e)
-                    }
-
-                    val newValue: Seq[String] = requestHeaders.getOrElse(headerName.toString, Seq()) :+ headerValue
-
-                    requestHeaders.update(headerName.toString, newValue)
+                    val newValue: Seq[String] = requestHeaders.getOrElse(keyString, Seq()) :+ headerValue
+                    requestHeaders.update(keyString, newValue)
                   })
               }
             })
