@@ -5,6 +5,7 @@ Map pipelineParams = [
         "enableAllureTestReportStage"           : false,
         "enableSonarQubeStage"                  : false,
         "enableNexusIqStage"                    : false,
+        "mavenSettingsXmlId"                    : "data-weave-maven-settings",
         "projectType"                           : "Shell"
     ]
 
