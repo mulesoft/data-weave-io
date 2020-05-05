@@ -10,6 +10,11 @@ subprojects {
     apply plugin: "com.github.hierynomus.scalariform"
     apply plugin: 'dataweave'
 
+    mavenSettings {
+        if (project.hasProperty('maven.settings.location')) {
+            userSettingsFileName = project.property('maven.settings.location')
+        }
+    }
 
     group = "org.mule.weave"
     version = version
@@ -109,7 +114,6 @@ subprojects {
     build.dependsOn("weavedoc")
     
 }
-
 
 buildscript {
     repositories {
