@@ -1,59 +1,70 @@
 package org.mule.weave.v2.module.http.netty
 
-import java.io.ByteArrayInputStream
 import java.io.IOException
 import java.io.InputStream
-import java.net.InetSocketAddress
 
-import io.netty.buffer.ByteBuf
 import io.netty.buffer.ByteBufInputStream
-import io.netty.buffer.Unpooled
-import io.netty.buffer.Unpooled.copiedBuffer
-import io.netty.channel.ChannelFuture
-import io.netty.channel.ChannelFutureListener
-import io.netty.channel.ChannelHandlerContext
-import io.netty.channel.ChannelInboundHandlerAdapter
-import io.netty.handler.codec.EmptyHeaders
-import io.netty.handler.codec.http.DefaultFullHttpResponse
+import io.netty.channel.SimpleChannelInboundHandler
 import io.netty.handler.codec.http.DefaultHttpHeaders
 import io.netty.handler.codec.http.EmptyHttpHeaders
 import io.netty.handler.codec.http.FullHttpRequest
-import io.netty.handler.codec.http.HttpHeaders
-import io.netty.handler.codec.http.HttpResponseStatus
 import io.netty.handler.codec.http.HttpResponseStatus.valueOf
 import io.netty.handler.codec.http.HttpVersion.HTTP_1_1
 import org.mule.weave.v2.module.http.service.HttpServerRequest
 import org.mule.weave.v2.module.http.service.HttpServerResponse
+import io.netty.channel.ChannelFuture
+import io.netty.channel.ChannelHandlerContext
+import io.netty.buffer.ByteBuf
+import io.netty.buffer.Unpooled
+import io.netty.channel.ChannelHandler.Sharable
+import io.netty.handler.codec.http.DefaultFullHttpResponse
+import io.netty.handler.codec.http.DefaultHttpResponse
+import io.netty.handler.codec.http.HttpChunkedInput
+import io.netty.handler.codec.http.HttpHeaderNames
+import io.netty.handler.codec.http.HttpHeaderNames.CONTENT_LENGTH
+import io.netty.handler.codec.http.HttpHeaderNames.TRANSFER_ENCODING
+import io.netty.handler.codec.http.HttpHeaderValues
+import io.netty.handler.codec.http.HttpHeaderValues.CHUNKED
+import io.netty.handler.codec.http.HttpHeaders
+import io.netty.handler.codec.http.HttpUtil
 
 import scala.collection.mutable.ArrayBuffer
 
-class HttpServiceHandler(callback: HttpServerRequest => HttpServerResponse) extends ChannelInboundHandlerAdapter {
+@Sharable
+class HttpServiceHandler(callback: HttpServerRequest => HttpServerResponse) extends SimpleChannelInboundHandler[FullHttpRequest] {
 
   @throws[Exception]
-  override def channelRead(ctx: ChannelHandlerContext, msg: Any): Unit = {
-    val localAddress = ctx.channel.localAddress.asInstanceOf[InetSocketAddress]
-    try if (msg.isInstanceOf[FullHttpRequest]) {
-      val request = msg.asInstanceOf[FullHttpRequest]
-      val httpRequest: HttpServerRequest = toHttpRequest(request)
-      val httpResponse: HttpServerResponse = callback.apply(httpRequest)
-      val nettyResponse = new DefaultFullHttpResponse(
-        HTTP_1_1,
-        valueOf(httpResponse.statusCode),
-        toByteBuf(httpResponse.body), toHttpHeaders(httpResponse.headers), EmptyHttpHeaders.INSTANCE)
+  protected def channelRead0(ctx: ChannelHandlerContext, request: FullHttpRequest): Unit = {
+    val weaveRequest: HttpServerRequest = toWeaveRequest(request)
+    val weaveResponse: HttpServerResponse = callback.apply(weaveRequest)
+    val headers = toHttpHeaders(weaveResponse.headers)
+    val contentLength = headers.contains(CONTENT_LENGTH)
+    val keepAlive = HttpUtil.isKeepAlive(request)
+    if (!keepAlive) {
+      headers.set(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE)
+    }
 
-      ctx.writeAndFlush(nettyResponse).addListener(new ChannelFutureListener {
-        override def operationComplete(future: ChannelFuture): Unit = {
-          httpResponse.closeCallBack.apply()
-          ctx.close()
-        }
+    // TODO: Check whether we can enforce the content length at the weave level
+    val contentFuture = if (!contentLength & weaveResponse.body != null) {
+      headers.set(TRANSFER_ENCODING, CHUNKED)
+      val headerResponse = new DefaultHttpResponse(HTTP_1_1, valueOf(weaveResponse.statusCode), headers)
+      ctx.write(headerResponse)
+      ctx.writeAndFlush(new HttpChunkedInput(new WeaveChunkedStream(weaveResponse.body)))
+    } else {
+      val fullResponse = new DefaultFullHttpResponse(HTTP_1_1, valueOf(weaveResponse.statusCode),
+        toByteBuf(weaveResponse.body), headers, EmptyHttpHeaders.INSTANCE)
+      ctx.writeAndFlush(fullResponse)
+    }
+
+    if (!keepAlive) {
+      contentFuture.addListener((future: ChannelFuture) => {
+        weaveResponse.closeCallBack.apply()
+        future.channel().close()
       })
-
-    } finally {
-
     }
   }
 
-  def toHttpRequest(request: FullHttpRequest): HttpServerRequest = {
+  def toWeaveRequest(request: FullHttpRequest): HttpServerRequest = {
     val uriParts = request.uri().split('?').iterator
     val path = uriParts.next()
     val queryString = if (uriParts.hasNext) uriParts.next() else ""
@@ -73,6 +84,7 @@ class HttpServiceHandler(callback: HttpServerRequest => HttpServerResponse) exte
     headers
   }
 
+  // TODO: Use io.netty.handler.codec.http.QueryStringDecoder instead
   def fromQueryString(queryString: String): Seq[(String, String)] = {
     val queryParams = ArrayBuffer[(String, String)]()
     queryString.split('&').foreach(query => {
@@ -88,6 +100,7 @@ class HttpServiceHandler(callback: HttpServerRequest => HttpServerResponse) exte
 
   @throws[IOException]
   def toByteBuf(input: InputStream): ByteBuf = {
+    // TODO: Check whether there's a better way of doing this stream to byte buf handling
     if (input != null) {
       val buf = Unpooled.buffer
       var n = 0
