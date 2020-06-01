@@ -1,0 +1,8 @@
+{
+  "resources": [
+    {
+      "pattern": "dw/io/file/FileSystem.dwl"
+    }
+  ]
+}
+

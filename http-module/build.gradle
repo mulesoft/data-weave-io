@@ -7,9 +7,6 @@ dependencies {
     compile group: 'org.mule.weave', name: 'runtime', version: weaveVersion
     compile group: 'org.mule.weave', name: 'parser', version: weaveVersion
     compile group: 'org.mule.weave', name: 'core-modules', version: weaveVersion
-    
-
-//    compile group: 'io.undertow', name: 'undertow-core', version: '2.0.29.Final'
     compile group: 'io.netty', name: 'netty-all', version: '4.1.43.Final'
 
     testCompile group: 'org.mule.weave', name: 'runtime-test-helpers', version: weaveVersion     
