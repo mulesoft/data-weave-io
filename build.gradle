@@ -49,7 +49,6 @@ subprojects {
         publications {
             mavenJava(MavenPublication) {
                 from components.java
-                artifact docs
             }
         }
         repositories {
@@ -145,8 +144,4 @@ buildscript {
         classpath "gradle.plugin.com.hierynomus.gradle.plugins:scalariform-gradle-plugin:0.2.0"
         classpath "org.mule.weave:weave-gradle-plugin:" + weavedocVersion        
     }
-}
-
-task wrapper(type: Wrapper) {
-    gradleVersion = '4.1'
 }

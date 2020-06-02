@@ -12,6 +12,8 @@ import org.mule.weave.v2.parser.ModuleParser
 import org.mule.weave.v2.parser.ast.variables.NameIdentifier
 import org.mule.weave.v2.parser.exception.LocatableException
 import org.mule.weave.v2.parser.phase.ParsingContext
+import org.mule.weave.v2.sdk.ClassLoaderResourceProvider
+import org.mule.weave.v2.sdk.ClassLoaderWeaveResourceResolver
 import org.mule.weave.v2.utils.AstEmitter
 
 class RamlModuleParserTest extends SimpleTextBasedTest {
@@ -25,6 +27,7 @@ class RamlModuleParserTest extends SimpleTextBasedTest {
       val baseName = FileHelper.baseName(testFile)
       val context: ParsingContext = createTestParsingContext(testFile)
       val moduleLoader = new RamlModuleLoader()
+      moduleLoader.resolver(ClassLoaderWeaveResourceResolver())
       val identifier = NameIdentifier(s"org::mule::weave::v2::module::test::raml::parser::${baseName}", Some("raml"))
       val result = moduleLoader.loadModule(identifier, context)
       result match {

@@ -88,9 +88,9 @@ import org.mule.weave.v2.parser.phase.ParsingContext
 import org.mule.weave.v2.parser.phase.ParsingResult
 import org.mule.weave.v2.parser.phase.PhaseResult
 import org.mule.weave.v2.parser.phase.SuccessResult
-import org.mule.weave.v2.sdk.ClassLoaderWeaveResourceResolver
 import org.mule.weave.v2.sdk.WeaveResource
 import org.mule.weave.v2.sdk.WeaveResourceResolver
+import org.mule.weave.v2.sdk.WeaveResourceResolverAware
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable
@@ -99,7 +99,7 @@ import scala.collection.mutable.ArrayBuffer
 class DataWeaveResourceLoader(resourceResolver: WeaveResourceResolver) extends ClientResourceLoader {
   override def fetch(resource: String): CompletableFuture[Content] = {
     CompletableFuture.supplyAsync(() => {
-      val maybeResource = ClassLoaderWeaveResourceResolver().lookupResource(resource)
+      val maybeResource = resourceResolver.resolvePath(resource)
       maybeResource.map((r) => new Content(r.content, r.url())).getOrElse(throw new RuntimeException(s"Unable to resolve ${resource}"))
     })
   }
@@ -108,7 +108,7 @@ class DataWeaveResourceLoader(resourceResolver: WeaveResourceResolver) extends C
 /**
   * This module handles the load for any
   */
-class RamlModuleLoader extends ModuleLoader {
+class RamlModuleLoader extends ModuleLoader with WeaveResourceResolverAware {
 
   amf.plugins.document.WebApi.register()
   amf.plugins.document.Vocabularies.register()
@@ -116,13 +116,18 @@ class RamlModuleLoader extends ModuleLoader {
   amf.Core.registerPlugin(PayloadValidatorPlugin)
   amf.Core.init.get
 
+  var resolver: WeaveResourceResolver = _
+
+  override def resolver(resolver: WeaveResourceResolver): Unit = {
+    this.resolver = resolver
+  }
+
   override def loadModule(nameIdentifier: NameIdentifier, moduleContext: ParsingContext): Option[PhaseResult[ParsingResult[ModuleNode]]] = {
-    val resourceResolver = ClassLoaderWeaveResourceResolver()
     val ramlPath = nameIdentifier.name.replaceAll(SEPARATOR, "/") + ".raml"
-    val maybeResource = resourceResolver.lookupResource(ramlPath)
+    val maybeResource = resolver.resolvePath(ramlPath)
     maybeResource
       .map((resource) => {
-        val ramlParser = new Raml10Parser(Environment(new DataWeaveResourceLoader(resourceResolver)))
+        val ramlParser = new Raml10Parser(Environment(new DataWeaveResourceLoader(resolver)))
         val raml = resource.content()
         val baseUnit = ramlParser.parseStringAsync(ramlPath, raml).get()
         val value = Core.validate(baseUnit, RamlProfile, MessageStyles.RAML).get()
