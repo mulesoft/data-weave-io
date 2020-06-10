@@ -2,7 +2,7 @@ import * from dw::io::http::Server
 import * from dw::io::http::Client
 import mustEqual from dw::core::Assertions
 
-var serverConfig = { host: "localhost", port: 8081 }
+var serverConfig = { host: "localhost", port: dw::io::http::utils::Port::freePort() }
 var LOCALHOST = '$(serverConfig.host):$(serverConfig.port)'
 
 var server = api(
@@ -102,7 +102,7 @@ fun then<A, V>(result: A, assertions: (result: A) -> V): V = assertions(result)
       ($).response.body.headers mustEqual {
                                              "X-Custom": "headerValue",
                                              "Accept-Encoding": "gzip,deflate",
-                                             Host: "localhost:8081",
+                                             Host: LOCALHOST,
                                              Connection: "close",
                                              "User-Agent": "DataWeave/2.0",
                                              Accept: "text/html, image/gif, image/jpeg, *; q=.2, */*; q=.2",

@@ -9,10 +9,8 @@ import org.mule.weave.v2.model.EvaluationContext
 import org.mule.weave.v2.model.types.StringType
 import org.mule.weave.v2.model.values.ArrayValue
 import org.mule.weave.v2.model.values.FunctionValue
-import org.mule.weave.v2.model.values.NullValue
 import org.mule.weave.v2.model.values.StringValue
 import org.mule.weave.v2.model.values.Value
-import org.mule.weave.v2.module.DataFormatManager
 import org.mule.weave.v2.module.native.NativeValueProvider
 
 class NativeFileModule extends NativeValueProvider {
@@ -22,8 +20,7 @@ class NativeFileModule extends NativeValueProvider {
     "FileTypeOfFunction" -> new FileTypeOfFunction(),
     "NameOfFunction" -> new NameOfFunction(),
     "TmpPathFunction" -> new TmpPathFunction(),
-    "PathFunction" -> new PathFunction(),
-    "MimeTypeOfFunction" -> new MimeTypeOfFunction())
+    "PathFunction" -> new PathFunction())
 
   override def name() = "file"
 
@@ -89,34 +86,3 @@ class TmpPathFunction extends EmptyFunctionValue {
   }
 }
 
-class MimeTypeOfFunction extends UnaryFunctionValue {
-
-  def getExtension(output: File): String = {
-    val i = output.getName lastIndexOf '.'
-    if (i > 0) {
-      output.getName.drop(i)
-    } else {
-      null
-    }
-  }
-
-  override val R = StringType
-
-  override def doExecute(path: R.V)(implicit ctx: EvaluationContext): Value[_] = {
-    val pathString = StringType.coerce(path).evaluate
-    val file = new File(pathString)
-    val extension = getExtension(file)
-    if (extension != null) {
-      val maybeFormat = DataFormatManager.byExtension(extension)
-      maybeFormat
-        .map(_.defaultMimeType.toString)
-        .orElse(MimeTypes.getMimeType(extension))
-        .map((value) => {
-          StringValue(value)
-        })
-        .getOrElse(NullValue)
-    } else {
-      NullValue
-    }
-  }
-}

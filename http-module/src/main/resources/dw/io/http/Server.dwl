@@ -124,61 +124,62 @@ fun server(configuration: HttpServerOptions, handler: HttpHandler): HttpServer =
 **/
 fun api(config: ApiConfig = {port: 8081, host:"localhost"}, apiDefinition: APIDefinition): HttpServer = do {
 
-fun handleRequestInterceptors(req: HttpServerRequest, interceptors: Array<HttpInterceptor>): InterceptedHttpRequest =
-  interceptors match {
-    case [] -> { request: req }
-    case [head ~ tail] ->
-      if (head.onRequest?)
-        using(result = head.onRequest(req))
-          if (result.response?)
-            result
+    fun handleRequestInterceptors(req: HttpServerRequest, interceptors: Array<HttpInterceptor>): InterceptedHttpRequest =
+      interceptors match {
+        case [] -> { request: req }
+        case [head ~ tail] ->
+          if (head.onRequest?)
+            using(result = head.onRequest(req))
+              if (result.response?)
+                result
+              else
+                handleRequestInterceptors(result.request!, tail)
           else
-            handleRequestInterceptors(result.request!, tail)
-      else
-        handleRequestInterceptors(req, tail)
-  }
-
-fun handleResponseInterceptors(req: HttpServerRequest, resp: HttpServerResponse, interceptors: Array<HttpInterceptor>): HttpServerResponse =
-  interceptors match {
-    case [] -> resp
-    case [head ~ tail] ->
-      if (head.onResponse?)
-        handleResponseInterceptors(req, head.onResponse(req, resp), tail)
-      else
-        handleResponseInterceptors(req, resp, tail)
-  }
- ---
-  server(config, (request) -> do {
-    var matchingHandler = apiDefinition[?(request.path matches ($$ as String))][0]
-    var methodHandler = matchingHandler[(request.method)]
-    var interseptedRequest = handleRequestInterceptors(request, config.interceptors default [])
-    ---
-    if (interseptedRequest.response?)
-      interseptedRequest.response!
-    else if (methodHandler == null)
-      {
-        body: "$(request.path) Not Found",
-        status: 404
+            handleRequestInterceptors(req, tail)
       }
-    else do {
-      var response = methodHandler(interseptedRequest.request!)
-      var headers = normalizeHeaders(response.headers)
-      ---
-      handleResponseInterceptors(
-        interseptedRequest.request!,
-        {
-            //If there is body and not Content-Type header is defined use the one form the config
-          headers: if(response.body? and (not headers."Content-Type"?))
-                     headers ++ {"Content-Type": config.contentType default "application/json"}
-                   else
-                     headers,
-          (body: response.body) if response.body?,
-          status: response.status default 200
-        },
-        config.interceptors default []
-      )
-    }
-  })
+
+    fun handleResponseInterceptors(req: HttpServerRequest, resp: HttpServerResponse, interceptors: Array<HttpInterceptor>): HttpServerResponse =
+      interceptors match {
+        case [] -> resp
+        case [head ~ tail] ->
+          if (head.onResponse?)
+            handleResponseInterceptors(req, head.onResponse(req, resp), tail)
+          else
+            handleResponseInterceptors(req, resp, tail)
+      }
+    ---
+    server(config, (request) -> do {
+        var matchingHandler = apiDefinition[?(request.path matches ($$ as String))][0]
+        var methodHandler = matchingHandler[(request.method)]
+        var interseptedRequest = handleRequestInterceptors(request, config.interceptors default [])
+        ---
+        if (interseptedRequest.response?)
+          interseptedRequest.response!
+        else if (methodHandler == null)
+          {
+            body: "$(request.path) Not Found",
+            status: 404
+          }
+        else do {
+          var response = methodHandler(interseptedRequest.request!)
+          var headers = normalizeHeaders(response.headers)
+          ---
+          handleResponseInterceptors(
+            interseptedRequest.request!,
+            {
+                //If there is body and not Content-Type header is defined use the one form the config
+              headers: if(response.body? and (not headers."Content-Type"?))
+                         headers ++ {"Content-Type": config.contentType default "application/json"}
+                       else
+                         headers,
+              (body: response.body) if response.body?,
+              status: response.status default 200
+            },
+            config.interceptors default []
+          )
+        }
+      }
+   )
 }
 
 /**
@@ -207,12 +208,12 @@ fun handleResponseInterceptors(req: HttpServerRequest, resp: HttpServerResponse,
 * api(
 *     {port: 8081, host: "localhost"}, {
 *       "/test": {
-*         GET: (request) -> staticResponse("index.html")
+*         GET: (request) -> resourceResponse("index.html")
 *     }
 *   )
 * ----
 **/
-fun staticResponse(path: String): HttpServerResponse = do {
+fun resourceResponse(path: String): HttpServerResponse = do {
     var content: TryResult<Binary> = try(() -> readUrl("classpath://" ++ path, "binary") as Binary)
     ---
     if(content.success)
@@ -226,7 +227,10 @@ fun staticResponse(path: String): HttpServerResponse = do {
         }
     else
         {
+          body: content.error.message!,
+          headers: {
+            (CONTENT_TYPE_HEADER):  "text/plain",
+          },
           status: 404
         }
-
 }

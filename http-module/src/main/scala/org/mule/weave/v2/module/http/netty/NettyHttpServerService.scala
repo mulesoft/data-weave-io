@@ -47,9 +47,11 @@ class NettyHttpServerService extends HttpServerService {
       }
       case Success(serverChannelFuture: ChannelFuture) => {
         RunningStatus(config.host, config.port, () => {
+          println("Stopping server.")
           boss.shutdownGracefully()
           workers.shutdownGracefully()
           serverChannelFuture.channel.closeFuture.sync
+          println("Server stopped.")
         })
       }
     }

@@ -62,7 +62,7 @@ class HttpServerFunction extends BinaryFunctionValue {
     val serverHandler: HttpServerStatus = httpServerService.server(
       HttpServerConfig(port, host),
       (request) => {
-        val newThreadContext = context.asInstanceOf[ExecutionContext].spawnNewThread()
+        val newThreadContext: ExecutionContext = context.asInstanceOf[ExecutionContext].spawnNewThread()
         try {
           val requestValue = toRequestObjectValue(request)
           val callbackResult = callBack.call(ValuesHelper.array(requestValue))(newThreadContext)

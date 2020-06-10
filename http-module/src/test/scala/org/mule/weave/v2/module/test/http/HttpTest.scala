@@ -39,7 +39,7 @@ class HttpTest extends FunSpec with Matchers with FolderBasedTest with ParsingCo
           compilerResult
             .getResult()
             .executable
-            .write(EmptyWriter, readers)
+            .writeWith(EmptyWriter, readers)
         } catch {
           case e: LocatableException =>
             fail(e.getMessage + " at:\n" + e.location.locationString, e)

@@ -1,9 +1,11 @@
 %dw 2.0
 import * from dw::io::file::FileSystem
 output application/json
-var folder = path(tmp(),"dw_io_test")
+
 ---
 {
-  a: (ls(folder) orderBy $) map ((path, index) -> extensionOf(path)),
-  b: extensionOf(folder)
+  a: extensionOf(path("/tmp","foo.txt")),
+  b: extensionOf(path("/tmp","foo.html")),
+  c: extensionOf(path("/tmp","foo.json")),
+  d: extensionOf(tmp()) //Directory should return null
 }
