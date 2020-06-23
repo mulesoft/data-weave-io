@@ -30,20 +30,28 @@ import amf.core.model.DataType
 import amf.plugins.document.webapi.validation.PayloadValidatorPlugin
 import org.mule.weave.v2.grammar.AsOpId
 import org.mule.weave.v2.grammar.ValueSelectorOpId
+import org.mule.weave.v2.module.raml.RamlModuleLoader.APIDefinitionTypeName
+import org.mule.weave.v2.module.raml.RamlModuleLoader.ApiConfigTypeName
+import org.mule.weave.v2.module.raml.RamlModuleLoader.ApiFunctionName
 import org.mule.weave.v2.module.raml.RamlModuleLoader.BODY
 import org.mule.weave.v2.module.raml.RamlModuleLoader.HEADERS
 import org.mule.weave.v2.module.raml.RamlModuleLoader.HOST_PARAM
 import org.mule.weave.v2.module.raml.RamlModuleLoader.HOST_VAL
-import org.mule.weave.v2.module.raml.RamlModuleLoader.HttpClientResponse
+import org.mule.weave.v2.module.raml.RamlModuleLoader.HttpClientResponseTypeName
+import org.mule.weave.v2.module.raml.RamlModuleLoader.HttpServerResponseTypeName
+import org.mule.weave.v2.module.raml.RamlModuleLoader.HttpServerTypeName
 import org.mule.weave.v2.module.raml.RamlModuleLoader.OPERATION_PARAM
 import org.mule.weave.v2.module.raml.RamlModuleLoader.QUERY_PARAM
+import org.mule.weave.v2.module.raml.RamlModuleLoader.ServerHandlerTypeName
 import org.mule.weave.v2.module.raml.RamlModuleLoader.URI_PARAM
+import org.mule.weave.v2.module.raml.RamlModuleLoader.httpPackage
 import org.mule.weave.v2.parser.CanonicalPhaseCategory
 import org.mule.weave.v2.parser.Message
 import org.mule.weave.v2.parser.SafeStringBasedParserInput
 import org.mule.weave.v2.parser.annotation.InfixNotationFunctionCallAnnotation
 import org.mule.weave.v2.parser.ast.AstNode
 import org.mule.weave.v2.parser.ast.LocationInjectorHelper
+import org.mule.weave.v2.parser.ast.UndefinedExpressionNode
 import org.mule.weave.v2.parser.ast.functions.DoBlockNode
 import org.mule.weave.v2.parser.ast.functions.FunctionCallNode
 import org.mule.weave.v2.parser.ast.functions.FunctionCallParametersNode
@@ -66,6 +74,7 @@ import org.mule.weave.v2.parser.ast.selectors.NullUnSafeNode
 import org.mule.weave.v2.parser.ast.structure.KeyNode
 import org.mule.weave.v2.parser.ast.structure.KeyValuePairNode
 import org.mule.weave.v2.parser.ast.structure.NameNode
+import org.mule.weave.v2.parser.ast.structure.NumberNode
 import org.mule.weave.v2.parser.ast.structure.ObjectNode
 import org.mule.weave.v2.parser.ast.structure.QuotedStringNode
 import org.mule.weave.v2.parser.ast.structure.StringNode
@@ -164,7 +173,7 @@ class RamlModuleLoader extends ModuleLoader with WeaveResourceResolverAware {
         })
       })
     }).distinct
-    val nodes: Seq[WeaveTypeNode] = authsTypes.map((typeName) => TypeReferenceNode(NameIdentifier(s"dw::io::http::Client::${typeName}")))
+    val nodes: Seq[WeaveTypeNode] = authsTypes.map((typeName) => TypeReferenceNode(httpPackage.::("Client").::(typeName)))
     if (nodes.isEmpty) {
       None
     } else {
@@ -173,12 +182,13 @@ class RamlModuleLoader extends ModuleLoader with WeaveResourceResolverAware {
     }
   }
 
+
   def buildModule(nameIdentifier: NameIdentifier, unresovledDocument: Document): ModuleNode = {
 
     val shapes = unresovledDocument.declares.asScala.collect({ case s: Shape => s })
 
-    val importHttpClient = ImportDirective(ImportedElement(NameIdentifier("dw::io::http::Client")), ImportedElements(Seq(ImportedElement(NameIdentifier("*")))))
-    val importTypesClient = ImportDirective(ImportedElement(NameIdentifier("dw::io::http::Types")), ImportedElements(Seq(ImportedElement(NameIdentifier("*")))))
+    val importHttpClient = ImportDirective(ImportedElement(httpPackage.::("Client")), ImportedElements(Seq(ImportedElement(NameIdentifier("*")))))
+    val importTypesClient = ImportDirective(ImportedElement(httpPackage.::("Types")), ImportedElements(Seq(ImportedElement(NameIdentifier("*")))))
     val document: Document = Core.resolver("RAML").resolve(unresovledDocument).asInstanceOf[Document]
     val webApi = document.encodes.asInstanceOf[WebApi]
     val hostVarDirective = VarDirective(NameIdentifier(HOST_VAL), QuotedStringNode(webApi.servers.get(0).url.value()))
@@ -192,11 +202,60 @@ class RamlModuleLoader extends ModuleLoader with WeaveResourceResolverAware {
       typeDirective
     })
 
-    val endpointFields = endPoints.flatMap((endpoint) => {
+    val serverType: ObjectTypeNode = createServerType(endPoints, globalTypes)
+    val serverTypeDirective = TypeDirective(ServerHandlerTypeName, None, serverType)
+
+    val parameters = FunctionParameters(
+      Seq(
+        FunctionParameter(NameIdentifier("config"), wtype = Some(TypeReferenceNode(ApiConfigTypeName))),
+        FunctionParameter(NameIdentifier("apiHandler"), wtype = Some(TypeReferenceNode(ServerHandlerTypeName)))
+      )
+    )
+
+    val defaultImp = createDefaultServerImpl(endPoints, globalTypes)
+
+    val defaultImplVar = VarDirective(NameIdentifier("defaultImpl"), defaultImp)
+    val handler = FunctionCallNode(VariableReferenceNode(NameIdentifier("dw::core::Objects::mergeWith")), FunctionCallParametersNode(Seq(
+      VariableReferenceNode(NameIdentifier("defaultImpl")),
+      VariableReferenceNode(NameIdentifier("apiHandler"))
+    )))
+
+
+    val doBlock = DoBlockNode(HeaderNode(Seq(
+      defaultImplVar,
+      VarDirective(NameIdentifier("handler"), handler)
+    )),
+      FunctionCallNode(
+        VariableReferenceNode(ApiFunctionName),
+        FunctionCallParametersNode(
+          Seq(
+            VariableReferenceNode(NameIdentifier("config")),
+            BinaryOpNode(AsOpId, VariableReferenceNode(NameIdentifier("handler")), TypeReferenceNode(APIDefinitionTypeName))
+          )
+        )
+      )
+    )
+
+    val apiServerFunction = FunctionNode(parameters, doBlock, Some(TypeReferenceNode(HttpServerTypeName)))
+
+    val serverFunctionDirective = FunctionDirectiveNode(NameIdentifier("server"), apiServerFunction)
+
+    val client: ObjectNode = createClientType(endPoints, globalTypes)
+
+    val baseUrlParamDeclaration = FunctionParameter(NameIdentifier(HOST_PARAM), Some(VariableReferenceNode(NameIdentifier(HOST_VAL))), Some(stringType()))
+
+    val clientFunctionDirective = FunctionDirectiveNode(NameIdentifier("client"), FunctionNode(FunctionParameters(Seq(baseUrlParamDeclaration)), client))
+
+    val versionDirective = new VersionDirective()
+    ModuleNode(nameIdentifier, Seq(versionDirective, importHttpClient, importTypesClient, serverTypeDirective) ++ typeDirectives ++ Seq(hostVarDirective, clientFunctionDirective, serverFunctionDirective))
+  }
+
+  private def createClientType(endPoints: mutable.Buffer[EndPoint], globalTypes: ArrayBuffer[String]) = {
+    val endpointFields: Seq[KeyValuePairNode] = endPoints.flatMap((endpoint) => {
       val keyNode = KeyNode(endpoint.path.value())
 
       val operations = endpoint.operations.asScala.map((operation) => {
-        val operationName = KeyNode(operation.method.value())
+        val operationName = KeyNode(operation.method.value().toUpperCase)
         val request = Option(operation.request)
         val uriParamsList = endpoint.parameters.asScala
         val uriParams = asObjectTypeParameter(if (uriParamsList.isEmpty) None else Some(uriParamsList), URI_PARAM, globalTypes)
@@ -218,18 +277,18 @@ class RamlModuleLoader extends ModuleLoader with WeaveResourceResolverAware {
         val responses: Seq[WeaveTypeNode] = operation.responses.asScala.map((response) => {
           val headerProperties = mapToKeyValuePair(response.headers.asScala, globalTypes)
           val headersType = if (headerProperties.isEmpty) {
-            defaultHeaderType
+            createEmptyHeaderType
           } else {
             ObjectTypeNode(headerProperties)
           }
           val bodyType = response.payloads.asScala.headOption.map((payload) => {
             asTypeNode(payload.schema, globalTypes)
-          }).getOrElse(anyType)
-          TypeReferenceNode(NameIdentifier(HttpClientResponse), Some(Seq(bodyType, headersType)))
+          }).getOrElse(createEmptyBodyType)
+          TypeReferenceNode(HttpClientResponseTypeName, Some(Seq(bodyType, headersType)))
         })
 
         val responseType = if (responses.isEmpty) {
-          TypeReferenceNode(NameIdentifier(HttpClientResponse), Some(Seq(anyType, defaultHeaderType)))
+          TypeReferenceNode(HttpClientResponseTypeName, Some(Seq(createEmptyBodyType, createEmptyHeaderType)))
         } else {
           responses.reduce(UnionTypeNode)
         }
@@ -299,21 +358,120 @@ class RamlModuleLoader extends ModuleLoader with WeaveResourceResolverAware {
     })
 
     val client = ObjectNode(endpointFields)
-    val baseUrlParamDeclaration = FunctionParameter(NameIdentifier(HOST_PARAM), Some(VariableReferenceNode(NameIdentifier(HOST_VAL))), Some(stringType()))
-
-    val clientFunctionDirective = FunctionDirectiveNode(NameIdentifier("client"), FunctionNode(FunctionParameters(Seq(baseUrlParamDeclaration)), client))
-
-    val versionDirective = new VersionDirective()
-    ModuleNode(nameIdentifier, Seq(versionDirective, importHttpClient, importTypesClient) ++ typeDirectives ++ Seq(hostVarDirective, clientFunctionDirective))
+    client
   }
 
-  private def defaultHeaderType = {
-    TypeReferenceNode(NameIdentifier("Dictionary"), Some(Seq(TypeReferenceNode(NameIdentifier("String")))))
+  private def createDefaultServerImpl(endPoints: mutable.Buffer[EndPoint], globalTypes: ArrayBuffer[String]): ObjectNode = {
+    val endpointFields: Seq[KeyValuePairNode] = endPoints.flatMap((endpoint) => {
+      val keyNode = KeyNode(endpoint.path.value())
+      val operations: Seq[KeyValuePairNode] = endpoint.operations.asScala.flatMap((operation) => {
+        val operationName: KeyNode = KeyNode(operation.method.value().toUpperCase)
+        val responses: mutable.Seq[FunctionNode] = operation.responses.asScala
+          .filter(_.statusCode.value() == "200")
+          .map((response) => {
+            val responseValue: Option[FunctionCallNode] = response.payloads.asScala.flatMap((payload) => {
+              payload.examples.asScala.map(
+                (ex) => FunctionCallNode(
+                  VariableReferenceNode("read"),
+                  FunctionCallParametersNode(
+                    Seq(
+                      StringNode(ex.toJson),
+                      StringNode("application/json")
+                    )
+                  )
+                )
+              )
+            }).headOption
+
+            val result = ObjectNode(
+              Seq(
+                KeyValuePairNode(KeyNode("body"), responseValue.getOrElse(UndefinedExpressionNode())),
+                KeyValuePairNode(KeyNode("status"), NumberNode(response.statusCode.value()))
+              )
+            )
+            FunctionNode(FunctionParameters(Seq(FunctionParameter(NameIdentifier("req")))), result)
+          })
+
+        //HttpHandler<RequestType, RequestHeaderType <: HttpHeaders, QueryParamsType <: QueryParams, ResponseType, ResponseHeaderType <: HttpHeaders>
+        responses.headOption.map((r) => KeyValuePairNode(operationName, r))
+      })
+      if (operations.isEmpty) {
+        None
+      } else {
+        Some(KeyValuePairNode(keyNode, ObjectNode(operations)))
+      }
+    })
+    ObjectNode(endpointFields)
   }
 
-  private def anyType = {
-    TypeReferenceNode(NameIdentifier("Any"))
+  private def createServerType(endPoints: mutable.Buffer[EndPoint], globalTypes: ArrayBuffer[String]): ObjectTypeNode = {
+    val endpointFields: Seq[KeyValueTypeNode] = endPoints.flatMap((endpoint) => {
+      val keyNode = KeyTypeNode(NameTypeNode(Some(endpoint.path.value())))
+
+      val operations: mutable.Seq[KeyValueTypeNode] = endpoint.operations.asScala.map((operation) => {
+        val operationName = KeyTypeNode(NameTypeNode(Some(operation.method.value().toUpperCase)))
+        val request = Option(operation.request)
+        val headerType = asObjectType(request.map(_.headers.asScala), globalTypes).getOrElse(createEmptyHeaderType)
+        val queryParametersType = asObjectType(request.map(_.queryParameters.asScala), globalTypes).getOrElse(createEmptyQueryParamsType)
+        val payload = request.flatMap((request) => {
+          if (request.payloads.size() >= 1) {
+            Some(request.payloads.get(0))
+          } else {
+            None
+          }
+        })
+
+        val body = payload.map(_.schema).map(asTypeNode(_, globalTypes)).getOrElse(createEmptyBodyType)
+
+        val responses: Seq[WeaveTypeNode] = operation.responses.asScala.map((response) => {
+          val headerProperties: Seq[KeyValueTypeNode] = mapToKeyValuePair(response.headers.asScala, globalTypes)
+          val headersType = if (headerProperties.isEmpty) {
+            createEmptyHeaderType
+          } else {
+            ObjectTypeNode(headerProperties)
+          }
+          val bodyType = response.payloads.asScala.headOption.map((payload) => {
+            asTypeNode(payload.schema, globalTypes)
+          }).getOrElse(createEmptyBodyType)
+          TypeReferenceNode(HttpServerResponseTypeName, Some(Seq(bodyType, headersType)))
+        })
+
+        val responseType = if (responses.isEmpty) {
+          TypeReferenceNode(HttpServerResponseTypeName, Some(Seq(createEmptyBodyType, createEmptyHeaderType)))
+        } else {
+          responses.reduce(UnionTypeNode)
+        }
+
+
+        val httpHandlerName = httpPackage.::("Types").::("HttpHandler")
+
+        //HttpHandler<RequestType, RequestHeaderType <: HttpHeaders, QueryParamsType <: QueryParams, ResponseType, ResponseHeaderType <: HttpHeaders>
+        KeyValueTypeNode(operationName, TypeReferenceNode(httpHandlerName, Some(Seq(body, headerType, queryParametersType, responseType))), repeated = false, optional = true)
+      })
+      if (operations.isEmpty) {
+        None
+      } else {
+        Some(KeyValueTypeNode(keyNode, ObjectTypeNode(operations), repeated = false, optional = true))
+      }
+    })
+
+    val client = ObjectTypeNode(endpointFields)
+    client
   }
+
+
+  private def createEmptyHeaderType: TypeReferenceNode = {
+    TypeReferenceNode(RamlModuleLoader.HeadersTypeName)
+  }
+
+  private def createEmptyQueryParamsType: TypeReferenceNode = {
+    TypeReferenceNode(RamlModuleLoader.QueryTypeName)
+  }
+
+  private def createEmptyBodyType: TypeReferenceNode = {
+    TypeReferenceNode(RamlModuleLoader.BodyTypeName)
+  }
+
 
   def select(astNode: AstNode, selector: String): AstNode = {
     NullSafeNode(BinaryOpNode(ValueSelectorOpId, astNode, NameNode(StringNode(selector))))
@@ -328,6 +486,12 @@ class RamlModuleLoader extends ModuleLoader with WeaveResourceResolverAware {
   }
 
   private def asObjectTypeParameter(headersList: Option[Seq[Parameter]], paramName: String, globalTypes: Seq[String]): Option[KeyValueTypeNode] = {
+    asObjectType(headersList, globalTypes).map((ot) => {
+      KeyValueTypeNode(KeyTypeNode(NameTypeNode(Option(paramName))), ot, repeated = false, optional = false)
+    })
+  }
+
+  private def asObjectType(headersList: Option[Seq[Parameter]], globalTypes: Seq[String]): Option[ObjectTypeNode] = {
     headersList.map((parameters) => {
       mapToKeyValuePair(parameters, globalTypes)
     })
@@ -335,7 +499,7 @@ class RamlModuleLoader extends ModuleLoader with WeaveResourceResolverAware {
         if (headers.isEmpty) {
           None
         } else {
-          Some(KeyValueTypeNode(KeyTypeNode(NameTypeNode(Option(paramName))), ObjectTypeNode(headers), repeated = false, optional = false))
+          Some(ObjectTypeNode(headers))
         }
       })
   }
@@ -445,6 +609,25 @@ case class EndpointTreeNode(relativePath: String, endpoint: Option[EndPoint], ch
 }
 
 object RamlModuleLoader {
+
+  val httpPackage: NameIdentifier = NameIdentifier("dw::io::http")
+
+  def HttpTypeModuleName: NameIdentifier = httpPackage.::("Types")
+
+  def HttpServerModuleName: NameIdentifier = httpPackage.::("Server")
+
+  def ApiFunctionName: NameIdentifier = HttpServerModuleName.::("api")
+
+  def APIDefinitionTypeName: NameIdentifier = HttpServerModuleName.::("APIDefinition")
+
+  def HeadersTypeName: NameIdentifier = HttpTypeModuleName.::("HttpHeaders")
+
+  def HttpServerTypeName: NameIdentifier = HttpTypeModuleName.::("HttpServer")
+
+  def QueryTypeName: NameIdentifier = HttpTypeModuleName.::("QueryParams")
+
+  def BodyTypeName: NameIdentifier = HttpTypeModuleName.::("HttpBody")
+
   val HOST_PARAM = "host"
   val HOST_VAL = "defaultHost"
   val BODY = "body"
@@ -454,7 +637,14 @@ object RamlModuleLoader {
   val AUTH_FIELD = "auth"
   val AUTH_VAR = "authVar"
   val HEADERS = "headers"
-  val HttpClientResponse = "HttpClientResponse"
+
+  def ServerHandlerTypeName = NameIdentifier("ServerHandlerType")
+
+  def ApiConfigTypeName: NameIdentifier = HttpServerModuleName.::("ApiConfig")
+
+  def HttpClientResponseTypeName: NameIdentifier = HttpTypeModuleName.::("HttpClientResponse")
+
+  def HttpServerResponseTypeName: NameIdentifier = HttpTypeModuleName.::("HttpServerResponse")
 
   val SIMPLE_TYPE_MAP = Map(
     DataType.String -> "String",

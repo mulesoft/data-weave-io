@@ -1,3 +1,6 @@
+/**
+* List of well known http headers
+*/
 %dw 2.0
 
 var ACCEPT_HEADER = "Accept"

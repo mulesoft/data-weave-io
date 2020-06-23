@@ -5,7 +5,7 @@ import raml!org::mule::weave::v2::module::test::raml::engine::basic_post::api as
 var serverConfig = { host: "localhost", port: 8081 }
 var LOCALHOST = '$(serverConfig.host):$(serverConfig.port)'
 
-var server = api(
+var server = Api::server(
   serverConfig, {
     "/user": {
       POST: (request) -> {
@@ -18,5 +18,5 @@ var server = api(
 var client = Api::client()
 ---
 {
-    a: client."/user".post(body: {name: "Leandro", lastName: "Shokida"}).body
+    a: client."/user".POST(body: {name: "Leandro", lastName: "Shokida"}).body
 }

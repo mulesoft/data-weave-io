@@ -5,7 +5,7 @@ import raml!org::mule::weave::v2::module::test::raml::engine::basic_get::api as 
 var serverConfig = { host: "localhost", port: 8081 }
 var LOCALHOST = '$(serverConfig.host):$(serverConfig.port)'
 
-var server = api(
+var server = Api::server(
   serverConfig, {
     "/user": {
       GET: (request) -> {
@@ -21,5 +21,5 @@ var server = api(
 var client = Api::client()
 ---
 {
-    a: client."/user".get().body
+    a: client."/user".GET().body
 }

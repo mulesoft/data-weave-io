@@ -13,6 +13,30 @@
     |-ImportedElement
       |-NameIdentifier Name='*'
 |-TypeDirective
+  |-NameIdentifier Name='ServerHandlerType'
+  |-ObjectTypeNode
+    |-KeyValueTypeNode
+      |-KeyTypeNode
+        |-NameTypeNode
+      |-ObjectTypeNode
+        |-KeyValueTypeNode
+          |-KeyTypeNode
+            |-NameTypeNode
+          |-TypeReferenceNode
+            |-NameIdentifier Name='dw::io::http::Types::HttpHandler'
+            |-TypeReferenceNode
+              |-NameIdentifier Name='dw::io::http::Types::HttpBody'
+            |-TypeReferenceNode
+              |-NameIdentifier Name='dw::io::http::Types::HttpHeaders'
+            |-TypeReferenceNode
+              |-NameIdentifier Name='dw::io::http::Types::QueryParams'
+            |-TypeReferenceNode
+              |-NameIdentifier Name='dw::io::http::Types::HttpServerResponse'
+              |-TypeReferenceNode
+                |-NameIdentifier Name='foo'
+              |-TypeReferenceNode
+                |-NameIdentifier Name='dw::io::http::Types::HttpHeaders'
+|-TypeDirective
   |-NameIdentifier Name='foo'
   |-ObjectTypeNode
     |-KeyValueTypeNode
@@ -42,7 +66,7 @@
         |-ObjectNode
           |-KeyValuePairNode
             |-KeyNode
-              |-StringNode Value='get'
+              |-StringNode Value='GET'
             |-FunctionNode
               |-FunctionParameters
               |-DoBlockNode
@@ -66,21 +90,77 @@
                       |-NameNode
                         |-StringNode Value='response'
                   |-TypeReferenceNode
-                    |-NameIdentifier Name='HttpClientResponse'
+                    |-NameIdentifier Name='dw::io::http::Types::HttpClientResponse'
                     |-TypeReferenceNode
                       |-NameIdentifier Name='foo'
                     |-TypeReferenceNode
-                      |-NameIdentifier Name='Dictionary'
-                      |-TypeReferenceNode
-                        |-NameIdentifier Name='String'
+                      |-NameIdentifier Name='dw::io::http::Types::HttpHeaders'
               |-TypeReferenceNode
-                |-NameIdentifier Name='HttpClientResponse'
+                |-NameIdentifier Name='dw::io::http::Types::HttpClientResponse'
                 |-TypeReferenceNode
                   |-NameIdentifier Name='foo'
                 |-TypeReferenceNode
-                  |-NameIdentifier Name='Dictionary'
-                  |-TypeReferenceNode
-                    |-NameIdentifier Name='String'
+                  |-NameIdentifier Name='dw::io::http::Types::HttpHeaders'
+|-FunctionDirectiveNode
+  |-NameIdentifier Name='server'
+  |-FunctionNode
+    |-FunctionParameters
+      |-FunctionParameter
+        |-NameIdentifier Name='config'
+        |-TypeReferenceNode
+          |-NameIdentifier Name='dw::io::http::Server::ApiConfig'
+      |-FunctionParameter
+        |-NameIdentifier Name='apiHandler'
+        |-TypeReferenceNode
+          |-NameIdentifier Name='ServerHandlerType'
+    |-DoBlockNode
+      |-HeaderNode
+        |-VarDirective
+          |-NameIdentifier Name='defaultImpl'
+          |-ObjectNode
+            |-KeyValuePairNode
+              |-KeyNode
+                |-StringNode Value='/bar'
+              |-ObjectNode
+                |-KeyValuePairNode
+                  |-KeyNode
+                    |-StringNode Value='GET'
+                  |-FunctionNode
+                    |-FunctionParameters
+                      |-FunctionParameter
+                        |-NameIdentifier Name='req'
+                    |-ObjectNode
+                      |-KeyValuePairNode
+                        |-KeyNode
+                          |-StringNode Value='body'
+                        |-UndefinedExpressionNode
+                      |-KeyValuePairNode
+                        |-KeyNode
+                          |-StringNode Value='status'
+                        |-NumberNode Value='200'
+        |-VarDirective
+          |-NameIdentifier Name='handler'
+          |-FunctionCallNode
+            |-VariableReferenceNode
+              |-NameIdentifier Name='dw::core::Objects::mergeWith'
+            |-FunctionCallParametersNode
+              |-VariableReferenceNode
+                |-NameIdentifier Name='defaultImpl'
+              |-VariableReferenceNode
+                |-NameIdentifier Name='apiHandler'
+      |-FunctionCallNode
+        |-VariableReferenceNode
+          |-NameIdentifier Name='dw::io::http::Server::api'
+        |-FunctionCallParametersNode
+          |-VariableReferenceNode
+            |-NameIdentifier Name='config'
+          |-BinaryOpNode Name='as'
+            |-VariableReferenceNode
+              |-NameIdentifier Name='handler'
+            |-TypeReferenceNode
+              |-NameIdentifier Name='dw::io::http::Server::APIDefinition'
+    |-TypeReferenceNode
+      |-NameIdentifier Name='dw::io::http::Types::HttpServer'
 |-ImportDirective
   |-ImportedElement
     |-NameIdentifier Name='dw::Core'

@@ -17,6 +17,8 @@ type HttpResponseCookies = {
   _ ?: HttpResponseCookie
 }
 
+type HttpBody = Any
+
 type HttpHeaders = {
   _ ?: SimpleType
 }
@@ -41,7 +43,7 @@ type HttpClientRequiredOptions = {
 
 type HttpClientOptionalOptions = {
   headers?: HttpHeaders,
-  body?: BodyType,
+  body?: Any,
 
   /** Do we accept header redirections? */
   allowRedirect?: Boolean,
@@ -111,27 +113,35 @@ type HttpClientResult = {
   request?: HttpClientRequest,
   /** Timing metrics, all values are accumulative except for ssl, it is included inside connect when available */
   timers?: HARTimers,
-  response?: HttpClientResponse<BodyType, HttpStrictHeaders> //,
+  response?: HttpClientResponse<Any, HttpStrictHeaders> //,
   // redirects?: Array<HttpClientResult>
 }
 
 // SERVER IMPLEMENTATION
 
-type HttpServerResponse = {
-  headers?: HttpHeaders,
+
+
+type HttpServerResponse<BodyType <: HttpBody, HeaderType <: HttpHeaders> = {
+  headers?: HeaderType,
   body?: BodyType,
   status?: Number
 }
 
-type HttpServerRequest = {
+type HttpServerRequest<BodyType, HeaderType <: HttpHeaders, QueryParamsType <: QueryParams> = {
   headers: HttpHeaders,
   method: String,
   path: String,
-  queryParams: QueryParams,
+  queryParams: QueryParamsType,
   body: BodyType
 }
 
-type HttpHandler = (HttpServerRequest) -> HttpServerResponse
+type HttpHandler<
+                    RequestType,
+                    RequestHeaderType <: HttpHeaders,
+                    QueryParamsType <: QueryParams,
+                    HttpServerResponseType <: HttpServerResponse<Any, HttpHeaders>
+                 > =
+                    (HttpServerRequest<RequestType, RequestHeaderType, QueryParamsType>) -> HttpServerResponseType
 
 type HttpServerOptions = {
   port: Number,
@@ -146,4 +156,3 @@ type HttpServer = {|
   stop: () -> Boolean
 |}
 
-type BodyType = Any

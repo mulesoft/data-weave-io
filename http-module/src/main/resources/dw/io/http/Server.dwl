@@ -16,14 +16,14 @@ import * from dw::Runtime
 */
 type APIDefinition = {
     _ ?: {
-        GET?: HttpHandler,
-        POST?: HttpHandler,
-        PUT?: HttpHandler,
-        DELETE?: HttpHandler,
-        PATCH?: HttpHandler,
-        OPTIONS?: HttpHandler,
-        HEAD?: HttpHandler,
-        TRACE?: HttpHandler
+        GET?: HttpHandler<Any,HttpHeaders,QueryParams,HttpServerResponse<Any, HttpHeaders>>,
+        POST?: HttpHandler<Any,HttpHeaders,QueryParams,HttpServerResponse<Any, HttpHeaders>>,
+        PUT?: HttpHandler<Any,HttpHeaders,QueryParams,HttpServerResponse<Any, HttpHeaders>>,
+        DELETE?: HttpHandler<Any,HttpHeaders,QueryParams,HttpServerResponse<Any, HttpHeaders>>,
+        PATCH?: HttpHandler<Any,HttpHeaders,QueryParams,HttpServerResponse<Any, HttpHeaders>>,
+        OPTIONS?: HttpHandler<Any,HttpHeaders,QueryParams,HttpServerResponse<Any, HttpHeaders>>,
+        HEAD?: HttpHandler<Any,HttpHeaders,QueryParams,HttpServerResponse<Any, HttpHeaders>>,
+        TRACE?: HttpHandler<Any,HttpHeaders,QueryParams,HttpServerResponse<Any, HttpHeaders>>
     }
 }
 
@@ -82,7 +82,7 @@ type HttpInterceptor = {onRequest?: (HttpServerRequest) -> InterceptedHttpReques
 * ----
 *
 **/
-fun server(configuration: HttpServerOptions, handler: HttpHandler): HttpServer = native("http::HttpServerFunction")
+fun server<HttpHandlerType <: HttpHandler>(configuration: HttpServerOptions, handler: HttpHandlerType): HttpServer = native("http::HttpServerFunction")
 
 
 /**
