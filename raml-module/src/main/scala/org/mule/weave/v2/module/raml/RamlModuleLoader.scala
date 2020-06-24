@@ -182,7 +182,6 @@ class RamlModuleLoader extends ModuleLoader with WeaveResourceResolverAware {
     }
   }
 
-
   def buildModule(nameIdentifier: NameIdentifier, unresovledDocument: Document): ModuleNode = {
 
     val shapes = unresovledDocument.declares.asScala.collect({ case s: Shape => s })
@@ -208,33 +207,25 @@ class RamlModuleLoader extends ModuleLoader with WeaveResourceResolverAware {
     val parameters = FunctionParameters(
       Seq(
         FunctionParameter(NameIdentifier("config"), wtype = Some(TypeReferenceNode(ApiConfigTypeName))),
-        FunctionParameter(NameIdentifier("apiHandler"), wtype = Some(TypeReferenceNode(ServerHandlerTypeName)))
-      )
-    )
+        FunctionParameter(NameIdentifier("apiHandler"), wtype = Some(TypeReferenceNode(ServerHandlerTypeName)))))
 
     val defaultImp = createDefaultServerImpl(endPoints, globalTypes)
 
     val defaultImplVar = VarDirective(NameIdentifier("defaultImpl"), defaultImp)
     val handler = FunctionCallNode(VariableReferenceNode(NameIdentifier("dw::core::Objects::mergeWith")), FunctionCallParametersNode(Seq(
       VariableReferenceNode(NameIdentifier("defaultImpl")),
-      VariableReferenceNode(NameIdentifier("apiHandler"))
-    )))
+      VariableReferenceNode(NameIdentifier("apiHandler")))))
 
-
-    val doBlock = DoBlockNode(HeaderNode(Seq(
-      defaultImplVar,
-      VarDirective(NameIdentifier("handler"), handler)
-    )),
+    val doBlock = DoBlockNode(
+      HeaderNode(Seq(
+        defaultImplVar,
+        VarDirective(NameIdentifier("handler"), handler))),
       FunctionCallNode(
         VariableReferenceNode(ApiFunctionName),
         FunctionCallParametersNode(
           Seq(
             VariableReferenceNode(NameIdentifier("config")),
-            BinaryOpNode(AsOpId, VariableReferenceNode(NameIdentifier("handler")), TypeReferenceNode(APIDefinitionTypeName))
-          )
-        )
-      )
-    )
+            BinaryOpNode(AsOpId, VariableReferenceNode(NameIdentifier("handler")), TypeReferenceNode(APIDefinitionTypeName))))))
 
     val apiServerFunction = FunctionNode(parameters, doBlock, Some(TypeReferenceNode(HttpServerTypeName)))
 
@@ -376,19 +367,13 @@ class RamlModuleLoader extends ModuleLoader with WeaveResourceResolverAware {
                   FunctionCallParametersNode(
                     Seq(
                       StringNode(ex.toJson),
-                      StringNode("application/json")
-                    )
-                  )
-                )
-              )
+                      StringNode("application/json")))))
             }).headOption
 
             val result = ObjectNode(
               Seq(
                 KeyValuePairNode(KeyNode("body"), responseValue.getOrElse(UndefinedExpressionNode())),
-                KeyValuePairNode(KeyNode("status"), NumberNode(response.statusCode.value()))
-              )
-            )
+                KeyValuePairNode(KeyNode("status"), NumberNode(response.statusCode.value()))))
             FunctionNode(FunctionParameters(Seq(FunctionParameter(NameIdentifier("req")))), result)
           })
 
@@ -442,7 +427,6 @@ class RamlModuleLoader extends ModuleLoader with WeaveResourceResolverAware {
           responses.reduce(UnionTypeNode)
         }
 
-
         val httpHandlerName = httpPackage.::("Types").::("HttpHandler")
 
         //HttpHandler<RequestType, RequestHeaderType <: HttpHeaders, QueryParamsType <: QueryParams, ResponseType, ResponseHeaderType <: HttpHeaders>
@@ -459,7 +443,6 @@ class RamlModuleLoader extends ModuleLoader with WeaveResourceResolverAware {
     client
   }
 
-
   private def createEmptyHeaderType: TypeReferenceNode = {
     TypeReferenceNode(RamlModuleLoader.HeadersTypeName)
   }
@@ -471,7 +454,6 @@ class RamlModuleLoader extends ModuleLoader with WeaveResourceResolverAware {
   private def createEmptyBodyType: TypeReferenceNode = {
     TypeReferenceNode(RamlModuleLoader.BodyTypeName)
   }
-
 
   def select(astNode: AstNode, selector: String): AstNode = {
     NullSafeNode(BinaryOpNode(ValueSelectorOpId, astNode, NameNode(StringNode(selector))))
