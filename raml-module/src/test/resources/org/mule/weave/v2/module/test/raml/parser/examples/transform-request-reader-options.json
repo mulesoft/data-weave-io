@@ -1,0 +1,18 @@
+{
+  "main": "main.dwl",
+  "fs": {
+    "main.dwl": "output application/xml --- root: log(in0.foo) + 1"
+  },
+  "inputs": {
+    "in0": {
+      "value": "name|lastname\nDaniel|Belohlavek",
+      "encoding": "UTF-8",
+      "mimeType": "application/csv",
+      "properties": {
+        "separator": "|",
+        "ignoreEmptyLines": true,
+        "bodyStartLineNumber": 1
+      }
+    }
+  }
+}

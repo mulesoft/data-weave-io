@@ -1,0 +1,4 @@
+{
+  "contentType": "application/json",
+  "content": "[{\"a\": \"foo\",\"b\": 123}]"
+}

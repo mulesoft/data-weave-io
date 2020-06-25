@@ -504,7 +504,8 @@ class RamlModuleLoader extends ModuleLoader with WeaveResourceResolverAware {
         val keyValuePairNodes = properties.asScala.map((property) => {
           val propName = property.name.value()
           val range = property.range
-          KeyValueTypeNode(KeyTypeNode(NameTypeNode(Option(propName))), asTypeNode(range, canBeLink), property.maxCount.value() > 1, property.minCount.value() == 0)
+          val keyName = if (property.patternName.isNullOrEmpty) Option(propName) else None
+          KeyValueTypeNode(KeyTypeNode(NameTypeNode(keyName)), asTypeNode(range, canBeLink), property.maxCount.value() > 1, property.minCount.value() == 0)
         })
         ObjectTypeNode(keyValuePairNodes)
       }

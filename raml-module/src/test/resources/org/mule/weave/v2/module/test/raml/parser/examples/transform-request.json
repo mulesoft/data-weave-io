@@ -1,0 +1,15 @@
+
+{
+  "main": "main.dwl",
+  "fs": {
+    "main.dwl": "output application/xml --- root: log(in0.foo) + 1"
+  },
+  "inputs": {
+    "in0": {
+      "value": "{\"foo\": 123}",
+      "encoding": "UTF-8",
+      "mimeType": "application/json",
+      "properties": {}
+    }
+  }
+}

@@ -1,0 +1,166 @@
+#%RAML 1.0
+title: DW Playground Backend 2.0 API
+version: v1
+baseUri: https://localhost:8080/
+mediaType: application/json
+documentation:
+  - title: DW Playground Backend
+    content: |
+      Dataweave Services for Transform component in Mozart
+types:
+  Status:
+    type: object
+    properties:
+      status:
+        type: string
+        enum:
+          - Healthy
+          - Corrupted
+  TransformRequest:
+    type: object
+    properties:
+      main: string
+      fs:
+        type: object
+        properties:
+          //: string
+      inputs:
+        properties:
+          //: TransformInput
+    examples:
+      simple:
+        !include examples/transform-request.json
+      reader-options:
+        !include examples/transform-request-reader-options.json
+  TransformInput:
+    type: object
+    properties:
+      value: string
+      mimeType: string
+      properties?:
+        type: object
+
+  TransformResponse:
+    type: object
+    properties:
+      success: boolean
+      logs?: Log[]
+      error?:
+        type: object
+        properties:
+          kind: string
+          message: string
+          location: Location
+      result?:
+        type: object
+        properties:
+          content: string
+          contentType: string
+    examples:
+      success:
+        !include examples/transform-response-success.json
+      failure:
+        !include examples/transform-response-failure.json
+  Log:
+    type: object
+    additionalProperties: true
+    properties:
+      level: string
+      timestamp: string
+      message: string
+
+  Location:
+    properties:
+        start: Position
+        end: Position
+  Position:
+      properties:
+        index: number
+        line: number
+        column: number
+
+  DataFormatResponse:
+    properties:
+      name: string
+      defaultMimeType: string
+      mimeTypes: string[]
+      readOptions: DataFormatOption[]
+      writerOptions: DataFormatOption[]
+      dataType: string  #String, Boolean, Number
+
+  DataFormatOption:
+    properties:
+      name: string
+      defaultValue: string?
+      description: string?
+      possibleValues: string[]
+
+  MigrateResponse:
+    properties:
+      success: boolean
+      error:
+        properties:
+          message: string
+          location: Location
+      logs?: Log[]
+      result: string
+
+/transform:
+  displayName: DataWeave Preview Runner
+  description: run a given dataweave script with the provided inputs
+  post:
+    body: TransformRequest
+    responses:
+      200:
+        description: The response is an object with a success field, if it was successful it contains a result field, otherwise an error field
+        body: TransformResponse
+
+/type:
+  displayName: Returns the weave type of the provided sample data
+  post:
+    body:
+      examples:
+        simple:
+          !include examples/type-request.json
+        reader-options:
+          !include examples/type-request-with-options.json
+    responses:
+      200:
+        description: The response is an object with the success (boolean) and the serialized weave type.
+        body:
+          application/json:
+            examples:
+              success:
+                !include examples/type-response-success.json
+              failure:
+                !include examples/type-response-failure.json
+
+/dataformats:
+  displayName: Returns the list of data formats with its reader writer settings
+  get:
+    responses:
+      200:
+        description: The response is an array with the list of modules
+        body: DataFormatResponse
+
+/migrate:
+  displayName: Migrates from dw 1.0 to dw 2.0
+  post:
+    body:
+      type: string
+    responses:
+      200:
+        body: MigrateResponse
+
+/{resource}:
+  displayName: Static content
+  get:
+    description: returns the static content at the specified path
+
+/ping:
+  displayName: Ping endpoint
+  get:
+    responses:
+      200:
+        body:
+          type: Status
