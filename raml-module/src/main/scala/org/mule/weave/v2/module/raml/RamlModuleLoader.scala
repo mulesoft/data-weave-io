@@ -26,6 +26,7 @@ import amf.client.model.domain.WebApi
 import amf.client.parse.Raml10Parser
 import amf.client.remote.Content
 import amf.client.resource.ClientResourceLoader
+import amf.client.validate.ValidationReport
 import amf.core.model.DataType
 import amf.plugins.document.webapi.validation.PayloadValidatorPlugin
 import org.mule.weave.v2.grammar.AsOpId
@@ -139,7 +140,7 @@ class RamlModuleLoader extends ModuleLoader with WeaveResourceResolverAware {
         val ramlParser = new Raml10Parser(Environment(new DataWeaveResourceLoader(resolver)))
         val raml = resource.content()
         val baseUnit = ramlParser.parseStringAsync(ramlPath, raml).get()
-        val value = Core.validate(baseUnit, RamlProfile, MessageStyles.RAML).get()
+        val value: ValidationReport = Core.validate(baseUnit, RamlProfile, MessageStyles.RAML).get()
         val messages = value.results.asScala
         if (messages.nonEmpty) {
           messages.map((message) => {
