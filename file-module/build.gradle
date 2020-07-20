@@ -3,10 +3,8 @@ plugins {
 }
 
 dependencies {
-    compile group: 'org.mule.weave', name: 'runtime', version: weaveVersion
-    compile group: 'org.mule.weave', name: 'parser', version: weaveVersion
-    compile group: 'org.mule.weave', name: 'core-modules', version: weaveVersion
 
+    compileOnly group: 'org.mule.weave', name: 'runtime', version: weaveVersion
 
     testCompile group: 'org.mule.weave', name: 'runtime-test-helpers', version: weaveVersion     
     testCompile group: 'org.scalatest', name: 'scalatest_2.12', version: '3.0.1'
