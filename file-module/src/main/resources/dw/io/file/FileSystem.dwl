@@ -7,6 +7,9 @@ import dataFormatsDescriptor from dw::Runtime
 
 type Path = String
 
+/**
+* Mapping between file extension and MimeType
+*/
 var FILE_EXTENSIONS: {_: String} = {
     ".txt": "text/plain",
     ".css": "text/css",
