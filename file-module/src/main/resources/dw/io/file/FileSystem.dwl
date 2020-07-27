@@ -205,21 +205,33 @@ fun ls(folder: Path, filterExpr: Regex): Array<Path> = do {
 }
 
 /**
-* Returns the file type. FileType or DirType
+* Returns the file type. File or Folder or null if it doesn't exits
 */
-fun fileTypeOf(path: Path): FileKind = native("file::FileTypeOfFunction")
+fun kindOf(path: Path): FileKind | Null = native("file::FileTypeOfFunction")
 
 /**
 * Returns the name of this file
 */
-fun nameOf(path:Path): String = native("file::NameOfFunction")
+fun nameOf(path: Path): String = native("file::NameOfFunction")
+
+fun exists(path: Path):Boolean = kindOf(path) != null
 
 /**
 * Returns the content of the specified file
 */
 fun contentOf(path: Path): Binary = do {
-    readUrl("file://" ++ path, "binary") as Binary
+    readUrl(toUrl(path), "binary") as Binary
 }
+
+
+/**
+* Returns the content of the specified file
+*/
+fun toUrl(path: Path): String = native("file::ToUrlFunction")
+
+fun writeTo(path: Path, binary: Binary): Number = native("file::WriteFunction")
+
+fun mkdir(path: Path): Path = native("file::MakeDirFunction")
 
 /**
 * Tries to guess the mimeType of the given Path
@@ -344,3 +356,17 @@ fun tmp(): Path = native("file::TmpPathFunction")
 * Creates a valid path from this two parts
 */
 fun path(basePath: Path, part: String): Path = native("file::PathFunction")
+
+
+/**
+* Creates a valid path from this two parts
+*/
+fun path(basePath: Path, part: String, part2: String): Path =
+    path(path(basePath, part), part2)
+
+fun path(basePath: Path, part: String, part2: String, part3: String): Path =
+    path(path(basePath, part), part2, part3)
+
+
+fun path(basePath: Path, parts: Array<String>): Path =
+    parts reduce ((part, accumulator = basePath) -> path(accumulator, part))
