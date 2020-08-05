@@ -49,24 +49,23 @@ object DummyAMFValidatorPlugin extends AMFFeaturePlugin with RuntimeValidator wi
 
   override def dependencies() = Seq(SYamlSyntaxPlugin)
 
-
   // All the profiles are collected here, plugins can generate their own profiles
 
   override def loadValidationProfile(
-                                      validationProfilePath: String,
-                                      env: Environment = Environment(),
-                                      errorHandler: ErrorHandler,
-                                      exec: BaseExecutionEnvironment = platform.defaultExecutionEnvironment): Future[ProfileName] = {
+    validationProfilePath: String,
+    env: Environment = Environment(),
+    errorHandler: ErrorHandler,
+    exec: BaseExecutionEnvironment = platform.defaultExecutionEnvironment): Future[ProfileName] = {
 
     Future.successful(Raml10Profile)
 
   }
 
   override def shaclValidation(
-                                model: BaseUnit,
-                                validations: EffectiveValidations,
-                                customFunctions: CustomShaclFunctions,
-                                options: ValidationOptions)(implicit executionContext: ExecutionContext): Future[ValidationReport] = {
+    model: BaseUnit,
+    validations: EffectiveValidations,
+    customFunctions: CustomShaclFunctions,
+    options: ValidationOptions)(implicit executionContext: ExecutionContext): Future[ValidationReport] = {
 
     Future.successful(new CustomValidationReport())
   }
@@ -76,12 +75,12 @@ object DummyAMFValidatorPlugin extends AMFFeaturePlugin with RuntimeValidator wi
       case OasProfile =>
         getSource(unit) match {
           case Some(Oas30) => Oas30Profile
-          case _ => Oas20Profile
+          case _           => Oas20Profile
         }
       case RamlProfile =>
         getSource(unit) match {
           case Some(Raml08) => Raml08Profile
-          case _ => Raml10Profile
+          case _            => Raml10Profile
         }
       case _ => given
     }
@@ -90,18 +89,18 @@ object DummyAMFValidatorPlugin extends AMFFeaturePlugin with RuntimeValidator wi
 
   private def getSource(unit: BaseUnit): Option[Vendor] = unit match {
     case d: Document => d.encodes.annotations.find(classOf[SourceVendor]).map(_.vendor)
-    case m: Module => m.annotations.find(classOf[SourceVendor]).map(_.vendor)
+    case m: Module   => m.annotations.find(classOf[SourceVendor]).map(_.vendor)
     case f: Fragment => f.encodes.annotations.find(classOf[SourceVendor]).map(_.vendor)
-    case _ => None
+    case _           => None
   }
 
   override def validate(
-                         model: BaseUnit,
-                         given: ProfileName,
-                         messageStyle: MessageStyle,
-                         env: Environment,
-                         resolved: Boolean = false,
-                         exec: BaseExecutionEnvironment = platform.defaultExecutionEnvironment): Future[AMFValidationReport] = {
+    model: BaseUnit,
+    given: ProfileName,
+    messageStyle: MessageStyle,
+    env: Environment,
+    resolved: Boolean = false,
+    exec: BaseExecutionEnvironment = platform.defaultExecutionEnvironment): Future[AMFValidationReport] = {
 
     val profileName = profileForUnit(model, given)
     Future.successful(AMFValidationReport(true, model.id, profileName, Seq()))
@@ -111,9 +110,9 @@ object DummyAMFValidatorPlugin extends AMFFeaturePlugin with RuntimeValidator wi
     * Returns a native RDF model with the dw.amf.SHACL shapes graph
     */
   override def shaclModel(
-                           validations: Seq[ValidationSpecification],
-                           functionUrls: String,
-                           messageStyle: MessageStyle): RdfModel =
+    validations: Seq[ValidationSpecification],
+    functionUrls: String,
+    messageStyle: MessageStyle): RdfModel =
     throw new RuntimeException("Not Implemented")
 
   /**
