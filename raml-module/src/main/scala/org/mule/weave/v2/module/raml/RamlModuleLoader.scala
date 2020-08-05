@@ -29,7 +29,8 @@ import amf.client.resource.ClientResourceLoader
 import amf.client.validate.ValidationReport
 import amf.core.model.DataType
 import amf.plugins.document.webapi.validation.PayloadValidatorPlugin
-import dw.amf.AMFValidatorPlugin
+import dw.amf.DummyAMFValidatorPlugin
+import dw.amf.DummyPayloadValidator
 import org.mule.weave.v2.grammar.AsOpId
 import org.mule.weave.v2.grammar.ValueSelectorOpId
 import org.mule.weave.v2.module.raml.RamlModuleLoader.APIDefinitionTypeName
@@ -123,7 +124,7 @@ class RamlModuleLoader extends ModuleLoader with WeaveResourceResolverAware {
 
   amf.plugins.document.WebApi.register()
   amf.plugins.document.Vocabularies.register()
-  amf.Core.registerPlugin(AMFValidatorPlugin)
+  amf.Core.registerPlugin(DummyAMFValidatorPlugin)
   amf.Core.registerPlugin(PayloadValidatorPlugin)
   amf.Core.init.get
 
