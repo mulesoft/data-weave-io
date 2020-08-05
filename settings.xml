@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+    3 Users/Name Password pairs expected 
+    PUB_CI_USER/PUB_CI_PASSWORD for public mule repositories
+    CI_USER/CI_PASSWORD for private mule repositories
+    CI_DEPLOY_USER/CI_DEPLOY_PASSWORD for customer mule repos
+ -->
+<settings>
+   <pluginGroups>
+      <pluginGroup>org.mule.tools</pluginGroup>
+   </pluginGroups>
+   <profiles>
+      <profile>
+         <id>default-profile</id>
+         <repositories>
+            <repository>
+               <id>mule-ee-releases</id>
+               <name>MuleEE Releases Repository</name>
+               <url>http://repository-master.mulesoft.org/nexus/content/repositories/ci-releases/</url>
+            </repository>
+            <repository>
+               <id>mule-ee-snapshots</id>
+               <name>MuleEE Snapshots Repository</name>
+               <layout>default</layout>
+               <url>http://repository-master.mulesoft.org/nexus/content/repositories/ci-snapshots/</url>
+            </repository>
+            <repository>
+               <id>mule-snapshots</id>
+               <name>MuleEE Snapshots Repository</name>
+               <layout>default</layout>
+               <url>http://repository-master.mulesoft.org/nexus/content/repositories/snapshots/</url>
+            </repository>
+            <repository>
+               <id>mule-ee-thirdparty</id>
+               <snapshots>
+                  <enabled>true</enabled>
+               </snapshots>
+               <name>Local repository for thirdparty</name>
+               <url>http://repository-master.mulesoft.org/nexus/content/repositories/ext-releases/</url>
+            </repository>
+            <repository>
+               <id>mule-ee-dependencies</id>
+               <name>Mule EE Dependencies</name>
+               <url>http://repository-master.mulesoft.org/nexus/content/groups/mule-ee-dependencies/</url>
+            </repository>
+         </repositories>
+         <pluginRepositories>
+            <pluginRepository>
+               <id>mule-ee-snapshots</id>
+               <url>http://repository-master.mulesoft.org/nexus/content/repositories/ci-snapshots/</url>
+               <layout>default</layout>
+            </pluginRepository>
+            <pluginRepository>
+               <id>mule-ee-releases</id>
+               <url>http://repository-master.mulesoft.org/nexus/content/repositories/ci-releases/</url>
+               <layout>default</layout>
+            </pluginRepository>
+         </pluginRepositories>
+      </profile>
+   </profiles>
+   <activeProfiles>
+      <activeProfile>default-profile</activeProfile>
+   </activeProfiles>
+   <servers>
+      <server>
+         <id>nexus.repository</id>
+         <username>${env.CI_USER}</username>
+         <password>${env.CI_PASSWORD}</password>
+      </server>
+      <server>
+         <id>nexus.snapshots.repository</id>
+         <username>${env.CI_USER}</username>
+         <password>${env.CI_PASSWORD}</password>
+      </server>
+      <server>
+         <id>mule-ee-releases</id>
+         <username>${env.CI_USER}</username>
+         <password>${env.CI_PASSWORD}</password>
+      </server>
+      <server>
+         <id>mule-ee-customer-releases</id>
+         <username>${env.CI_DEPLOY_USER}</username>
+         <password>${env.CI_DEPLOY_PASSWORD}</password>
+      </server>
+      <server>
+         <id>mule-ee-snapshots</id>
+         <username>${env.CI_USER}</username>
+         <password>${env.CI_PASSWORD}</password>
+      </server>
+      <server>
+         <id>mule-snapshots</id>
+         <username>${env.PUB_CI_USER}</username>
+         <password>${env.PUB_CI_PASSWORD}</password>
+      </server>
+      <server>
+         <id>mule-ee-thirdparty</id>
+         <username>${env.CI_USER}</username>
+         <password>${env.CI_PASSWORD}</password>
+      </server>
+      <server>
+         <id>mule-ee-dependencies</id>
+         <username>${env.CI_USER}</username>
+         <password>${env.CI_PASSWORD}</password>
+      </server>
+      <server>
+         <id>muleforge-releases</id>
+         <username>${env.CI_USER}</username>
+         <password>${env.CI_PASSWORD}</password>
+      </server>
+      <server>
+         <id>muleforge-snapshots</id>
+         <username>${env.CI_USER}</username>
+         <password>${env.CI_PASSWORD}</password>
+      </server>
+      <server>
+         <id>mule-ee-private</id>
+         <username>${env.CI_USER}</username>
+         <password>${env.CI_PASSWORD}</password>
+      </server>
+   </servers>
+</settings>

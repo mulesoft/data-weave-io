@@ -1,0 +1,552 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="BranchesTreeState">
+    <expand>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+    </expand>
+    <select />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="6eb4104d-c3d6-4da4-b603-04a6ef53f84c" name="Default Changelist" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="CodeStyleSettingsInfer">
+    <option name="done" value="true" />
+  </component>
+  <component name="ExternalProjectsData">
+    <projectState path="$PROJECT_DIR$">
+      <ProjectState />
+    </projectState>
+  </component>
+  <component name="ExternalProjectsManager">
+    <system id="GRADLE">
+      <state>
+        <task path="$PROJECT_DIR$">
+          <activation />
+        </task>
+        <task path="$PROJECT_DIR$/http-module">
+          <activation />
+        </task>
+        <task path="$PROJECT_DIR$/raml-module">
+          <activation />
+        </task>
+        <projects_view>
+          <tree_state>
+            <expand>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="data-weave-http" type="f1a62948:ProjectNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="data-weave-http" type="f1a62948:ProjectNode" />
+                <item name="raml-module" type="2d1252cf:ModuleNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="data-weave-http" type="f1a62948:ProjectNode" />
+                <item name="raml-module" type="2d1252cf:ModuleNode" />
+                <item name="Tasks" type="e4a08cd1:TasksNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="data-weave-http" type="f1a62948:ProjectNode" />
+                <item name="raml-module" type="2d1252cf:ModuleNode" />
+                <item name="Dependencies" type="6de06a37:ExternalSystemViewDefaultContributor$MyDependenciesNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="data-weave-http" type="f1a62948:ProjectNode" />
+                <item name="raml-module" type="2d1252cf:ModuleNode" />
+                <item name="Dependencies" type="6de06a37:ExternalSystemViewDefaultContributor$MyDependenciesNode" />
+                <item name="compileClasspath" type="62daadca:ExternalSystemViewDefaultContributor$DependencyScopeExternalSystemNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="data-weave-http" type="f1a62948:ProjectNode" />
+                <item name="raml-module" type="2d1252cf:ModuleNode" />
+                <item name="Dependencies" type="6de06a37:ExternalSystemViewDefaultContributor$MyDependenciesNode" />
+                <item name="compileClasspath" type="62daadca:ExternalSystemViewDefaultContributor$DependencyScopeExternalSystemNode" />
+                <item name="com.github.amlorg:amf-client_2.12:4.1.0" type="b3323d55:ExternalSystemViewDefaultContributor$DependencyExternalSystemNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="data-weave-http" type="f1a62948:ProjectNode" />
+                <item name="raml-module" type="2d1252cf:ModuleNode" />
+                <item name="Dependencies" type="6de06a37:ExternalSystemViewDefaultContributor$MyDependenciesNode" />
+                <item name="compileClasspath" type="62daadca:ExternalSystemViewDefaultContributor$DependencyScopeExternalSystemNode" />
+                <item name="com.github.amlorg:amf-client_2.12:4.1.0" type="b3323d55:ExternalSystemViewDefaultContributor$DependencyExternalSystemNode" />
+                <item name="com.github.amlorg:amf-validation_2.12:4.1.0" type="b3323d55:ExternalSystemViewDefaultContributor$DependencyExternalSystemNode" />
+              </path>
+            </expand>
+            <select />
+          </tree_state>
+        </projects_view>
+      </state>
+    </system>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="DataWeave Mapping" />
+        <option value="DataWeave Module" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="UPDATE_TYPE" value="REBASE" />
+  </component>
+  <component name="ProjectCodeStyleSettingsMigration">
+    <option name="version" value="1" />
+  </component>
+  <component name="ProjectId" id="1ZOveKaJ8lLRs9JDsnVGVlUU1yo" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
+    <property name="ASKED_SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/file-module/src/test/resources/org/mule/weave/io/file" />
+    <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
+    <property name="nodejs_npm_path_reset_for_default_project" value="true" />
+    <property name="show.unlinked.gradle.project.popup" value="true" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/file-module/src/test/resources/org/mule/weave/io/file" />
+      <recent name="$PROJECT_DIR$/file-module/src/test/resources/org/mule/weave/io/file/mkdir" />
+      <recent name="$PROJECT_DIR$" />
+      <recent name="$PROJECT_DIR$/raml-module/src/test/resources/org/mule/weave/v2/module/test/raml/parser" />
+      <recent name="$PROJECT_DIR$/file-module/src/main/resources/META-INF" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/http-module/src/test/resources/www" />
+      <recent name="$PROJECT_DIR$/graphql-module/src/main/resources/dw/io/graphql/utils" />
+      <recent name="$PROJECT_DIR$/raml-module/src/test/resources/org/mule/weave/v2/module/test/raml/parser" />
+      <recent name="$PROJECT_DIR$/raml-module/src/test/resources/org/mule/weave/v2/module/test" />
+      <recent name="$PROJECT_DIR$/raml-module/src/test/resources/org/mule/weave/v2/module" />
+    </key>
+  </component>
+  <component name="RunManager" selected="ScalaTest.RamlModuleParserTest (1)">
+    <configuration name="data-weave-http:raml-module [muleServiceJar]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$/raml-module" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value="muleServiceJar" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <GradleScriptDebugEnabled>true</GradleScriptDebugEnabled>
+      <method v="2" />
+    </configuration>
+    <configuration name="FileSystemTest All" type="ScalaTestRunConfiguration" factoryName="ScalaTest" show_console_on_std_err="false" show_console_on_std_out="false">
+      <module name="data-weave-http.file-module.test" />
+      <option name="allowRunningInParallel" value="false" />
+      <option name="selectedOptions">
+        <set />
+      </option>
+      <option name="testKind" value="Class" />
+      <option name="testClassPath" value="org.mule.weave.io.file.FileSystemTest" />
+      <option name="workingDirectory" value="$PROJECT_DIR$" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="FileSystemTest" type="ScalaTestRunConfiguration" factoryName="ScalaTest" show_console_on_std_err="false" show_console_on_std_out="false">
+      <module name="data-weave-http.file-module.test" />
+      <option name="allowRunningInParallel" value="false" />
+      <option name="selectedOptions">
+        <set />
+      </option>
+      <option name="testKind" value="Class" />
+      <option name="javaOptions" value="-DtestToRun=writeTo" />
+      <option name="testClassPath" value="org.mule.weave.io.file.FileSystemTest" />
+      <option name="workingDirectory" value="$PROJECT_DIR$" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="HttpTest" type="ScalaTestRunConfiguration" factoryName="ScalaTest" temporary="true" show_console_on_std_err="false" show_console_on_std_out="false">
+      <module name="data-weave-http.http-module.test" />
+      <option name="allowRunningInParallel" value="false" />
+      <option name="selectedOptions">
+        <set />
+      </option>
+      <option name="testKind" value="Class" />
+      <option name="javaOptions" value="-DtestToRun=server" />
+      <option name="testClassPath" value="org.mule.weave.v2.module.test.http.HttpTest" />
+      <option name="workingDirectory" value="$PROJECT_DIR$" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="RamlModuleEngineTest" type="ScalaTestRunConfiguration" factoryName="ScalaTest" temporary="true" show_console_on_std_err="false" show_console_on_std_out="false">
+      <module name="data-weave-http.raml-module.test" />
+      <option name="allowRunningInParallel" value="false" />
+      <option name="selectedOptions">
+        <set />
+      </option>
+      <option name="testKind" value="Class" />
+      <option name="testClassPath" value="org.mule.weave.v2.module.test.raml.engine.RamlModuleEngineTest" />
+      <option name="workingDirectory" value="$PROJECT_DIR$" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="RamlModuleParserTest (1)" type="ScalaTestRunConfiguration" factoryName="ScalaTest" show_console_on_std_err="false" show_console_on_std_out="false">
+      <module name="data-weave-http.raml-module.test" />
+      <option name="allowRunningInParallel" value="false" />
+      <option name="selectedOptions">
+        <set />
+      </option>
+      <option name="testKind" value="Class" />
+      <option name="javaOptions" value="-DupdateResult=true" />
+      <option name="testClassPath" value="org.mule.weave.v2.module.test.raml.parser.RamlModuleParserTest" />
+      <option name="workingDirectory" value="$PROJECT_DIR$" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="RamlModuleParserTest" type="ScalaTestRunConfiguration" factoryName="ScalaTest" temporary="true" show_console_on_std_err="false" show_console_on_std_out="false">
+      <module name="data-weave-http.raml-module.test" />
+      <option name="allowRunningInParallel" value="false" />
+      <option name="selectedOptions">
+        <set />
+      </option>
+      <option name="testKind" value="Class" />
+      <option name="javaOptions" value="-DupdateResult=true -DtestToRun=playground" />
+      <option name="testClassPath" value="org.mule.weave.v2.module.test.raml.parser.RamlModuleParserTest" />
+      <option name="workingDirectory" value="$PROJECT_DIR$" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <list>
+      <item itemvalue="Gradle.data-weave-http:raml-module [muleServiceJar]" />
+      <item itemvalue="ScalaTest.FileSystemTest" />
+      <item itemvalue="ScalaTest.FileSystemTest All" />
+      <item itemvalue="ScalaTest.RamlModuleParserTest (1)" />
+      <item itemvalue="ScalaTest.HttpTest" />
+      <item itemvalue="ScalaTest.RamlModuleEngineTest" />
+      <item itemvalue="ScalaTest.RamlModuleParserTest" />
+    </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Gradle.data-weave-http:raml-module [muleServiceJar]" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="6eb4104d-c3d6-4da4-b603-04a6ef53f84c" name="Default Changelist" comment="" />
+      <created>1584723048421</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1584723048421</updated>
+    </task>
+    <task id="LOCAL-00001" summary="Adding more examples fixing some issues with recursive types">
+      <created>1585602431708</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1585602431708</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Fix AMF enabling">
+      <created>1585605874149</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1585605874149</updated>
+    </task>
+    <task id="LOCAL-00003" summary="First GraphQL module WIP">
+      <created>1585614590971</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1585614590971</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Fix graalvm files">
+      <created>1591036405843</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1591036405843</updated>
+    </task>
+    <task id="LOCAL-00005" summary="Inicial POC of api server support for RAML">
+      <created>1592918916339</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1592918916339</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Add support for pattern properties">
+      <created>1593108251617</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1593108251617</updated>
+    </task>
+    <task id="LOCAL-00007" summary="Small build changes">
+      <created>1593228781147</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1593228781147</updated>
+    </task>
+    <task id="LOCAL-00008" summary="Cleanup dependencies and raml to be lighter">
+      <created>1595275140764</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1595275140764</updated>
+    </task>
+    <task id="LOCAL-00009" summary="DummyAMFValidatorPlugin add a validator that doesn't validate">
+      <created>1596669032321</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1596669032322</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
+    <servers />
+  </component>
+  <component name="Vcs.Log.History.Properties">
+    <option name="COLUMN_ORDER">
+      <list>
+        <option value="0" />
+        <option value="2" />
+        <option value="3" />
+        <option value="1" />
+      </list>
+    </option>
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
+    <MESSAGE value="Adding more examples fixing some issues with recursive types" />
+    <MESSAGE value="Fix AMF enabling" />
+    <MESSAGE value="First GraphQL module WIP" />
+    <MESSAGE value="Fix graalvm files" />
+    <MESSAGE value="Inicial POC of api server support for RAML" />
+    <MESSAGE value="Add support for pattern properties" />
+    <MESSAGE value="Small build changes" />
+    <MESSAGE value="Cleanup dependencies and raml to be lighter" />
+    <MESSAGE value="DummyAMFValidatorPlugin add a validator that doesn't validate" />
+    <option name="LAST_COMMIT_MESSAGE" value="DummyAMFValidatorPlugin add a validator that doesn't validate" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="440" y="202" key="#Plugins" timestamp="1595352906129">
+      <screen x="0" y="23" width="1680" height="1027" />
+    </state>
+    <state x="440" y="202" key="#Plugins/0.23.1680.1027@0.23.1680.1027" timestamp="1595352906129" />
+    <state x="578" y="309" key="#com.intellij.codeInsight.editorActions.RestoreReferencesDialog" timestamp="1596664753459">
+      <screen x="0" y="23" width="1680" height="1027" />
+    </state>
+    <state x="578" y="309" key="#com.intellij.codeInsight.editorActions.RestoreReferencesDialog/0.23.1680.1027@0.23.1680.1027" timestamp="1596664753459" />
+    <state x="304" y="154" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1595646692237">
+      <screen x="0" y="23" width="1680" height="1027" />
+    </state>
+    <state x="304" y="154" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.23.1680.1027@0.23.1680.1027" timestamp="1595646692237" />
+    <state x="653" y="241" key="#com.intellij.ide.util.MemberChooser" timestamp="1596664837563">
+      <screen x="0" y="23" width="1680" height="1027" />
+    </state>
+    <state x="653" y="241" key="#com.intellij.ide.util.MemberChooser/0.23.1680.1027@0.23.1680.1027" timestamp="1596664837563" />
+    <state x="560" y="370" width="1058" height="579" key="#xdebugger.evaluate" timestamp="1595635497035">
+      <screen x="0" y="23" width="1680" height="1027" />
+    </state>
+    <state x="560" y="370" width="1058" height="579" key="#xdebugger.evaluate/0.23.1680.1027@0.23.1680.1027" timestamp="1595635497035" />
+    <state x="355" y="139" key="CommitChangelistDialog2" timestamp="1596669031731">
+      <screen x="0" y="23" width="1680" height="1027" />
+    </state>
+    <state x="-1325" y="766" key="CommitChangelistDialog2/-1680.650.1680.1027/0.23.1920.1057@-1680.650.1680.1027" timestamp="1592828534499" />
+    <state x="355" y="139" key="CommitChangelistDialog2/0.23.1680.1027@0.23.1680.1027" timestamp="1596669031731" />
+    <state x="100" y="123" width="1480" height="827" key="DiffContextDialog" timestamp="1593439107251">
+      <screen x="0" y="23" width="1680" height="1027" />
+    </state>
+    <state x="100" y="123" width="1480" height="827" key="DiffContextDialog/0.23.1680.1027@0.23.1680.1027" timestamp="1593439107251" />
+    <state width="1638" height="530" key="GridCell.Tab.0.bottom" timestamp="1596671620856">
+      <screen x="0" y="23" width="1680" height="1027" />
+    </state>
+    <state width="1638" height="535" key="GridCell.Tab.0.bottom/-1680.650.1680.1027/0.23.1920.1057@-1680.650.1680.1027" timestamp="1592828465600" />
+    <state width="1638" height="530" key="GridCell.Tab.0.bottom/-1680.650.1680.1027/0.23.1920.1057@0.23.1920.1057" timestamp="1592575138140" />
+    <state width="1638" height="530" key="GridCell.Tab.0.bottom/0.23.1680.1027@0.23.1680.1027" timestamp="1596671620856" />
+    <state width="1638" height="530" key="GridCell.Tab.0.center" timestamp="1596671620856">
+      <screen x="0" y="23" width="1680" height="1027" />
+    </state>
+    <state width="1638" height="535" key="GridCell.Tab.0.center/-1680.650.1680.1027/0.23.1920.1057@-1680.650.1680.1027" timestamp="1592828465598" />
+    <state width="1638" height="530" key="GridCell.Tab.0.center/-1680.650.1680.1027/0.23.1920.1057@0.23.1920.1057" timestamp="1592575138139" />
+    <state width="1638" height="530" key="GridCell.Tab.0.center/0.23.1680.1027@0.23.1680.1027" timestamp="1596671620856" />
+    <state width="1638" height="530" key="GridCell.Tab.0.left" timestamp="1596671620855">
+      <screen x="0" y="23" width="1680" height="1027" />
+    </state>
+    <state width="1638" height="535" key="GridCell.Tab.0.left/-1680.650.1680.1027/0.23.1920.1057@-1680.650.1680.1027" timestamp="1592828465598" />
+    <state width="1638" height="530" key="GridCell.Tab.0.left/-1680.650.1680.1027/0.23.1920.1057@0.23.1920.1057" timestamp="1592575138139" />
+    <state width="1638" height="530" key="GridCell.Tab.0.left/0.23.1680.1027@0.23.1680.1027" timestamp="1596671620855" />
+    <state width="1638" height="530" key="GridCell.Tab.0.right" timestamp="1596671620856">
+      <screen x="0" y="23" width="1680" height="1027" />
+    </state>
+    <state width="1638" height="535" key="GridCell.Tab.0.right/-1680.650.1680.1027/0.23.1920.1057@-1680.650.1680.1027" timestamp="1592828465599" />
+    <state width="1638" height="530" key="GridCell.Tab.0.right/-1680.650.1680.1027/0.23.1920.1057@0.23.1920.1057" timestamp="1592575138139" />
+    <state width="1638" height="530" key="GridCell.Tab.0.right/0.23.1680.1027@0.23.1680.1027" timestamp="1596671620856" />
+    <state width="1638" height="530" key="GridCell.Tab.1.bottom" timestamp="1596671620858">
+      <screen x="0" y="23" width="1680" height="1027" />
+    </state>
+    <state width="1638" height="530" key="GridCell.Tab.1.bottom/-1680.650.1680.1027/0.23.1920.1057@0.23.1920.1057" timestamp="1592575138140" />
+    <state width="1638" height="530" key="GridCell.Tab.1.bottom/0.23.1680.1027@0.23.1680.1027" timestamp="1596671620858" />
+    <state width="1638" height="530" key="GridCell.Tab.1.center" timestamp="1596671620858">
+      <screen x="0" y="23" width="1680" height="1027" />
+    </state>
+    <state width="1638" height="530" key="GridCell.Tab.1.center/-1680.650.1680.1027/0.23.1920.1057@0.23.1920.1057" timestamp="1592575138140" />
+    <state width="1638" height="530" key="GridCell.Tab.1.center/0.23.1680.1027@0.23.1680.1027" timestamp="1596671620858" />
+    <state width="1638" height="530" key="GridCell.Tab.1.left" timestamp="1596671620857">
+      <screen x="0" y="23" width="1680" height="1027" />
+    </state>
+    <state width="1638" height="530" key="GridCell.Tab.1.left/-1680.650.1680.1027/0.23.1920.1057@0.23.1920.1057" timestamp="1592575138140" />
+    <state width="1638" height="530" key="GridCell.Tab.1.left/0.23.1680.1027@0.23.1680.1027" timestamp="1596671620857" />
+    <state width="1638" height="530" key="GridCell.Tab.1.right" timestamp="1596671620858">
+      <screen x="0" y="23" width="1680" height="1027" />
+    </state>
+    <state width="1638" height="530" key="GridCell.Tab.1.right/-1680.650.1680.1027/0.23.1920.1057@0.23.1920.1057" timestamp="1592575138140" />
+    <state width="1638" height="530" key="GridCell.Tab.1.right/0.23.1680.1027@0.23.1680.1027" timestamp="1596671620858" />
+    <state x="428" y="278" key="IDE.errors.dialog" timestamp="1593453806864">
+      <screen x="0" y="23" width="1680" height="1027" />
+    </state>
+    <state x="428" y="278" key="IDE.errors.dialog/0.23.1680.1027@0.23.1680.1027" timestamp="1593453806864" />
+    <state x="609" y="254" key="RollbackChangesDialog" timestamp="1593453350597">
+      <screen x="0" y="23" width="1680" height="1027" />
+    </state>
+    <state x="609" y="254" key="RollbackChangesDialog/0.23.1680.1027@0.23.1680.1027" timestamp="1593453350597" />
+    <state x="570" y="275" width="540" height="524" key="StructurePopup" timestamp="1595631503684">
+      <screen x="0" y="23" width="1680" height="1027" />
+    </state>
+    <state x="-1110" y="902" width="540" height="524" key="StructurePopup/-1680.650.1680.1027/0.23.1920.1057@-1680.650.1680.1027" timestamp="1592828036540" />
+    <state x="570" y="275" width="540" height="524" key="StructurePopup/0.23.1680.1027@0.23.1680.1027" timestamp="1595631503684" />
+    <state width="500" height="445" key="SwitcherDM" timestamp="1593439787160">
+      <screen x="0" y="23" width="1680" height="1027" />
+    </state>
+    <state width="500" height="445" key="SwitcherDM/0.23.1680.1027@0.23.1680.1027" timestamp="1593439787160" />
+    <state x="385" y="298" key="Vcs.Push.Dialog.v2" timestamp="1596669034447">
+      <screen x="0" y="23" width="1680" height="1027" />
+    </state>
+    <state x="385" y="298" key="Vcs.Push.Dialog.v2/0.23.1680.1027@0.23.1680.1027" timestamp="1596669034447" />
+    <state x="100" y="123" width="1480" height="827" key="com.intellij.history.integration.ui.views.DirectoryHistoryDialog" timestamp="1593456220358">
+      <screen x="0" y="23" width="1680" height="1027" />
+    </state>
+    <state x="100" y="123" width="1480" height="827" key="com.intellij.history.integration.ui.views.DirectoryHistoryDialog/0.23.1680.1027@0.23.1680.1027" timestamp="1593456220358" />
+    <state x="100" y="123" width="1480" height="827" key="com.intellij.history.integration.ui.views.FileHistoryDialog" timestamp="1593456220359">
+      <screen x="0" y="23" width="1680" height="1027" />
+    </state>
+    <state x="100" y="123" width="1480" height="827" key="com.intellij.history.integration.ui.views.FileHistoryDialog/0.23.1680.1027@0.23.1680.1027" timestamp="1593456220359" />
+    <state x="498" y="158" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser" timestamp="1595634827938">
+      <screen x="0" y="23" width="1680" height="1027" />
+    </state>
+    <state x="498" y="158" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser/0.23.1680.1027@0.23.1680.1027" timestamp="1595634827938" />
+    <state x="503" y="293" width="822" height="550" key="find.popup" timestamp="1592835708345">
+      <screen x="0" y="23" width="1680" height="1027" />
+    </state>
+    <state x="503" y="293" width="822" height="550" key="find.popup/0.23.1680.1027@0.23.1680.1027" timestamp="1592835708345" />
+    <state x="505" y="187" width="670" height="676" key="search.everywhere.popup" timestamp="1596667296266">
+      <screen x="0" y="23" width="1680" height="1027" />
+    </state>
+    <state x="-1175" y="814" width="670" height="676" key="search.everywhere.popup/-1680.650.1680.1027/0.23.1920.1057@-1680.650.1680.1027" timestamp="1592826685955" />
+    <state x="577" y="192" width="766" height="696" key="search.everywhere.popup/-1680.650.1680.1027/0.23.1920.1057@0.23.1920.1057" timestamp="1592574897610" />
+    <state x="505" y="187" width="670" height="676" key="search.everywhere.popup/0.23.1680.1027@0.23.1680.1027" timestamp="1596667296266" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_181.jdk/Contents/Home/src.zip!/javax/script/ScriptEngineManager.java</url>
+          <line>87</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_181.jdk/Contents/Home/src.zip!/javax/script/ScriptEngineManager.java</url>
+          <line>95</line>
+          <option name="timeStamp" value="2" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_181.jdk/Contents/Home/src.zip!/javax/script/ScriptEngineManager.java</url>
+          <line>211</line>
+          <option name="timeStamp" value="3" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_181.jdk/Contents/Home/src.zip!/javax/script/ScriptEngineManager.java</url>
+          <line>310</line>
+          <option name="timeStamp" value="4" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_181.jdk/Contents/Home/src.zip!/javax/script/ScriptEngineManager.java</url>
+          <line>353</line>
+          <option name="timeStamp" value="5" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_181.jdk/Contents/Home/src.zip!/javax/script/ScriptEngineManager.java</url>
+          <line>383</line>
+          <option name="timeStamp" value="6" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_181.jdk/Contents/Home/src.zip!/javax/script/ScriptEngineManager.java</url>
+          <line>397</line>
+          <option name="timeStamp" value="7" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="scala-line">
+          <url>jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.amlorg/amf-validation_2.12/4.1.0/51fe4fa44f25ea0941a53b9903e6712817c51677/amf-validation_2.12-4.1.0-sources.jar!/amf/plugins/features/validation/AMFValidatorPlugin.scala</url>
+          <line>35</line>
+          <option name="timeStamp" value="9" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+    <watches-manager>
+      <configuration name="ScalaTestRunConfiguration">
+        <watch expression="ns.dataType.value()" />
+      </configuration>
+    </watches-manager>
+  </component>
+</project>
