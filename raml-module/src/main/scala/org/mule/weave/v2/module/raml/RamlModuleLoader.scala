@@ -41,6 +41,7 @@ import org.mule.weave.v2.module.raml.RamlModuleLoader.HEADERS
 import org.mule.weave.v2.module.raml.RamlModuleLoader.HOST_PARAM
 import org.mule.weave.v2.module.raml.RamlModuleLoader.HOST_VAL
 import org.mule.weave.v2.module.raml.RamlModuleLoader.HttpClientResponseTypeName
+import org.mule.weave.v2.module.raml.RamlModuleLoader.HttpHandlerTypeName
 import org.mule.weave.v2.module.raml.RamlModuleLoader.HttpServerResponseTypeName
 import org.mule.weave.v2.module.raml.RamlModuleLoader.HttpServerTypeName
 import org.mule.weave.v2.module.raml.RamlModuleLoader.OPERATION_PARAM
@@ -308,7 +309,7 @@ class RamlModuleLoader extends ModuleLoader with WeaveResourceResolverAware {
 
           if (securityParam.isDefined) {
             directiveNodes.+=(VarDirective(NameIdentifier(RamlModuleLoader.AUTH_VAR), select(VariableReferenceNode(OPERATION_PARAM), RamlModuleLoader.AUTH_FIELD)))
-            headerParts += FunctionCallNode(VariableReferenceNode("resolveAuthorizationHeader"), FunctionCallParametersNode(Seq(VariableReferenceNode(RamlModuleLoader.AUTH_VAR))))
+            headerParts += FunctionCallNode(VariableReferenceNode("createAuthorizationHeader"), FunctionCallParametersNode(Seq(VariableReferenceNode(RamlModuleLoader.AUTH_VAR))))
           }
 
           val headersNode: AstNode = headerParts.reduce((acc, v) => {
@@ -339,7 +340,7 @@ class RamlModuleLoader extends ModuleLoader with WeaveResourceResolverAware {
           Some(FunctionParameter(NameIdentifier(OPERATION_PARAM), None, Some(requestParam)))
         }
 
-        val functionCallNode = as(strictSelect(FunctionCallNode(VariableReferenceNode("request"), FunctionCallParametersNode(params)), "response"), responseType)
+        val functionCallNode = as(FunctionCallNode(VariableReferenceNode("request"), FunctionCallParametersNode(params)), responseType)
         val operationFunctionBody = DoBlockNode(HeaderNode(directiveNodes), functionCallNode)
         val operationValue = FunctionNode(FunctionParameters(Seq(operationParameter).flatten), operationFunctionBody, Some(responseType))
         KeyValuePairNode(operationName, operationValue)
@@ -430,10 +431,8 @@ class RamlModuleLoader extends ModuleLoader with WeaveResourceResolverAware {
           responses.reduce(UnionTypeNode)
         }
 
-        val httpHandlerName = httpPackage.::("Types").::("HttpHandler")
-
         //HttpHandler<RequestType, RequestHeaderType <: HttpHeaders, QueryParamsType <: QueryParams, ResponseType, ResponseHeaderType <: HttpHeaders>
-        KeyValueTypeNode(operationName, TypeReferenceNode(httpHandlerName, Some(Seq(body, headerType, queryParametersType, responseType))), repeated = false, optional = true)
+        KeyValueTypeNode(operationName, TypeReferenceNode(HttpHandlerTypeName, Some(Seq(body, headerType, queryParametersType, responseType))), repeated = false, optional = true)
       })
       if (operations.isEmpty) {
         None
@@ -600,6 +599,8 @@ object RamlModuleLoader {
 
   def HttpTypeModuleName: NameIdentifier = httpPackage.::("Types")
 
+  def HttpClientModuleName: NameIdentifier = httpPackage.::("Client")
+
   def HttpServerModuleName: NameIdentifier = httpPackage.::("Server")
 
   def ApiFunctionName: NameIdentifier = HttpServerModuleName.::("api")
@@ -608,7 +609,9 @@ object RamlModuleLoader {
 
   def HeadersTypeName: NameIdentifier = HttpTypeModuleName.::("HttpHeaders")
 
-  def HttpServerTypeName: NameIdentifier = HttpTypeModuleName.::("HttpServer")
+  def HttpServerTypeName: NameIdentifier = HttpServerModuleName.::("HttpServer")
+
+  def HttpHandlerTypeName: NameIdentifier = HttpServerModuleName.::("HttpHandler")
 
   def QueryTypeName: NameIdentifier = HttpTypeModuleName.::("QueryParams")
 
@@ -628,9 +631,9 @@ object RamlModuleLoader {
 
   def ApiConfigTypeName: NameIdentifier = HttpServerModuleName.::("ApiConfig")
 
-  def HttpClientResponseTypeName: NameIdentifier = HttpTypeModuleName.::("HttpClientResponse")
+  def HttpClientResponseTypeName: NameIdentifier = HttpClientModuleName.::("HttpClientResponse")
 
-  def HttpServerResponseTypeName: NameIdentifier = HttpTypeModuleName.::("HttpServerResponse")
+  def HttpServerResponseTypeName: NameIdentifier = HttpServerModuleName.::("HttpServerResponse")
 
   val SIMPLE_TYPE_MAP = Map(
     DataType.String -> "String",

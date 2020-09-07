@@ -1,0 +1,14 @@
+
+
+dependencies {
+    compile project(":http-module")
+    compile group: 'org.scala-lang', name: 'scala-library', version: scalaVersion
+    compile group: 'io.netty', name: 'netty-codec-http', version: '4.1.50.Final'
+    compile group: 'org.asynchttpclient', name: 'async-http-client', version: '2.12.1'
+    compileOnly group: 'org.mule.weave', name: 'runtime', version: weaveVersion
+
+
+    testCompile group: 'org.mule.weave', name: 'wtf', version: '1.0.3-SNAPSHOT'
+}
+
+test.dependsOn("weavetest")

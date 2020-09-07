@@ -2,10 +2,10 @@ package org.mule.weave.v2.module.http.service
 
 import java.io.InputStream
 import java.net.HttpCookie
-import java.net.Proxy
+import java.util.concurrent.CompletableFuture
 
 trait HttpClientService {
-  def request(config: HttpClientOptions): HttpClientResult
+  def request(config: HttpClientOptions): CompletableFuture[_ <: HttpClientResponse]
 }
 
 case class HttpClientOptions(
@@ -16,13 +16,14 @@ case class HttpClientOptions(
   var method: String,
 
   var headers: Map[String, Seq[String]] = Map[String, Seq[String]](),
+  var queryParams: Map[String, Seq[String]] = Map[String, Seq[String]](),
   var body: Option[InputStream] = None,
 
   /** Do we accept header redirections? */
   var allowRedirect: Boolean = false,
 
-  var readTimeout: Number = 20000, // default 20000ms
-  var connectionTimeout: Number = 10000, // default 10000ms
+  var readTimeout: Option[Int] = None, // default 20000ms
+  var requestTimeout: Option[Int] = None, // default 10000ms
 
   /**
     * Should HTTP compression be used?
@@ -33,8 +34,10 @@ case class HttpClientOptions(
     */
   var allowCompression: Boolean = true,
   var ssl: SSLOptions = SSLOptions(),
-  var proxyConfig: Option[Proxy] = None,
+  var proxyConfig: Option[ProxyConfig] = None,
   var digestCreds: Option[(String, String)] = None)
+
+case class ProxyConfig(host: String, port: Int)
 
 case class SSLOptions(
   /** Accept self signed server certificates */
@@ -54,39 +57,39 @@ case class HttpClientRequest(
   var headers: Map[String, Seq[String]] = Map(),
   var payload: Option[InputStream] = None)
 
-case class HttpClientResponse(
-    /** Example: 200 */
-    status: Number,
+trait HttpClientResponse {
+  /** Example: 200 */
+  def status: Int
 
-    /** Response headers **/
-    headers: Map[String, Seq[String]],
+  /** Response headers * */
+  def headers: HttpClientHeaders
 
-    /** Response's raw body */
-    payload: Option[InputStream] = None,
+  def contentType: String
 
-    statusText: Option[String] = None) {
-  /** Get the response header value for a key */
-  def header(key: String): Option[String] = headers.get(key).flatMap(_.headOption)
+  /** Response's raw body */
+  def body: Option[InputStream]
 
-  /** Get all the response header values for a repeated key */
-  def headerSeq(key: String): Seq[String] = headers.getOrElse(key, Seq.empty)
+  def statusText: Option[String]
 
   /** Location header value sent for redirects. By default, this library will not follow redirects. */
-  def location: Option[String] = header("Location")
+  def location: Option[String] = {
+    headers.headerValues("Location").headOption
+  }
 
-  /** Get the parsed cookies from the "Set-Cookie" header **/
+  /** Get the parsed cookies from the "Set-Cookie" header * */
   def cookies: Seq[HttpCookie] = {
-    headerSeq("Set-Cookie").flatMap(x => HttpCookie.parse(x).toArray().asInstanceOf[Array[HttpCookie]])
+    headers.headerValues("Set-Cookie").flatMap(x => {
+      HttpCookie.parse(x).toArray(Array[HttpCookie]())
+    })
   }
 }
 
-case class HttpClientResult(
-  var err: Boolean,
-  var options: HttpClientOptions,
-  var message: Option[String] = None,
-  var request: Option[HttpClientRequest] = None,
+trait HttpClientHeaders {
 
-  /** Timing metrics, all values are accumulative except for ssl, it is included inside connect when available */
-  var timers: Option[Map[String, Number]] = None,
-  var response: Option[HttpClientResponse] = None,
-  var redirects: Option[Seq[HttpClientResponse]] = None)
+  def headerNames: Array[String]
+
+  def headerValues(name: String): Array[String]
+
+  def headerValue(name: String): Option[String]
+}
+

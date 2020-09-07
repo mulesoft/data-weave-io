@@ -23,7 +23,7 @@
           |-KeyTypeNode
             |-NameTypeNode
           |-TypeReferenceNode
-            |-NameIdentifier Name='dw::io::http::Types::HttpHandler'
+            |-NameIdentifier Name='dw::io::http::Server::HttpHandler'
             |-TypeReferenceNode
               |-NameIdentifier Name='TransformRequest'
             |-TypeReferenceNode
@@ -31,7 +31,7 @@
             |-TypeReferenceNode
               |-NameIdentifier Name='dw::io::http::Types::QueryParams'
             |-TypeReferenceNode
-              |-NameIdentifier Name='dw::io::http::Types::HttpServerResponse'
+              |-NameIdentifier Name='dw::io::http::Server::HttpServerResponse'
               |-TypeReferenceNode
                 |-NameIdentifier Name='TransformResponse'
               |-TypeReferenceNode
@@ -44,7 +44,7 @@
           |-KeyTypeNode
             |-NameTypeNode
           |-TypeReferenceNode
-            |-NameIdentifier Name='dw::io::http::Types::HttpHandler'
+            |-NameIdentifier Name='dw::io::http::Server::HttpHandler'
             |-TypeReferenceNode
               |-NameIdentifier Name='Any'
             |-TypeReferenceNode
@@ -52,7 +52,7 @@
             |-TypeReferenceNode
               |-NameIdentifier Name='dw::io::http::Types::QueryParams'
             |-TypeReferenceNode
-              |-NameIdentifier Name='dw::io::http::Types::HttpServerResponse'
+              |-NameIdentifier Name='dw::io::http::Server::HttpServerResponse'
               |-TypeReferenceNode
                 |-NameIdentifier Name='Any'
               |-TypeReferenceNode
@@ -65,7 +65,7 @@
           |-KeyTypeNode
             |-NameTypeNode
           |-TypeReferenceNode
-            |-NameIdentifier Name='dw::io::http::Types::HttpHandler'
+            |-NameIdentifier Name='dw::io::http::Server::HttpHandler'
             |-TypeReferenceNode
               |-NameIdentifier Name='dw::io::http::Types::HttpBody'
             |-TypeReferenceNode
@@ -73,7 +73,7 @@
             |-TypeReferenceNode
               |-NameIdentifier Name='dw::io::http::Types::QueryParams'
             |-TypeReferenceNode
-              |-NameIdentifier Name='dw::io::http::Types::HttpServerResponse'
+              |-NameIdentifier Name='dw::io::http::Server::HttpServerResponse'
               |-TypeReferenceNode
                 |-NameIdentifier Name='DataFormatResponse'
               |-TypeReferenceNode
@@ -86,7 +86,7 @@
           |-KeyTypeNode
             |-NameTypeNode
           |-TypeReferenceNode
-            |-NameIdentifier Name='dw::io::http::Types::HttpHandler'
+            |-NameIdentifier Name='dw::io::http::Server::HttpHandler'
             |-TypeReferenceNode
               |-NameIdentifier Name='String'
             |-TypeReferenceNode
@@ -94,7 +94,7 @@
             |-TypeReferenceNode
               |-NameIdentifier Name='dw::io::http::Types::QueryParams'
             |-TypeReferenceNode
-              |-NameIdentifier Name='dw::io::http::Types::HttpServerResponse'
+              |-NameIdentifier Name='dw::io::http::Server::HttpServerResponse'
               |-TypeReferenceNode
                 |-NameIdentifier Name='MigrateResponse'
               |-TypeReferenceNode
@@ -107,7 +107,7 @@
           |-KeyTypeNode
             |-NameTypeNode
           |-TypeReferenceNode
-            |-NameIdentifier Name='dw::io::http::Types::HttpHandler'
+            |-NameIdentifier Name='dw::io::http::Server::HttpHandler'
             |-TypeReferenceNode
               |-NameIdentifier Name='dw::io::http::Types::HttpBody'
             |-TypeReferenceNode
@@ -115,7 +115,7 @@
             |-TypeReferenceNode
               |-NameIdentifier Name='dw::io::http::Types::QueryParams'
             |-TypeReferenceNode
-              |-NameIdentifier Name='dw::io::http::Types::HttpServerResponse'
+              |-NameIdentifier Name='dw::io::http::Server::HttpServerResponse'
               |-TypeReferenceNode
                 |-NameIdentifier Name='dw::io::http::Types::HttpBody'
               |-TypeReferenceNode
@@ -128,7 +128,7 @@
           |-KeyTypeNode
             |-NameTypeNode
           |-TypeReferenceNode
-            |-NameIdentifier Name='dw::io::http::Types::HttpHandler'
+            |-NameIdentifier Name='dw::io::http::Server::HttpHandler'
             |-TypeReferenceNode
               |-NameIdentifier Name='dw::io::http::Types::HttpBody'
             |-TypeReferenceNode
@@ -136,7 +136,7 @@
             |-TypeReferenceNode
               |-NameIdentifier Name='dw::io::http::Types::QueryParams'
             |-TypeReferenceNode
-              |-NameIdentifier Name='dw::io::http::Types::HttpServerResponse'
+              |-NameIdentifier Name='dw::io::http::Server::HttpServerResponse'
               |-TypeReferenceNode
                 |-NameIdentifier Name='Status'
               |-TypeReferenceNode
@@ -558,44 +558,40 @@
                         |-NameNode
                           |-StringNode Value='body'
                 |-BinaryOpNode Name='as'
-                  |-NullUnSafeNode
-                    |-BinaryOpNode Name='Value Selector'
+                  |-FunctionCallNode
+                    |-VariableReferenceNode
+                      |-NameIdentifier Name='request'
+                    |-FunctionCallParametersNode
+                      |-StringNode Value='POST'
                       |-FunctionCallNode
                         |-VariableReferenceNode
-                          |-NameIdentifier Name='request'
+                          |-NameIdentifier Name='++'
                         |-FunctionCallParametersNode
-                          |-StringNode Value='POST'
-                          |-FunctionCallNode
-                            |-VariableReferenceNode
-                              |-NameIdentifier Name='++'
-                            |-FunctionCallParametersNode
-                              |-VariableReferenceNode
-                                |-NameIdentifier Name='host'
-                              |-StringNode Value='/transform'
+                          |-VariableReferenceNode
+                            |-NameIdentifier Name='host'
+                          |-StringNode Value='/transform'
+                      |-ObjectNode
+                        |-KeyValuePairNode
+                          |-KeyNode
+                            |-StringNode Value='body'
+                          |-VariableReferenceNode
+                            |-NameIdentifier Name='body'
+                        |-KeyValuePairNode
+                          |-KeyNode
+                            |-StringNode Value='headers'
                           |-ObjectNode
                             |-KeyValuePairNode
                               |-KeyNode
-                                |-StringNode Value='body'
-                              |-VariableReferenceNode
-                                |-NameIdentifier Name='body'
-                            |-KeyValuePairNode
-                              |-KeyNode
-                                |-StringNode Value='headers'
-                              |-ObjectNode
-                                |-KeyValuePairNode
-                                  |-KeyNode
-                                    |-StringNode Value='Content-Type'
-                                  |-StringNode Value='application/json'
-                      |-NameNode
-                        |-StringNode Value='response'
+                                |-StringNode Value='Content-Type'
+                              |-StringNode Value='application/json'
                   |-TypeReferenceNode
-                    |-NameIdentifier Name='dw::io::http::Types::HttpClientResponse'
+                    |-NameIdentifier Name='dw::io::http::Client::HttpClientResponse'
                     |-TypeReferenceNode
                       |-NameIdentifier Name='TransformResponse'
                     |-TypeReferenceNode
                       |-NameIdentifier Name='dw::io::http::Types::HttpHeaders'
               |-TypeReferenceNode
-                |-NameIdentifier Name='dw::io::http::Types::HttpClientResponse'
+                |-NameIdentifier Name='dw::io::http::Client::HttpClientResponse'
                 |-TypeReferenceNode
                   |-NameIdentifier Name='TransformResponse'
                 |-TypeReferenceNode
@@ -628,44 +624,40 @@
                         |-NameNode
                           |-StringNode Value='body'
                 |-BinaryOpNode Name='as'
-                  |-NullUnSafeNode
-                    |-BinaryOpNode Name='Value Selector'
+                  |-FunctionCallNode
+                    |-VariableReferenceNode
+                      |-NameIdentifier Name='request'
+                    |-FunctionCallParametersNode
+                      |-StringNode Value='POST'
                       |-FunctionCallNode
                         |-VariableReferenceNode
-                          |-NameIdentifier Name='request'
+                          |-NameIdentifier Name='++'
                         |-FunctionCallParametersNode
-                          |-StringNode Value='POST'
-                          |-FunctionCallNode
-                            |-VariableReferenceNode
-                              |-NameIdentifier Name='++'
-                            |-FunctionCallParametersNode
-                              |-VariableReferenceNode
-                                |-NameIdentifier Name='host'
-                              |-StringNode Value='/type'
+                          |-VariableReferenceNode
+                            |-NameIdentifier Name='host'
+                          |-StringNode Value='/type'
+                      |-ObjectNode
+                        |-KeyValuePairNode
+                          |-KeyNode
+                            |-StringNode Value='body'
+                          |-VariableReferenceNode
+                            |-NameIdentifier Name='body'
+                        |-KeyValuePairNode
+                          |-KeyNode
+                            |-StringNode Value='headers'
                           |-ObjectNode
                             |-KeyValuePairNode
                               |-KeyNode
-                                |-StringNode Value='body'
-                              |-VariableReferenceNode
-                                |-NameIdentifier Name='body'
-                            |-KeyValuePairNode
-                              |-KeyNode
-                                |-StringNode Value='headers'
-                              |-ObjectNode
-                                |-KeyValuePairNode
-                                  |-KeyNode
-                                    |-StringNode Value='Content-Type'
-                                  |-StringNode Value='application/json'
-                      |-NameNode
-                        |-StringNode Value='response'
+                                |-StringNode Value='Content-Type'
+                              |-StringNode Value='application/json'
                   |-TypeReferenceNode
-                    |-NameIdentifier Name='dw::io::http::Types::HttpClientResponse'
+                    |-NameIdentifier Name='dw::io::http::Client::HttpClientResponse'
                     |-TypeReferenceNode
                       |-NameIdentifier Name='Any'
                     |-TypeReferenceNode
                       |-NameIdentifier Name='dw::io::http::Types::HttpHeaders'
               |-TypeReferenceNode
-                |-NameIdentifier Name='dw::io::http::Types::HttpClientResponse'
+                |-NameIdentifier Name='dw::io::http::Client::HttpClientResponse'
                 |-TypeReferenceNode
                   |-NameIdentifier Name='Any'
                 |-TypeReferenceNode
@@ -682,31 +674,27 @@
               |-DoBlockNode
                 |-HeaderNode
                 |-BinaryOpNode Name='as'
-                  |-NullUnSafeNode
-                    |-BinaryOpNode Name='Value Selector'
+                  |-FunctionCallNode
+                    |-VariableReferenceNode
+                      |-NameIdentifier Name='request'
+                    |-FunctionCallParametersNode
+                      |-StringNode Value='GET'
                       |-FunctionCallNode
                         |-VariableReferenceNode
-                          |-NameIdentifier Name='request'
+                          |-NameIdentifier Name='++'
                         |-FunctionCallParametersNode
-                          |-StringNode Value='GET'
-                          |-FunctionCallNode
-                            |-VariableReferenceNode
-                              |-NameIdentifier Name='++'
-                            |-FunctionCallParametersNode
-                              |-VariableReferenceNode
-                                |-NameIdentifier Name='host'
-                              |-StringNode Value='/dataformats'
-                          |-ObjectNode
-                      |-NameNode
-                        |-StringNode Value='response'
+                          |-VariableReferenceNode
+                            |-NameIdentifier Name='host'
+                          |-StringNode Value='/dataformats'
+                      |-ObjectNode
                   |-TypeReferenceNode
-                    |-NameIdentifier Name='dw::io::http::Types::HttpClientResponse'
+                    |-NameIdentifier Name='dw::io::http::Client::HttpClientResponse'
                     |-TypeReferenceNode
                       |-NameIdentifier Name='DataFormatResponse'
                     |-TypeReferenceNode
                       |-NameIdentifier Name='dw::io::http::Types::HttpHeaders'
               |-TypeReferenceNode
-                |-NameIdentifier Name='dw::io::http::Types::HttpClientResponse'
+                |-NameIdentifier Name='dw::io::http::Client::HttpClientResponse'
                 |-TypeReferenceNode
                   |-NameIdentifier Name='DataFormatResponse'
                 |-TypeReferenceNode
@@ -739,44 +727,40 @@
                         |-NameNode
                           |-StringNode Value='body'
                 |-BinaryOpNode Name='as'
-                  |-NullUnSafeNode
-                    |-BinaryOpNode Name='Value Selector'
+                  |-FunctionCallNode
+                    |-VariableReferenceNode
+                      |-NameIdentifier Name='request'
+                    |-FunctionCallParametersNode
+                      |-StringNode Value='POST'
                       |-FunctionCallNode
                         |-VariableReferenceNode
-                          |-NameIdentifier Name='request'
+                          |-NameIdentifier Name='++'
                         |-FunctionCallParametersNode
-                          |-StringNode Value='POST'
-                          |-FunctionCallNode
-                            |-VariableReferenceNode
-                              |-NameIdentifier Name='++'
-                            |-FunctionCallParametersNode
-                              |-VariableReferenceNode
-                                |-NameIdentifier Name='host'
-                              |-StringNode Value='/migrate'
+                          |-VariableReferenceNode
+                            |-NameIdentifier Name='host'
+                          |-StringNode Value='/migrate'
+                      |-ObjectNode
+                        |-KeyValuePairNode
+                          |-KeyNode
+                            |-StringNode Value='body'
+                          |-VariableReferenceNode
+                            |-NameIdentifier Name='body'
+                        |-KeyValuePairNode
+                          |-KeyNode
+                            |-StringNode Value='headers'
                           |-ObjectNode
                             |-KeyValuePairNode
                               |-KeyNode
-                                |-StringNode Value='body'
-                              |-VariableReferenceNode
-                                |-NameIdentifier Name='body'
-                            |-KeyValuePairNode
-                              |-KeyNode
-                                |-StringNode Value='headers'
-                              |-ObjectNode
-                                |-KeyValuePairNode
-                                  |-KeyNode
-                                    |-StringNode Value='Content-Type'
-                                  |-StringNode Value='application/json'
-                      |-NameNode
-                        |-StringNode Value='response'
+                                |-StringNode Value='Content-Type'
+                              |-StringNode Value='application/json'
                   |-TypeReferenceNode
-                    |-NameIdentifier Name='dw::io::http::Types::HttpClientResponse'
+                    |-NameIdentifier Name='dw::io::http::Client::HttpClientResponse'
                     |-TypeReferenceNode
                       |-NameIdentifier Name='MigrateResponse'
                     |-TypeReferenceNode
                       |-NameIdentifier Name='dw::io::http::Types::HttpHeaders'
               |-TypeReferenceNode
-                |-NameIdentifier Name='dw::io::http::Types::HttpClientResponse'
+                |-NameIdentifier Name='dw::io::http::Client::HttpClientResponse'
                 |-TypeReferenceNode
                   |-NameIdentifier Name='MigrateResponse'
                 |-TypeReferenceNode
@@ -813,37 +797,33 @@
                         |-NameNode
                           |-StringNode Value='uriParams'
                 |-BinaryOpNode Name='as'
-                  |-NullUnSafeNode
-                    |-BinaryOpNode Name='Value Selector'
+                  |-FunctionCallNode
+                    |-VariableReferenceNode
+                      |-NameIdentifier Name='request'
+                    |-FunctionCallParametersNode
+                      |-StringNode Value='GET'
                       |-FunctionCallNode
                         |-VariableReferenceNode
-                          |-NameIdentifier Name='request'
+                          |-NameIdentifier Name='resolveTemplateWith'
                         |-FunctionCallParametersNode
-                          |-StringNode Value='GET'
                           |-FunctionCallNode
                             |-VariableReferenceNode
-                              |-NameIdentifier Name='resolveTemplateWith'
+                              |-NameIdentifier Name='++'
                             |-FunctionCallParametersNode
-                              |-FunctionCallNode
-                                |-VariableReferenceNode
-                                  |-NameIdentifier Name='++'
-                                |-FunctionCallParametersNode
-                                  |-VariableReferenceNode
-                                    |-NameIdentifier Name='host'
-                                  |-StringNode Value='/{resource}'
                               |-VariableReferenceNode
-                                |-NameIdentifier Name='uriParams'
-                          |-ObjectNode
-                      |-NameNode
-                        |-StringNode Value='response'
+                                |-NameIdentifier Name='host'
+                              |-StringNode Value='/{resource}'
+                          |-VariableReferenceNode
+                            |-NameIdentifier Name='uriParams'
+                      |-ObjectNode
                   |-TypeReferenceNode
-                    |-NameIdentifier Name='dw::io::http::Types::HttpClientResponse'
+                    |-NameIdentifier Name='dw::io::http::Client::HttpClientResponse'
                     |-TypeReferenceNode
                       |-NameIdentifier Name='dw::io::http::Types::HttpBody'
                     |-TypeReferenceNode
                       |-NameIdentifier Name='dw::io::http::Types::HttpHeaders'
               |-TypeReferenceNode
-                |-NameIdentifier Name='dw::io::http::Types::HttpClientResponse'
+                |-NameIdentifier Name='dw::io::http::Client::HttpClientResponse'
                 |-TypeReferenceNode
                   |-NameIdentifier Name='dw::io::http::Types::HttpBody'
                 |-TypeReferenceNode
@@ -860,31 +840,27 @@
               |-DoBlockNode
                 |-HeaderNode
                 |-BinaryOpNode Name='as'
-                  |-NullUnSafeNode
-                    |-BinaryOpNode Name='Value Selector'
+                  |-FunctionCallNode
+                    |-VariableReferenceNode
+                      |-NameIdentifier Name='request'
+                    |-FunctionCallParametersNode
+                      |-StringNode Value='GET'
                       |-FunctionCallNode
                         |-VariableReferenceNode
-                          |-NameIdentifier Name='request'
+                          |-NameIdentifier Name='++'
                         |-FunctionCallParametersNode
-                          |-StringNode Value='GET'
-                          |-FunctionCallNode
-                            |-VariableReferenceNode
-                              |-NameIdentifier Name='++'
-                            |-FunctionCallParametersNode
-                              |-VariableReferenceNode
-                                |-NameIdentifier Name='host'
-                              |-StringNode Value='/ping'
-                          |-ObjectNode
-                      |-NameNode
-                        |-StringNode Value='response'
+                          |-VariableReferenceNode
+                            |-NameIdentifier Name='host'
+                          |-StringNode Value='/ping'
+                      |-ObjectNode
                   |-TypeReferenceNode
-                    |-NameIdentifier Name='dw::io::http::Types::HttpClientResponse'
+                    |-NameIdentifier Name='dw::io::http::Client::HttpClientResponse'
                     |-TypeReferenceNode
                       |-NameIdentifier Name='Status'
                     |-TypeReferenceNode
                       |-NameIdentifier Name='dw::io::http::Types::HttpHeaders'
               |-TypeReferenceNode
-                |-NameIdentifier Name='dw::io::http::Types::HttpClientResponse'
+                |-NameIdentifier Name='dw::io::http::Client::HttpClientResponse'
                 |-TypeReferenceNode
                   |-NameIdentifier Name='Status'
                 |-TypeReferenceNode
@@ -1028,7 +1004,7 @@
             |-TypeReferenceNode
               |-NameIdentifier Name='dw::io::http::Server::APIDefinition'
     |-TypeReferenceNode
-      |-NameIdentifier Name='dw::io::http::Types::HttpServer'
+      |-NameIdentifier Name='dw::io::http::Server::HttpServer'
 |-ImportDirective
   |-ImportedElement
     |-NameIdentifier Name='dw::Core'

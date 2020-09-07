@@ -23,7 +23,7 @@
           |-KeyTypeNode
             |-NameTypeNode
           |-TypeReferenceNode
-            |-NameIdentifier Name='dw::io::http::Types::HttpHandler'
+            |-NameIdentifier Name='dw::io::http::Server::HttpHandler'
             |-TypeReferenceNode
               |-NameIdentifier Name='dw::io::http::Types::HttpBody'
             |-TypeReferenceNode
@@ -31,7 +31,7 @@
             |-TypeReferenceNode
               |-NameIdentifier Name='dw::io::http::Types::QueryParams'
             |-TypeReferenceNode
-              |-NameIdentifier Name='dw::io::http::Types::HttpServerResponse'
+              |-NameIdentifier Name='dw::io::http::Server::HttpServerResponse'
               |-TypeReferenceNode
                 |-NameIdentifier Name='Any'
               |-TypeReferenceNode
@@ -44,7 +44,7 @@
           |-KeyTypeNode
             |-NameTypeNode
           |-TypeReferenceNode
-            |-NameIdentifier Name='dw::io::http::Types::HttpHandler'
+            |-NameIdentifier Name='dw::io::http::Server::HttpHandler'
             |-ObjectTypeNode
               |-KeyValueTypeNode
                 |-KeyTypeNode
@@ -56,7 +56,7 @@
             |-TypeReferenceNode
               |-NameIdentifier Name='dw::io::http::Types::QueryParams'
             |-TypeReferenceNode
-              |-NameIdentifier Name='dw::io::http::Types::HttpServerResponse'
+              |-NameIdentifier Name='dw::io::http::Server::HttpServerResponse'
               |-TypeReferenceNode
                 |-NameIdentifier Name='dw::io::http::Types::HttpBody'
               |-TypeReferenceNode
@@ -120,46 +120,42 @@
                         |-NameNode
                           |-StringNode Value='uriParams'
                 |-BinaryOpNode Name='as'
-                  |-NullUnSafeNode
-                    |-BinaryOpNode Name='Value Selector'
+                  |-FunctionCallNode
+                    |-VariableReferenceNode
+                      |-NameIdentifier Name='request'
+                    |-FunctionCallParametersNode
+                      |-StringNode Value='GET'
                       |-FunctionCallNode
                         |-VariableReferenceNode
-                          |-NameIdentifier Name='request'
+                          |-NameIdentifier Name='resolveTemplateWith'
                         |-FunctionCallParametersNode
-                          |-StringNode Value='GET'
                           |-FunctionCallNode
                             |-VariableReferenceNode
-                              |-NameIdentifier Name='resolveTemplateWith'
+                              |-NameIdentifier Name='++'
                             |-FunctionCallParametersNode
-                              |-FunctionCallNode
-                                |-VariableReferenceNode
-                                  |-NameIdentifier Name='++'
-                                |-FunctionCallParametersNode
-                                  |-VariableReferenceNode
-                                    |-NameIdentifier Name='host'
-                                  |-StringNode Value='/users/{id}'
                               |-VariableReferenceNode
-                                |-NameIdentifier Name='uriParams'
-                          |-ObjectNode
-                            |-KeyValuePairNode
-                              |-KeyNode
-                                |-StringNode Value='headers'
-                              |-FunctionCallNode
-                                |-VariableReferenceNode
-                                  |-NameIdentifier Name='resolveAuthorizationHeader'
-                                |-FunctionCallParametersNode
-                                  |-VariableReferenceNode
-                                    |-NameIdentifier Name='authVar'
-                      |-NameNode
-                        |-StringNode Value='response'
+                                |-NameIdentifier Name='host'
+                              |-StringNode Value='/users/{id}'
+                          |-VariableReferenceNode
+                            |-NameIdentifier Name='uriParams'
+                      |-ObjectNode
+                        |-KeyValuePairNode
+                          |-KeyNode
+                            |-StringNode Value='headers'
+                          |-FunctionCallNode
+                            |-VariableReferenceNode
+                              |-NameIdentifier Name='createAuthorizationHeader'
+                            |-FunctionCallParametersNode
+                              |-VariableReferenceNode
+                                |-NameIdentifier Name='authVar'
                   |-TypeReferenceNode
-                    |-NameIdentifier Name='dw::io::http::Types::HttpClientResponse'
+                    |-NameIdentifier Name='dw::io::http::Client::HttpClientResponse'
                     |-TypeReferenceNode
                       |-NameIdentifier Name='Any'
                     |-TypeReferenceNode
                       |-NameIdentifier Name='dw::io::http::Types::HttpHeaders'
               |-TypeReferenceNode
-                |-NameIdentifier Name='dw::io::http::Types::HttpClientResponse'
+                |-NameIdentifier Name='dw::io::http::Client::HttpClientResponse'
                 |-TypeReferenceNode
                   |-NameIdentifier Name='Any'
                 |-TypeReferenceNode
@@ -209,54 +205,50 @@
                         |-NameNode
                           |-StringNode Value='auth'
                 |-BinaryOpNode Name='as'
-                  |-NullUnSafeNode
-                    |-BinaryOpNode Name='Value Selector'
+                  |-FunctionCallNode
+                    |-VariableReferenceNode
+                      |-NameIdentifier Name='request'
+                    |-FunctionCallParametersNode
+                      |-StringNode Value='POST'
                       |-FunctionCallNode
                         |-VariableReferenceNode
-                          |-NameIdentifier Name='request'
+                          |-NameIdentifier Name='++'
                         |-FunctionCallParametersNode
-                          |-StringNode Value='POST'
+                          |-VariableReferenceNode
+                            |-NameIdentifier Name='host'
+                          |-StringNode Value='/files'
+                      |-ObjectNode
+                        |-KeyValuePairNode
+                          |-KeyNode
+                            |-StringNode Value='body'
+                          |-VariableReferenceNode
+                            |-NameIdentifier Name='body'
+                        |-KeyValuePairNode
+                          |-KeyNode
+                            |-StringNode Value='headers'
                           |-FunctionCallNode
                             |-VariableReferenceNode
                               |-NameIdentifier Name='++'
                             |-FunctionCallParametersNode
-                              |-VariableReferenceNode
-                                |-NameIdentifier Name='host'
-                              |-StringNode Value='/files'
-                          |-ObjectNode
-                            |-KeyValuePairNode
-                              |-KeyNode
-                                |-StringNode Value='body'
-                              |-VariableReferenceNode
-                                |-NameIdentifier Name='body'
-                            |-KeyValuePairNode
-                              |-KeyNode
-                                |-StringNode Value='headers'
+                              |-ObjectNode
+                                |-KeyValuePairNode
+                                  |-KeyNode
+                                    |-StringNode Value='Content-Type'
+                                  |-StringNode Value='multipart/form-data'
                               |-FunctionCallNode
                                 |-VariableReferenceNode
-                                  |-NameIdentifier Name='++'
+                                  |-NameIdentifier Name='createAuthorizationHeader'
                                 |-FunctionCallParametersNode
-                                  |-ObjectNode
-                                    |-KeyValuePairNode
-                                      |-KeyNode
-                                        |-StringNode Value='Content-Type'
-                                      |-StringNode Value='multipart/form-data'
-                                  |-FunctionCallNode
-                                    |-VariableReferenceNode
-                                      |-NameIdentifier Name='resolveAuthorizationHeader'
-                                    |-FunctionCallParametersNode
-                                      |-VariableReferenceNode
-                                        |-NameIdentifier Name='authVar'
-                      |-NameNode
-                        |-StringNode Value='response'
+                                  |-VariableReferenceNode
+                                    |-NameIdentifier Name='authVar'
                   |-TypeReferenceNode
-                    |-NameIdentifier Name='dw::io::http::Types::HttpClientResponse'
+                    |-NameIdentifier Name='dw::io::http::Client::HttpClientResponse'
                     |-TypeReferenceNode
                       |-NameIdentifier Name='dw::io::http::Types::HttpBody'
                     |-TypeReferenceNode
                       |-NameIdentifier Name='dw::io::http::Types::HttpHeaders'
               |-TypeReferenceNode
-                |-NameIdentifier Name='dw::io::http::Types::HttpClientResponse'
+                |-NameIdentifier Name='dw::io::http::Client::HttpClientResponse'
                 |-TypeReferenceNode
                   |-NameIdentifier Name='dw::io::http::Types::HttpBody'
                 |-TypeReferenceNode
@@ -320,7 +312,7 @@
             |-TypeReferenceNode
               |-NameIdentifier Name='dw::io::http::Server::APIDefinition'
     |-TypeReferenceNode
-      |-NameIdentifier Name='dw::io::http::Types::HttpServer'
+      |-NameIdentifier Name='dw::io::http::Server::HttpServer'
 |-ImportDirective
   |-ImportedElement
     |-NameIdentifier Name='dw::Core'

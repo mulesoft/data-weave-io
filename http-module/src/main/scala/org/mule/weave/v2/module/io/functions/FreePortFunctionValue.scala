@@ -9,6 +9,7 @@ import org.mule.weave.v2.model.values.Value
 import org.mule.weave.v2.util.TryClose
 
 class FreePortFunctionValue extends EmptyFunctionValue {
+
   override def doExecute()(implicit ctx: EvaluationContext): Value[_] = {
     val port = TryClose(new ServerSocket(0), (ss: ServerSocket) => {
       ss.getLocalPort

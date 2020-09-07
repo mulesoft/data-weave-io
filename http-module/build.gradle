@@ -4,14 +4,8 @@ plugins {
 
 dependencies {
     compile project(":file-module")
-    compile group: 'io.netty', name: 'netty-codec-http', version: '4.1.50.Final'
-
     compileOnly group: 'org.mule.weave', name: 'runtime', version: weaveVersion
-
-    testCompile group: 'org.mule.weave', name: 'runtime-test-helpers', version: weaveVersion     
-    testCompile group: 'org.scalatest', name: 'scalatest_2.12', version: '3.0.1'
-    testRuntime 'org.pegdown:pegdown:1.6.0'
-
+    compileOnly group: 'org.mule.weave', name: 'core-modules', version: weaveVersion
 }
 
 

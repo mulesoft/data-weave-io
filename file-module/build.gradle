@@ -3,7 +3,7 @@ plugins {
 }
 
 dependencies {
-
+    compile group: 'org.scala-lang', name: 'scala-library', version: scalaVersion
     compileOnly group: 'org.mule.weave', name: 'runtime', version: weaveVersion
 
     testCompile group: 'org.mule.weave', name: 'runtime-test-helpers', version: weaveVersion     

@@ -23,7 +23,7 @@
           |-KeyTypeNode
             |-NameTypeNode
           |-TypeReferenceNode
-            |-NameIdentifier Name='dw::io::http::Types::HttpHandler'
+            |-NameIdentifier Name='dw::io::http::Server::HttpHandler'
             |-TypeReferenceNode
               |-NameIdentifier Name='dw::io::http::Types::HttpBody'
             |-TypeReferenceNode
@@ -31,7 +31,7 @@
             |-TypeReferenceNode
               |-NameIdentifier Name='dw::io::http::Types::QueryParams'
             |-TypeReferenceNode
-              |-NameIdentifier Name='dw::io::http::Types::HttpServerResponse'
+              |-NameIdentifier Name='dw::io::http::Server::HttpServerResponse'
               |-TypeReferenceNode
                 |-NameIdentifier Name='dw::io::http::Types::HttpBody'
               |-TypeReferenceNode
@@ -82,37 +82,33 @@
                         |-NameNode
                           |-StringNode Value='uriParams'
                 |-BinaryOpNode Name='as'
-                  |-NullUnSafeNode
-                    |-BinaryOpNode Name='Value Selector'
+                  |-FunctionCallNode
+                    |-VariableReferenceNode
+                      |-NameIdentifier Name='request'
+                    |-FunctionCallParametersNode
+                      |-StringNode Value='GET'
                       |-FunctionCallNode
                         |-VariableReferenceNode
-                          |-NameIdentifier Name='request'
+                          |-NameIdentifier Name='resolveTemplateWith'
                         |-FunctionCallParametersNode
-                          |-StringNode Value='GET'
                           |-FunctionCallNode
                             |-VariableReferenceNode
-                              |-NameIdentifier Name='resolveTemplateWith'
+                              |-NameIdentifier Name='++'
                             |-FunctionCallParametersNode
-                              |-FunctionCallNode
-                                |-VariableReferenceNode
-                                  |-NameIdentifier Name='++'
-                                |-FunctionCallParametersNode
-                                  |-VariableReferenceNode
-                                    |-NameIdentifier Name='host'
-                                  |-StringNode Value='/{userId}'
                               |-VariableReferenceNode
-                                |-NameIdentifier Name='uriParams'
-                          |-ObjectNode
-                      |-NameNode
-                        |-StringNode Value='response'
+                                |-NameIdentifier Name='host'
+                              |-StringNode Value='/{userId}'
+                          |-VariableReferenceNode
+                            |-NameIdentifier Name='uriParams'
+                      |-ObjectNode
                   |-TypeReferenceNode
-                    |-NameIdentifier Name='dw::io::http::Types::HttpClientResponse'
+                    |-NameIdentifier Name='dw::io::http::Client::HttpClientResponse'
                     |-TypeReferenceNode
                       |-NameIdentifier Name='dw::io::http::Types::HttpBody'
                     |-TypeReferenceNode
                       |-NameIdentifier Name='dw::io::http::Types::HttpHeaders'
               |-TypeReferenceNode
-                |-NameIdentifier Name='dw::io::http::Types::HttpClientResponse'
+                |-NameIdentifier Name='dw::io::http::Client::HttpClientResponse'
                 |-TypeReferenceNode
                   |-NameIdentifier Name='dw::io::http::Types::HttpBody'
                 |-TypeReferenceNode
@@ -156,7 +152,7 @@
             |-TypeReferenceNode
               |-NameIdentifier Name='dw::io::http::Server::APIDefinition'
     |-TypeReferenceNode
-      |-NameIdentifier Name='dw::io::http::Types::HttpServer'
+      |-NameIdentifier Name='dw::io::http::Server::HttpServer'
 |-ImportDirective
   |-ImportedElement
     |-NameIdentifier Name='dw::Core'

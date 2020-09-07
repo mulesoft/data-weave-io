@@ -1,13 +1,11 @@
 %dw 2.0
 import * from dw::io::http::Client
 import form, field from dw::module::Multipart
-import HttpClientResult from dw::io::http::Types
 
-output application/java
-
-var mapResult = ['sha256', 'sha384', 'sha512', 'rsa2048', 'ecc256', 'ecc384'] map (
+var mapResult= ['sha256', 'sha384', 'sha512', 'rsa2048', 'ecc256', 'ecc384'] map (
                   request('GET', 'https://$.badssl.com/')
                 )
+
 
 var result = [
   // TEST weird https behavior

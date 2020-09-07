@@ -11,6 +11,43 @@ import dw::io::file::FileSystem
 import * from dw::Runtime
 
 
+type HttpServerResponse<BodyType <: HttpBody, HeaderType <: HttpHeaders> = {
+  headers?: HeaderType,
+  body?: BodyType,
+  status?: Number
+}
+
+
+type HttpServerRequest<BodyType, HeaderType <: HttpHeaders, QueryParamsType <: QueryParams> = {
+  headers: HttpHeaders,
+  method: String,
+  path: String,
+  queryParams: QueryParamsType,
+  body: BodyType
+}
+
+type HttpHandler<
+                    RequestType,
+                    RequestHeaderType <: HttpHeaders,
+                    QueryParamsType <: QueryParams,
+                    HttpServerResponseType <: HttpServerResponse<Any, HttpHeaders>
+                 > =
+                    (HttpServerRequest<RequestType, RequestHeaderType, QueryParamsType>) -> HttpServerResponseType
+
+type HttpServerOptions = {
+  port: Number,
+  host: String,
+  contentType?: String
+}
+
+type HttpServer = {|
+  running: Boolean,
+  port: Number,
+  host: String,
+  stop: () -> Boolean
+|}
+
+
 /**
 * Type for an API Definition
 */
@@ -128,14 +165,15 @@ fun api(config: ApiConfig = {port: 8081, host:"localhost"}, apiDefinition: APIDe
       interceptors match {
         case [] -> { request: req }
         case [head ~ tail] ->
-          if (head.onRequest?)
-            using(result = head.onRequest(req))
-              if (result.response?)
+          if (head.onRequest?) do {
+            var result = head.onRequest(req)
+            ---
+            if (result.response?)
                 result
-              else
+            else
                 handleRequestInterceptors(result.request!, tail)
-          else
-            handleRequestInterceptors(req, tail)
+          } else
+              handleRequestInterceptors(req, tail)
       }
 
     fun handleResponseInterceptors(req: HttpServerRequest, resp: HttpServerResponse, interceptors: Array<HttpInterceptor>): HttpServerResponse =
@@ -151,21 +189,21 @@ fun api(config: ApiConfig = {port: 8081, host:"localhost"}, apiDefinition: APIDe
     server(config, (request) -> do {
         var matchingHandler = apiDefinition[?(request.path matches ($$ as String))][0]
         var methodHandler = matchingHandler[(request.method)]
-        var interseptedRequest = handleRequestInterceptors(request, config.interceptors default [])
+        var interceptedRequest = handleRequestInterceptors(request, config.interceptors default [])
         ---
-        if (interseptedRequest.response?)
-          interseptedRequest.response!
+        if (interceptedRequest.response?)
+          interceptedRequest.response!
         else if (methodHandler == null)
           {
             body: "$(request.path) Not Found",
             status: 404
           }
         else do {
-          var response = methodHandler(interseptedRequest.request!)
+          var response = methodHandler(interceptedRequest.request!)
           var headers = normalizeHeaders(response.headers)
           ---
           handleResponseInterceptors(
-            interseptedRequest.request!,
+            interceptedRequest.request!,
             {
                 //If there is body and not Content-Type header is defined use the one form the config
               headers: if(response.body? and (not headers."Content-Type"?))
