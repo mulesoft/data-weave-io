@@ -12,3 +12,12 @@ dependencies {
 }
 
 test.dependsOn("weavetest")
+
+
+test {
+    reports {
+        junitXml.enabled = true
+        html.enabled = true
+    }
+}
+
