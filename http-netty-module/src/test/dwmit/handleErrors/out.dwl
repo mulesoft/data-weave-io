@@ -27,7 +27,7 @@
     success: false,
     error: {
       kind: "UrlConnectionException",
-      message: "Unable to connect to http://localhost:32191/url. Caused by Connection refused: localhost/0:0:0:0:0:0:0:1:32191.",
+      message: "Unable to connect to http://127.0.0.1:32191/url. Caused by Connection refused: /127.0.0.1:32191.",
       location: "\n90| fun request(method: HttpMethod, url: String | UrlBuilder, httpRequest: HttpRequest = {}): HttpClientResponse = native(\"http::HttpRequestFunction\")\n                                                                                                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
       stack: [
         "main (dw::io::http::Client:90:112)"

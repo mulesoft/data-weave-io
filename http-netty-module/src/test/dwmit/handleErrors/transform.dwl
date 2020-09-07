@@ -5,5 +5,5 @@ import try from dw::Runtime
 {
   a: try(() -> GET('absolute/url')),
   b: try(() -> GET('http://unknown-host/path')),
-  c: try(() -> GET( 'http://localhost:32191/url')),
+  c: try(() -> GET( 'http://127.0.0.1:32191/url')),
 }
