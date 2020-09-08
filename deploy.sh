@@ -8,4 +8,4 @@ then
     exit 1
 fi
 
-./gradlew -Pmaven.settings.location=$1 clean publish
+./gradlew -Pmaven.settings.location=$1 publish
