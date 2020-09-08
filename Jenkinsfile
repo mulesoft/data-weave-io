@@ -9,7 +9,7 @@ Map pipelineParams = [
     "projectType"                           : "Shell",
     "devBranchesRegex"                      : "master",
     "enableScheduleTrigger"                 : true,
-    "scheduleTriggerCommand"                : "@hourly",
+    "scheduleTriggerCommand"                : "@daily",
     "junitTestResults"                      : '**/build/test-results/test/*.xml, **/build/test-results/*.xml'
 ]
 
