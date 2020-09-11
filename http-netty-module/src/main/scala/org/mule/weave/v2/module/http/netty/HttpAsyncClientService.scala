@@ -50,6 +50,10 @@ class HttpAsyncClientService extends HttpClientService {
       new HttpAsyncResponse(response)
     }).toCompletableFuture
   }
+
+  def stop(): Unit = {
+    client.close()
+  }
 }
 
 class HttpAsyncResponse(response: Response) extends HttpClientResponse {
