@@ -353,6 +353,16 @@ fun extensionOf(path: Path): String | Null = do {
 fun tmp(): Path = native("file::TmpPathFunction")
 
 /**
+ * Returns the Path value of the home directory.
+ **/
+fun home(): Path = native("file::HomePathFunction")
+
+/**
+ * Returns the Path value of the working directory.
+ **/
+fun wd(): Path = native("file::WorkingDirectoryPathFunction")
+
+/**
 * Creates a valid path from this two parts
 */
 fun path(basePath: Path, part: String): Path = native("file::PathFunction")

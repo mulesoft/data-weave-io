@@ -30,7 +30,9 @@ class NativeFileModule extends NativeValueProvider {
       new PathFunction(),
       new ToUrlFunction(),
       new MakeDirFunction(),
-      new WriteFunction()))
+      new WriteFunction(),
+      new WorkingDirectoryPathFunction(),
+      new HomePathFunction()))
 
   override def name() = "file"
 
@@ -131,3 +133,14 @@ class TmpPathFunction extends EmptyFunctionValue {
   }
 }
 
+class HomePathFunction extends EmptyFunctionValue {
+  override protected def doExecute()(implicit ctx: EvaluationContext): Value[_] = {
+    StringValue(System.getProperty("user.home"))
+  }
+}
+
+class WorkingDirectoryPathFunction extends EmptyFunctionValue {
+  override protected def doExecute()(implicit ctx: EvaluationContext): Value[_] = {
+    StringValue(System.getProperty("user.dir"))
+  }
+}
