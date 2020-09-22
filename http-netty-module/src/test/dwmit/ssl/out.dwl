@@ -16,8 +16,8 @@
     statusText: "Not Found"
   }, 
   {
-    status: 400,
-    statusText: "Bad Request"
+    status: 401,
+    statusText: "Unauthorized"
   }, 
   {
     status: 200,
