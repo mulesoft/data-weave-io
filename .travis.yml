@@ -4,7 +4,7 @@ before_install:
 - git clone -b travis `git config --get remote.origin.url` build/travis
 - cp build/travis/settings.xml ~/.m2/settings.xml
 script:
-- "./gradlew build"
+- "./gradlew clean build"
 deploy:
 - provider: script
   skip_cleanup: true

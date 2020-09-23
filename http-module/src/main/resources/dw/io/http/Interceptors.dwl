@@ -8,7 +8,7 @@ fun isOptions(request: HttpServerRequest) =
   request.method == "OPTIONS"
 
 //TODO improve with cors config for now use it hardcoded
-fun CORS() =
+fun CORS(allowOrigin: String = "*", allowMethods: String = "POST, GET, OPTIONS", allowHTTPHeaders: String = "*", maxAge: Number = 86400, exposeHeaders: String = "") =
   {
     onRequest: (
       (req) ->
@@ -16,10 +16,11 @@ fun CORS() =
           {
             response: {
               headers: {
-                "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Methods": "POST, GET, OPTIONS, DELETE, PUT",
-                "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept, Accept-Encoding, Accept-Language, Host, Referer, User-Agent",
-                "Access-Control-Max-Age": 60 * 60 * 24 * 20 // cache pre-flight response for 20 days
+                "Access-Control-Allow-Origin": allowOrigin,
+                "Access-Control-Allow-Methods": allowMethods,
+                "Access-Control-Allow-Headers": allowHTTPHeaders,
+                "Access-Control-Max-Age": maxAge,
+                "Access-Control-Expose-Headers": exposeHeaders
               }
             }
           }
@@ -29,7 +30,7 @@ fun CORS() =
     onResponse: (
       (req, resp) ->
         if (req.headers.Origin?)
-          resp mergeWith { headers: resp.headers mergeWith {"Access-Control-Allow-Origin": "*"} }
+          resp mergeWith { headers: resp.headers mergeWith {"Access-Control-Allow-Origin": allowOrigin} }
         else
           resp
       )
