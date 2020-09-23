@@ -2,9 +2,10 @@
   "a": [
     "test1.txt",
     "test2.json",
-    "test3.unknown"
+    "test3.unknown",
+    "zips"
   ],
   "b": [
     "test1.txt"
   ]
-} 
+}

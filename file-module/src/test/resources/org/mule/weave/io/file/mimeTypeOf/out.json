@@ -2,6 +2,7 @@
   "a": [
     "text/plain",
     "application/json",
+    null,
     null
   ]
 }

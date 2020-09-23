@@ -234,6 +234,16 @@ fun writeTo(path: Path, binary: Binary): Number = native("file::WriteFunction")
 fun mkdir(path: Path): Path = native("file::MakeDirFunction")
 
 /**
+* Zips all the specified files into the `zipPath`
+**/
+fun zip(paths: Array<Path>, zipPath:Path): Path = native("file::ZipFunction")
+
+/**
+* Unzip the given `zipPath` into the specified directory.
+**/
+fun unzip(zipPath: Path, zipDirectory:Path): Path = native("file::UnzipFunction")
+
+/**
 * Tries to guess the mimeType of the given Path
 *
 * === Parameters
@@ -366,6 +376,8 @@ fun wd(): Path = native("file::WorkingDirectoryPathFunction")
 * Creates a valid path from this two parts
 */
 fun path(basePath: Path, part: String): Path = native("file::PathFunction")
+
+
 
 
 /**
