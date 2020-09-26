@@ -233,6 +233,9 @@ fun writeTo(path: Path, binary: Binary): Number = native("file::WriteFunction")
 
 fun mkdir(path: Path): Path = native("file::MakeDirFunction")
 
+fun tree(path:Path): Array<Path> =
+  ls(path) flatMap ((child, index) -> child >> tree(child) )
+
 /**
 * Zips all the specified files into the `zipPath`
 **/
@@ -241,7 +244,7 @@ fun zip(paths: Array<Path>, zipPath:Path): Path = native("file::ZipFunction")
 /**
 * Unzip the given `zipPath` into the specified directory.
 **/
-fun unzip(zipPath: Path, zipDirectory:Path): Path = native("file::UnzipFunction")
+fun unzip(zipPath: Path, targetDirectory:Path): Path = native("file::UnzipFunction")
 
 /**
 * Tries to guess the mimeType of the given Path

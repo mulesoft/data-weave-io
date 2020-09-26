@@ -43,8 +43,7 @@ class NativeFileModule extends NativeValueProvider {
       new WorkingDirectoryPathFunction(),
       new HomePathFunction(),
       new ZipFunction(),
-      new UnzipFunction(),
-    ))
+      new UnzipFunction()))
 
   override def name() = "file"
 
@@ -157,7 +156,6 @@ class WorkingDirectoryPathFunction extends EmptyFunctionValue {
   }
 }
 
-
 class ZipFunction extends BinaryFunctionValue {
   override val L = ArrayType
   override val R = StringType
@@ -199,8 +197,7 @@ class ZipFunction extends BinaryFunctionValue {
       if (fileName.endsWith("/")) {
         zipOut.putNextEntry(new ZipEntry(fileName))
         zipOut.closeEntry()
-      }
-      else {
+      } else {
         zipOut.putNextEntry(new ZipEntry(fileName + "/"))
         zipOut.closeEntry()
       }
@@ -223,7 +220,6 @@ class ZipFunction extends BinaryFunctionValue {
   }
 }
 
-
 class UnzipFunction extends BinaryFunctionValue {
   override val L = StringType
   override val R = StringType
@@ -232,7 +228,7 @@ class UnzipFunction extends BinaryFunctionValue {
     val fileZip = leftValue.evaluate
     val destDirPath = rightValue.evaluate
     unzip(fileZip, destDirPath)
-    leftValue
+    rightValue
   }
 
   private def unzip(zipFilePath: String, destDir: String): Unit = {

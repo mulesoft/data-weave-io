@@ -30,7 +30,7 @@ import amf.client.validate.ValidationReport
 import amf.core.model.DataType
 import amf.plugins.document.webapi.validation.PayloadValidatorPlugin
 import dw.amf.DummyAMFValidatorPlugin
-import dw.amf.DummyPayloadValidator
+
 import org.mule.weave.v2.grammar.AsOpId
 import org.mule.weave.v2.grammar.ValueSelectorOpId
 import org.mule.weave.v2.module.raml.RamlModuleLoader.APIDefinitionTypeName
