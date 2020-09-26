@@ -165,6 +165,8 @@ type FileKind = "File" | "Folder"
 **/
 fun ls(folder: Path): Array<Path> = native("file::LSFunction")
 
+fun rm(path:Path):Boolean = native("file::RemoveFunction")
+
 /**
 * Return the list of child elements of the specified path. That matches the specified regex pattern
 *

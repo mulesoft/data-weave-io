@@ -21,6 +21,7 @@ import org.mule.weave.v2.model.types.ArrayType
 import org.mule.weave.v2.model.types.BinaryType
 import org.mule.weave.v2.model.types.StringType
 import org.mule.weave.v2.model.values.ArrayValue
+import org.mule.weave.v2.model.values.BooleanValue
 import org.mule.weave.v2.model.values.FunctionValue
 import org.mule.weave.v2.model.values.NullValue
 import org.mule.weave.v2.model.values.NumberValue
@@ -30,20 +31,23 @@ import org.mule.weave.v2.module.native.NativeValueProvider
 
 class NativeFileModule extends NativeValueProvider {
 
-  val functions: Map[String, FunctionValue] = toMap(
-    Seq(
-      new LSFunction(),
-      new FileTypeOfFunction(),
-      new NameOfFunction(),
-      new TmpPathFunction(),
-      new PathFunction(),
-      new ToUrlFunction(),
-      new MakeDirFunction(),
-      new WriteFunction(),
-      new WorkingDirectoryPathFunction(),
-      new HomePathFunction(),
-      new ZipFunction(),
-      new UnzipFunction()))
+  val functions: Map[String, FunctionValue] = {
+    toMap(
+      Seq(
+        new LSFunction(),
+        new FileTypeOfFunction(),
+        new NameOfFunction(),
+        new TmpPathFunction(),
+        new PathFunction(),
+        new ToUrlFunction(),
+        new MakeDirFunction(),
+        new WriteFunction(),
+        new WorkingDirectoryPathFunction(),
+        new HomePathFunction(),
+        new ZipFunction(),
+        new UnzipFunction(),
+        new RemoveFunction()))
+  }
 
   override def name() = "file"
 
@@ -76,11 +80,11 @@ class FileTypeOfFunction extends UnaryFunctionValue {
     val file = new File(pathString)
     if (!file.exists()) {
       NullValue
-    } else if (file.isDirectory)
-      StringValue("Folder")
-    else
-      StringValue("File")
-
+    } else if (file.isDirectory) {
+      StringValue(FSKind.FOLDER_KIND)
+    } else {
+      StringValue(FSKind.FILE_KIND)
+    }
   }
 }
 
@@ -166,11 +170,11 @@ class ZipFunction extends BinaryFunctionValue {
       val zipFileToCreate = new File(zipPath)
       val parentFile = zipFileToCreate.getParentFile
       if (parentFile.exists() && parentFile.isFile) {
-        throw new InvalidFileKindPathException(parentFile.getAbsolutePath, "Folder", "File", location())
+        throw new InvalidFileKindPathException(parentFile.getAbsolutePath, FSKind.FOLDER_KIND, FSKind.FILE_KIND, location())
       } else {
         parentFile.mkdirs()
         if (zipFileToCreate.isDirectory) {
-          throw new InvalidFileKindPathException(zipPath, "File", "Folder", location())
+          throw new InvalidFileKindPathException(zipPath, FSKind.FILE_KIND, FSKind.FOLDER_KIND, location())
         }
         val fos = new FileOutputStream(zipPath)
         val zipOut = new ZipOutputStream(fos)
@@ -220,6 +224,26 @@ class ZipFunction extends BinaryFunctionValue {
   }
 }
 
+class RemoveFunction extends UnaryFunctionValue {
+  override val R = StringType
+
+  override protected def doExecute(v: R.V)(implicit ctx: EvaluationContext): Value[_] = {
+    val filePath = v.evaluate
+    BooleanValue(deleteDirectory(new File(filePath)))
+  }
+
+  def deleteDirectory(directoryToBeDeleted: File): Boolean = {
+    val allContents = directoryToBeDeleted.listFiles
+    if (allContents != null) {
+      for (file <- allContents) {
+        deleteDirectory(file)
+      }
+    }
+    directoryToBeDeleted.delete
+  }
+
+}
+
 class UnzipFunction extends BinaryFunctionValue {
   override val L = StringType
   override val R = StringType
@@ -234,7 +258,7 @@ class UnzipFunction extends BinaryFunctionValue {
   private def unzip(zipFilePath: String, destDir: String): Unit = {
     val dir = new File(destDir)
     if (dir.isFile) {
-      throw new InvalidFileKindPathException(dir.getAbsolutePath, "Folder", "File", location())
+      throw new InvalidFileKindPathException(dir.getAbsolutePath, FSKind.FOLDER_KIND, FSKind.FILE_KIND, location())
     } else if (!dir.exists) {
       // create output directory if it doesn't exist
       dir.mkdirs
@@ -272,4 +296,9 @@ class UnzipFunction extends BinaryFunctionValue {
       }
     }
   }
+}
+
+object FSKind {
+  val FOLDER_KIND = "Folder"
+  val FILE_KIND = "File"
 }
