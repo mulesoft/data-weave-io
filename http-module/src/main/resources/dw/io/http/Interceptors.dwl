@@ -8,7 +8,7 @@ fun isOptions(request: HttpServerRequest) =
   request.method == "OPTIONS"
 
 //TODO improve with cors config for now use it hardcoded
-fun CORS(allowOrigin: String = "*", allowMethods: String = "POST, GET, OPTIONS", allowHTTPHeaders: String = "*", maxAge: Number = 86400, exposeHeaders: String = "") =
+fun CORS(allowOrigin: Array<String> = ["*"], allowMethods: Array<String> = ["POST", "GET", "OPTIONS"], allowHTTPHeaders: Array<String> = ["*"], maxAge: Number = 86400, exposeHeaders: Array<String> = [""]) =
   {
     onRequest: (
       (req) ->
@@ -16,11 +16,11 @@ fun CORS(allowOrigin: String = "*", allowMethods: String = "POST, GET, OPTIONS",
           {
             response: {
               headers: {
-                "Access-Control-Allow-Origin": allowOrigin,
-                "Access-Control-Allow-Methods": allowMethods,
-                "Access-Control-Allow-Headers": allowHTTPHeaders,
+                "Access-Control-Allow-Origin": allowOrigin joinBy ", ",
+                "Access-Control-Allow-Methods": allowMethods joinBy ", ",
+                "Access-Control-Allow-Headers": allowHTTPHeaders joinBy ", ",
                 "Access-Control-Max-Age": maxAge,
-                "Access-Control-Expose-Headers": exposeHeaders
+                "Access-Control-Expose-Headers": exposeHeaders joinBy ", "
               }
             }
           }
@@ -30,7 +30,7 @@ fun CORS(allowOrigin: String = "*", allowMethods: String = "POST, GET, OPTIONS",
     onResponse: (
       (req, resp) ->
         if (req.headers.Origin?)
-          resp mergeWith { headers: resp.headers mergeWith {"Access-Control-Allow-Origin": allowOrigin} }
+          resp mergeWith { headers: resp.headers mergeWith {"Access-Control-Allow-Origin": allowOrigin joinBy ", "} }
         else
           resp
       )
