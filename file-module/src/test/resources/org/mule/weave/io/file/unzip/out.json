@@ -1,9 +1,9 @@
 {
   "fileToUnzip": true,
   "unzip": [
-    "zips",
-    "test",
     "readme.txt",
-    "readme.txt"
+    "readme.txt",
+    "test",
+    "zips"
   ]
 }

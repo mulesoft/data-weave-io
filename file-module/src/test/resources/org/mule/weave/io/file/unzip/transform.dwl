@@ -6,5 +6,7 @@ var folder2 = fileToUnzip unzipTo path(tmp(),"dw_io_test" ,"outputZip")
 ---
 {
   fileToUnzip: exists(fileToUnzip),
-  unzip : tree(log(folder2)) map ((item, index) -> nameOf(item)),
+  unzip : tree(log(folder2))
+              map ((item, index) -> nameOf(item))
+              orderBy $,
 }
