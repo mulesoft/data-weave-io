@@ -41,7 +41,7 @@ class NativeFileModule extends NativeValueProvider {
         new PathFunction(),
         new ToUrlFunction(),
         new MakeDirFunction(),
-        new WriteFunction(),
+        new CopyToFunction(),
         new WorkingDirectoryPathFunction(),
         new HomePathFunction(),
         new ZipFunction(),
@@ -119,13 +119,18 @@ class MakeDirFunction extends UnaryFunctionValue {
   }
 }
 
-class WriteFunction extends BinaryFunctionValue {
-  override val L = StringType
-  override val R = BinaryType
+class CopyToFunction extends BinaryFunctionValue {
+  override val L = BinaryType
+  override val R = StringType
 
-  override protected def doExecute(leftValue: Value[L.T], rightValue: Value[SeekableStream])(implicit ctx: EvaluationContext): Value[_] = {
-    val path: String = leftValue.evaluate
-    val amount = Files.copy(rightValue.evaluate.spinOff(), new File(path).toPath, StandardCopyOption.REPLACE_EXISTING)
+  override protected def doExecute(leftValue: Value[L.T], rightValue: Value[R.T])(implicit ctx: EvaluationContext): Value[_] = {
+    val path: String = rightValue.evaluate
+    val file = new File(path)
+    val parentFile = file.getParentFile
+    if (parentFile != null && !parentFile.exists()) {
+      parentFile.mkdirs()
+    }
+    val amount = Files.copy(leftValue.evaluate.spinOff(), file.toPath, StandardCopyOption.REPLACE_EXISTING)
     NumberValue(amount)
   }
 }

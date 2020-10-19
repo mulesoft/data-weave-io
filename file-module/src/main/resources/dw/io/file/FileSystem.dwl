@@ -163,9 +163,47 @@ type FileKind = "File" | "Folder"
 * ["/tmp/foo.txt","/tmp/dw-input-buffer-0.tmp","/tmp/dw-output-buffer-0.tmp"]
 * ----
 **/
+@RuntimePermissions(permissions = ["FileRead"])
 fun ls(folder: Path): Array<Path> = native("file::LSFunction")
 
-fun rm(path:Path):Boolean = native("file::RemoveFunction")
+/**
+* Removes the file at the given location. Returns true if the file or folder was removed.
+*
+* If the path is a file it will delete everything recursively.
+*
+* === Parameters
+*
+* [%header, cols="1,3"]
+* |===
+* | Name   | Description
+* | path | The path to delete
+* |===
+*
+* === Example
+*
+* This example shows how the `rm` behaves under different inputs.
+*
+* ==== Source
+*
+* [source,DataWeave,linenums]
+* ----
+* %dw 2.0
+* import rm from dw::io::file::FileSystem
+* output application/json
+* ---
+* rm("/home/dw/toRemove")
+*
+* ----
+*
+* ==== Output
+*
+* [source,Json,linenums]
+* ----
+* true
+* ----
+**/
+@RuntimePermissions(permissions = ["FileWrite"])
+fun rm(path: Path):Boolean = native("file::RemoveFunction")
 
 /**
 * Return the list of child elements of the specified path. That matches the specified regex pattern
@@ -207,8 +245,9 @@ fun ls(folder: Path, filterExpr: Regex): Array<Path> = do {
 }
 
 /**
-* Returns the file type. File or Folder or null if it doesn't exits
+* Returns the file type. "File" or "Folder" or null if it doesn't exits
 */
+@RuntimePermissions(permissions = ["FileRead"])
 fun kindOf(path: Path): FileKind | Null = native("file::FileTypeOfFunction")
 
 /**
@@ -216,11 +255,75 @@ fun kindOf(path: Path): FileKind | Null = native("file::FileTypeOfFunction")
 */
 fun nameOf(path: Path): String = native("file::NameOfFunction")
 
+/**
+* Returns true if the file exits
+*
+* === Parameters
+*
+* [%header, cols="1,3"]
+* |===
+* | Name   | Description
+* | path | The path to be checked
+* |===
+*
+* === Example
+*
+* This example shows how the `exists` behaves under different inputs.
+*
+* ==== Source
+*
+* [source,DataWeave,linenums]
+* ----
+* %dw 2.0
+* output application/json
+* ---
+* dw::io::file::FileSystem::exists("/tmp")
+*
+* ----
+*
+* ==== Output
+*
+* [source,Json,linenums]
+* ----
+* true
+* ----
+**/
 fun exists(path: Path):Boolean = kindOf(path) != null
 
 /**
-* Returns the content of the specified file
-*/
+* Returns the content of the given path
+*
+* === Parameters
+*
+* [%header, cols="1,3"]
+* |===
+* | Name   | Description
+* | path | The path of the file
+* |===
+*
+* === Example
+*
+* This example shows how the `contentOf` behaves under different inputs.
+*
+* ==== Source
+*
+* [source,DataWeave,linenums]
+* ----
+* %dw 2.0
+* output application/json
+* ---
+* contentOf("/tmp/foo/bar.txt") as String {encoding: "UTF-8"}
+*
+* ----
+*
+* ==== Output
+*
+* [source,Json,linenums]
+* ----
+* "Hello"
+* ----
+**/
+@RuntimePermissions(permissions = ["FileRead"])
 fun contentOf(path: Path): Binary = do {
     readUrl(toUrl(path), "binary") as Binary
 }
@@ -231,22 +334,160 @@ fun contentOf(path: Path): Binary = do {
 */
 fun toUrl(path: Path): String = native("file::ToUrlFunction")
 
-fun writeTo(path: Path, binary: Binary): Number = native("file::WriteFunction")
+/**
+* Copies the specified binary into the given path.
+*
+* === Parameters
+*
+* [%header, cols="1,3"]
+* |===
+* | Name   | Description
+* | binary | The content to be written
+* | path | The path were is going to be written
+* |===
+*
+* === Example
+*
+* This example shows how the `writeTo` behaves under different inputs.
+*
+* ==== Source
+*
+* [source,DataWeave,linenums]
+* ----
+* %dw 2.0
+* output application/json
+* ---
+* copyTo( "Hello" as Binary {encoding: "UTF-8"}, "/tmp/foo/bar.txt")
+* ----
+*
+* ==== Output
+*
+* [source,Json,linenums]
+* ----
+* 5
+* ----
+**/
+@Labels(labels = ["write", "copy"])
+fun copyTo(binary: Binary, path: Path): Number = native("file::CopyToFunction")
 
+//Will be removed soon
+@Deprecated(since = "1.0.0",replacement = "copyTo")
+fun writeTo(path: Path, binary:Binary):Number= binary copyTo  path
+
+/**
+* Creates the a folder in the given path. And returns the path.
+*
+* === Parameters
+*
+* [%header, cols="1,3"]
+* |===
+* | Name   | Description
+* | path | The path to be created
+* |===
+*
+* === Example
+*
+* This example shows how the `mkdir` behaves under different inputs.
+*
+* ==== Source
+*
+* [source,DataWeave,linenums]
+* ----
+* %dw 2.0
+* output application/json
+* ---
+* mkdir("/tmp/a")
+*
+* ----
+*
+* ==== Output
+*
+* [source,Json,linenums]
+* ----
+* "/tmp/a"
+* ----
+**/
 fun mkdir(path: Path): Path = native("file::MakeDirFunction")
+
 
 fun tree(path:Path): Array<Path> =
   ls(path) flatMap ((child, index) -> child >> tree(child) )
 
 /**
-* Zips all the specified files into the `zipPath`
+* Zips the specified collection of files into the given zip path.
+*
+* === Parameters
+*
+* [%header, cols="1,3"]
+* |===
+* | Name   | Description
+* | paths | The array of paths to be zipped
+* | zipPath | The zip file path to be created
+* |===
+*
+* === Example
+*
+* This example shows how the `zipInto` behaves under different inputs.
+*
+* ==== Source
+*
+* [source,DataWeave,linenums]
+* ----
+* %dw 2.0
+* import * from dw::io::file::FileSystem
+* output application/json
+* ---
+* [path(tmp(),"dw_io_test")] zipInto path(tmp(),"outputZip.zip")
+*
+* ----
+*
+* ==== Output
+*
+* [source,Json,linenums]
+* ----
+* "/tmp/outputZip.zip"
+* ----
 **/
-fun zip(paths: Array<Path>, zipPath:Path): Path = native("file::ZipFunction")
+@RuntimePermissions(permissions = ["FileWrite"])
+fun zipInto(paths: Array<Path>, zipPath: Path): Path = native("file::ZipFunction")
 
 /**
-* Unzip the given `zipPath` into the specified directory.
+* Unzips the specified file into the given directory
+*
+* === Parameters
+*
+* [%header, cols="1,3"]
+* |===
+* | Name   | Description
+* | zipPath |
+* | targetDirectory |
+* |===
+*
+* === Example
+*
+* This example shows how the `unzipTo` behaves under different inputs.
+*
+* ==== Source
+*
+* [source,DataWeave,linenums]
+* ----
+* %dw 2.0
+* import * from dw::io::file::FileSystem
+* output application/json
+* ---
+* fileToUnzip unzipTo path(tmp(), "dw_io_test" ,"outputZip")
+*
+* ----
+*
+* ==== Output
+*
+* [source,Json,linenums]
+* ----
+* "/tmp/dw_io_test/outputZip"
+* ----
 **/
-fun unzip(zipPath: Path, targetDirectory:Path): Path = native("file::UnzipFunction")
+@RuntimePermissions(permissions = ["FileWrite"])
+fun unzipTo(zipPath: Path, targetDirectory: Path): Path = native("file::UnzipFunction")
 
 /**
 * Tries to guess the mimeType of the given Path
@@ -270,7 +511,7 @@ fun unzip(zipPath: Path, targetDirectory:Path): Path = native("file::UnzipFuncti
 * %dw 2.0
 * output application/json
 * ---
-*
+* dw::io::file::FileSystem::mimeTypeOf("/tmp/test.json")
 *
 * ----
 *
@@ -278,7 +519,7 @@ fun unzip(zipPath: Path, targetDirectory:Path): Path = native("file::UnzipFuncti
 *
 * [source,Json,linenums]
 * ----
-*
+* "application/json"
 * ----
 **/
 fun mimeTypeOf(path: Path): String | Null = do {
@@ -295,7 +536,37 @@ fun mimeTypeOf(path: Path): String | Null = do {
 
 /**
 * Returns the base name of this file
-*/
+*
+* === Parameters
+*
+* [%header, cols="1,3"]
+* |===
+* | Name   | Description
+* | path |
+* |===
+*
+* === Example
+*
+* This example shows how the `baseNameOf` behaves under different inputs.
+*
+* ==== Source
+*
+* [source,DataWeave,linenums]
+* ----
+* %dw 2.0
+* output application/json
+* ---
+* dw::io::file::FileSystem::baseNameOf("/tmp/a/test.json")
+*
+* ----
+*
+* ==== Output
+*
+* [source,Json,linenums]
+* ----
+* "test"
+* ----
+**/
 fun baseNameOf(path: Path): String = do {
     var name = nameOf(path)
     var lastDotIndex =  (name find ".")[-1] default -1
@@ -378,22 +649,154 @@ fun home(): Path = native("file::HomePathFunction")
 fun wd(): Path = native("file::WorkingDirectoryPathFunction")
 
 /**
-* Creates a valid path from this two parts
-*/
+* Creates a valid path with the specified parts
+*
+* === Parameters
+*
+* [%header, cols="1,3"]
+* |===
+* | Name   | Description
+* | basePath | The base path
+* | part | The child path to append
+* |===
+*
+* === Example
+*
+* This example shows how the `path` behaves under different inputs.
+*
+* ==== Source
+*
+* [source,DataWeave,linenums]
+* ----
+* %dw 2.0
+* output application/json
+* ---
+* path("/tmp/a","b")
+*
+* ----
+*
+* ==== Output
+*
+* [source,Json,linenums]
+* ----
+* "/tmp/a/b"
+* ----
+**/
 fun path(basePath: Path, part: String): Path = native("file::PathFunction")
 
 
 
 
 /**
-* Creates a valid path from this two parts
-*/
+* Creates a valid Path with the specified parts
+*
+* === Parameters
+*
+* [%header, cols="1,3"]
+* |===
+* | Name   | Description
+* | basePath | The base path
+* | part | Child Part 1
+* | part2 | Child Part 2
+* |===
+*
+* === Example
+*
+* This example shows how the `path` behaves under different inputs.
+*
+* ==== Source
+*
+* [source,DataWeave,linenums]
+* ----
+* %dw 2.0
+* output application/json
+* ---
+* path("/tmp", "a","b")
+*
+* ----
+*
+* ==== Output
+*
+* [source,Json,linenums]
+* ----
+* "/tmp/a/b"
+* ----
+**/
 fun path(basePath: Path, part: String, part2: String): Path =
     path(path(basePath, part), part2)
 
+/**
+* Creates a valid Path with the specified parts
+*
+* === Parameters
+*
+* [%header, cols="1,3"]
+* |===
+* | Name   | Description
+* | basePath | The base path
+* | part | Child Part 1
+* | part2 | Child Part 2
+* | part3 | Child Part 3
+* |===
+*
+* === Example
+*
+* This example shows how the `path` behaves under different inputs.
+*
+* ==== Source
+*
+* [source,DataWeave,linenums]
+* ----
+* %dw 2.0
+* output application/json
+* ---
+* path("/tmp", "a","b","c")
+*
+* ----
+*
+* ==== Output
+*
+* [source,Json,linenums]
+* ----
+* "/tmp/a/b/c"
+* ----
+**/
 fun path(basePath: Path, part: String, part2: String, part3: String): Path =
     path(path(basePath, part), part2, part3)
 
-
+/**
+* Creates a valid Path with the specified parts
+*
+* === Parameters
+*
+* [%header, cols="1,3"]
+* |===
+* | Name   | Description
+* | basePath | The base path
+* | parts | All that child part
+* |===
+*
+* === Example
+*
+* This example shows how the `path` behaves under different inputs.
+*
+* ==== Source
+*
+* [source,DataWeave,linenums]
+* ----
+* %dw 2.0
+* output application/json
+* ---
+* path("/tmp", ["a","b","c"])
+*
+* ----
+*
+* ==== Output
+*
+* [source,Json,linenums]
+* ----
+* "/tmp/a/b/c"
+* ----
+**/
 fun path(basePath: Path, parts: Array<String>): Path =
     parts reduce ((part, accumulator = basePath) -> path(accumulator, part))
