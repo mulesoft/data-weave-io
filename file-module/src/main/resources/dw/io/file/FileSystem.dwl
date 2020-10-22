@@ -163,7 +163,7 @@ type FileKind = "File" | "Folder"
 * ["/tmp/foo.txt","/tmp/dw-input-buffer-0.tmp","/tmp/dw-output-buffer-0.tmp"]
 * ----
 **/
-@RuntimePermissions(permissions = ["FileRead"])
+@RuntimePermissions(permissions = ["fs.Read"])
 fun ls(folder: Path): Array<Path> = native("file::LSFunction")
 
 /**
@@ -202,7 +202,7 @@ fun ls(folder: Path): Array<Path> = native("file::LSFunction")
 * true
 * ----
 **/
-@RuntimePermissions(permissions = ["FileWrite"])
+@RuntimePermissions(permissions = ["fs.Write"])
 fun rm(path: Path):Boolean = native("file::RemoveFunction")
 
 /**
@@ -247,7 +247,7 @@ fun ls(folder: Path, filterExpr: Regex): Array<Path> = do {
 /**
 * Returns the file type. "File" or "Folder" or null if it doesn't exits
 */
-@RuntimePermissions(permissions = ["FileRead"])
+@RuntimePermissions(permissions = ["fs.Read"])
 fun kindOf(path: Path): FileKind | Null = native("file::FileTypeOfFunction")
 
 /**
@@ -323,7 +323,7 @@ fun exists(path: Path):Boolean = kindOf(path) != null
 * "Hello"
 * ----
 **/
-@RuntimePermissions(permissions = ["FileRead"])
+@RuntimePermissions(permissions = ["fs.Read"])
 fun contentOf(path: Path): Binary = do {
     readUrl(toUrl(path), "binary") as Binary
 }
@@ -448,7 +448,7 @@ fun tree(path:Path): Array<Path> =
 * "/tmp/outputZip.zip"
 * ----
 **/
-@RuntimePermissions(permissions = ["FileWrite"])
+@RuntimePermissions(permissions = ["fs.Write"])
 fun zipInto(paths: Array<Path>, zipPath: Path): Path = native("file::ZipFunction")
 
 /**
@@ -486,7 +486,7 @@ fun zipInto(paths: Array<Path>, zipPath: Path): Path = native("file::ZipFunction
 * "/tmp/dw_io_test/outputZip"
 * ----
 **/
-@RuntimePermissions(permissions = ["FileWrite"])
+@RuntimePermissions(permissions = ["fs.Write"])
 fun unzipTo(zipPath: Path, targetDirectory: Path): Path = native("file::UnzipFunction")
 
 /**

@@ -87,6 +87,7 @@ fun PATCH(url: String | UrlBuilder, httpRequest: HttpRequest = {}): HttpClientRe
 
 
 
+@RuntimePermissions(permissions = ["http.Client"])
 fun request(method: HttpMethod, url: String | UrlBuilder, httpRequest: HttpRequest = {}): HttpClientResponse = native("http::HttpRequestFunction")
 
 //UTILITY FUNCTIONS
