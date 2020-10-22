@@ -57,10 +57,19 @@ subprojects {
             }
         }
         repositories {
-            maven {
-                name "mule-ee-releases"
-                url "https://repository-master.mulesoft.org/nexus/content/repositories/${project.version.endsWith('-SNAPSHOT') ? 'snapshots/' : 'releases/'}"
-            }
+            inGithub() ?
+                maven {
+                    name = "GitHubPackages"
+                    url = "https://maven.pkg.github.com/octocat/hello-world"
+                    credentials {
+                        username = System.getenv("GITHUB_ACTOR")
+                        password = System.getenv("GITHUB_TOKEN")
+                    }
+                } :
+                maven {
+                    name "mule-ee-releases"
+                    url "https://repository-master.mulesoft.org/nexus/content/repositories/${project.version.endsWith('-SNAPSHOT') ? 'snapshots/' : 'releases/'}"
+                }
         }
     }
 
@@ -117,6 +126,10 @@ subprojects {
     compileScala.dependsOn(formatScala)
     build.dependsOn("weavedoc")
     
+}
+
+private boolean inGithub() {
+    System.getenv("GITHUB_TOKEN") != null
 }
 
 buildscript {
