@@ -82,8 +82,12 @@ class HttpServerFunction extends BinaryFunctionValue {
       })
 
     serverHandler match {
-      case RunningStatus(host, port, _) => manager.loggingService.logInfo(s"Http Server started at ${host}:${port}")
-      case FailedStatus(errorMessage)   => manager.loggingService.logError(s"Unable to start http server. Reason ${errorMessage}")
+      case RunningStatus(host, port, _) => {
+        manager.loggingService.logInfo(s"Http Server started at ${host}:${port}")
+      }
+      case FailedStatus(errorMessage) => {
+        manager.loggingService.logError(s"Unable to start http server. Reason ${errorMessage}")
+      }
     }
 
     var resultKeys: Seq[KeyValuePair] = Seq()
