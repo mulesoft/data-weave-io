@@ -20,7 +20,9 @@ subprojects {
     version = version
 
     repositories {
-        mavenLocal()
+//        if(Boolean.getBoolean("mavenLocal")) {
+//            mavenLocal()
+//        }
         mavenCentral()
         maven {
             name "mule-releases"
@@ -124,14 +126,6 @@ buildscript {
         mavenCentral()
         maven {
             url "https://plugins.gradle.org/m2/"
-        }
-        maven {
-            name "mule-ee-releases"
-            url "https://repository.mulesoft.org/nexus/content/repositories/ci-releases/"
-        }
-        maven {
-            name "mule-ee-snapshots"
-            url "https://repository.mulesoft.org/nexus/content/repositories/ci-snapshots/"
         }
         maven {
             name "mule-releases"

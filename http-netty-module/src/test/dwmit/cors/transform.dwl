@@ -27,9 +27,6 @@ var server = api(
    }
 
 )
-
-fun then<A, V>(result: A, assertions: (result: A) -> V): V = assertions(result)
-
 ---
 [
   GET( 'http://$LOCALHOST/test1', {
