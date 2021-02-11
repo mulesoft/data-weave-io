@@ -8,7 +8,7 @@ import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ExecutionException
 
 import org.mule.weave.v2.core.functions.TernaryFunctionValue
-import org.mule.weave.v2.io.DefaultFileService
+import org.mule.weave.v2.io.service.DefaultFileService
 import org.mule.weave.v2.model.EvaluationContext
 import org.mule.weave.v2.model.structure.KeyValuePair
 import org.mule.weave.v2.model.structure.ObjectSeq
