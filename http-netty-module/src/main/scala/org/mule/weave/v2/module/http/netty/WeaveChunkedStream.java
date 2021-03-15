@@ -12,7 +12,6 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.stream.ChunkedInput;
 
 import java.io.InputStream;
-import java.io.PushbackInputStream;
 
 /**
  * Implementation of {@link io.netty.handler.stream.ChunkedStream} which does not rely on {@link InputStream#available()}
@@ -23,43 +22,17 @@ public class WeaveChunkedStream implements ChunkedInput<ByteBuf> {
 
     static final int DEFAULT_CHUNK_SIZE = 8192;
 
-    private final PushbackInputStream in;
-    private final int chunkSize;
+    private final InputStream in;
+    private final int chunkSize = DEFAULT_CHUNK_SIZE;
     private long offset;
     private boolean closed;
+    private long size;
 
-    /**
-     * Creates a new instance that fetches data from the specified stream.
-     */
-    public WeaveChunkedStream(InputStream in) {
-        this(in, DEFAULT_CHUNK_SIZE);
+    public WeaveChunkedStream(InputStream in, long size) {
+        this.in = in;
+        this.size = size;
     }
 
-    /**
-     * Creates a new instance that fetches data from the specified stream.
-     *
-     * @param chunkSize the number of bytes to fetch on each
-     *                  {@link #readChunk(ChannelHandlerContext)} call
-     */
-    public WeaveChunkedStream(InputStream in, int chunkSize) {
-        if (in == null) {
-            throw new NullPointerException("in");
-        }
-        if (chunkSize <= 0) {
-            throw new IllegalArgumentException("chunkSize: " + chunkSize + " (expected: a positive integer)");
-        }
-
-        if (in instanceof PushbackInputStream) {
-            this.in = (PushbackInputStream) in;
-        } else {
-            this.in = new PushbackInputStream(in);
-        }
-        this.chunkSize = chunkSize;
-    }
-
-    /**
-     * Returns the number of transferred bytes.
-     */
     public long transferredBytes() {
         return offset;
     }
@@ -69,14 +42,7 @@ public class WeaveChunkedStream implements ChunkedInput<ByteBuf> {
         if (closed) {
             return true;
         }
-
-        int b = in.read();
-        if (b < 0) {
-            return true;
-        } else {
-            in.unread(b);
-            return false;
-        }
+        return offset >= size;
     }
 
     @Override
@@ -97,18 +63,19 @@ public class WeaveChunkedStream implements ChunkedInput<ByteBuf> {
             return null;
         }
 
+        final int availableBytes = in.available();
+        final int chunkSize;
+        if (availableBytes <= 0) {
+            chunkSize = this.chunkSize;
+        } else {
+            chunkSize = Math.min(this.chunkSize, in.available());
+        }
+
         boolean release = true;
         ByteBuf buffer = allocator.buffer(chunkSize);
         try {
             // transfer to buffer
-            int read = 0;
-            int total = 0;
-            do {
-                read = buffer.writeBytes(in, chunkSize - total);
-                total += read;
-            } while (read >= 0 && total < chunkSize);
-
-            offset += total;
+            offset += buffer.writeBytes(in, chunkSize);
             release = false;
             return buffer;
         } finally {

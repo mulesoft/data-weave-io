@@ -2,8 +2,8 @@ package org.mule.weave.v2.module.http.netty
 
 import java.io.InputStream
 import java.util.concurrent.CompletableFuture
-
 import io.netty.handler.codec.http.HttpHeaders
+import org.asynchttpclient.AsyncHttpClient
 import org.asynchttpclient.Dsl._
 import org.asynchttpclient.ListenableFuture
 import org.asynchttpclient.RequestBuilder
@@ -19,7 +19,8 @@ import scala.collection.JavaConverters._
 
 class HttpAsyncClientService extends HttpClientService {
 
-  val client = asyncHttpClient()
+  //Make it lazy don't create if it is not required
+  lazy val client: AsyncHttpClient = asyncHttpClient()
 
   override def request(config: HttpClientOptions): CompletableFuture[_ <: HttpClientResponse] = {
     val builder = new RequestBuilder()
@@ -101,7 +102,12 @@ class HttpAsyncHeaders(headers: HttpHeaders) extends HttpClientHeaders {
 }
 
 class HttpClientServiceRegistration extends ServiceRegistration[HttpClientService] {
+  //Re-use same http client
+  private val httpAsyncClientService = new HttpAsyncClientService()
+
   override def service: Class[HttpClientService] = classOf[HttpClientService]
 
-  override def implementation = new HttpAsyncClientService()
+  override def implementation: HttpAsyncClientService = {
+    httpAsyncClientService
+  }
 }

@@ -68,7 +68,10 @@ class HttpServerFunction extends BinaryFunctionValue {
         try {
           val requestValue = toRequestObjectValue(request)
           val callbackResult = callBack.call(ValuesHelper.array(requestValue))(newThreadContext)
-          toHttpResponse(callbackResult, () => newThreadContext.close())(newThreadContext)
+          val closeCallback: () => Unit = () => {
+            newThreadContext.close()
+          }
+          toHttpResponse(callbackResult, closeCallback)(newThreadContext)
         } catch {
           case e: Exception => {
             val writer = new StringWriter()
@@ -165,7 +168,7 @@ class HttpServerFunction extends BinaryFunctionValue {
       }
     }
     val statusCode = selectInt(httpResponseObject, STATUS_CODE_KEY_NAME).getOrElse(200)
-    val stream = bodyStream match {
+    val stream: InputStream = bodyStream match {
       case Some(inputStream) => {
         inputStream
       }
@@ -175,6 +178,7 @@ class HttpServerFunction extends BinaryFunctionValue {
         EMPTY_INPUT_STREAM
       }
     }
+
     HttpServerResponse(stream, headers, closeCallback, statusCode)
   }
 }
