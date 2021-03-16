@@ -1,8 +1,6 @@
 package org.mule.weave.v2.module.http.netty
 
-import io.netty.buffer.ByteBuf
 import io.netty.buffer.ByteBufInputStream
-import io.netty.buffer.Unpooled
 import io.netty.channel.ChannelFuture
 import io.netty.channel.ChannelHandler.Sharable
 import io.netty.channel.ChannelHandlerContext
@@ -20,12 +18,12 @@ import io.netty.handler.codec.http.HttpHeaders
 import io.netty.handler.codec.http.HttpResponseStatus.valueOf
 import io.netty.handler.codec.http.HttpUtil
 import io.netty.handler.codec.http.HttpVersion.HTTP_1_1
+import io.netty.handler.codec.http.QueryStringDecoder
 import io.netty.handler.stream.ChunkedStream
 import org.mule.weave.v2.module.http.service.HttpServerRequest
 import org.mule.weave.v2.module.http.service.HttpServerResponse
 
-import java.io.IOException
-import java.io.InputStream
+import scala.collection.JavaConverters._
 import scala.collection.mutable.ArrayBuffer
 
 @Sharable
@@ -93,37 +91,14 @@ class HttpServiceHandler(callback: HttpServerRequest => HttpServerResponse) exte
     headers
   }
 
-  // TODO: Use io.netty.handler.codec.http.QueryStringDecoder instead
   def fromQueryString(queryString: String): Seq[(String, String)] = {
-    val queryParams = ArrayBuffer[(String, String)]()
-    queryString.split('&').foreach(query => {
-      val valueIndex = query.indexOf("=")
-      if (valueIndex > 0) {
-        queryParams.+=((query.substring(0, valueIndex), query.substring(valueIndex + 1)))
-      } else {
-        queryParams.+=((query, ""))
-      }
+    val decoder = new QueryStringDecoder(queryString)
+    val toSeq = decoder.parameters().asScala.toSeq
+    toSeq.flatMap((pair) => {
+      pair._2.asScala.map((value) => {
+        (pair._1, value)
+      })
     })
-    queryParams
-  }
-
-  @throws[IOException]
-  def toByteBuf(input: InputStream): ByteBuf = {
-    try {
-      // TODO: Check whether there's a better way of doing this stream to byte buf handling
-      if (input != null) {
-        val buf = Unpooled.buffer
-        var n = 0
-        do n = buf.writeBytes(input, 1024) while ({
-          n > 0
-        })
-        buf
-      } else {
-        Unpooled.buffer(0)
-      }
-    } finally {
-      input.close()
-    }
   }
 
   @throws[Exception]
