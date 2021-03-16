@@ -1,6 +1,6 @@
 import * from dw::io::http::Server
 import * from dw::io::http::Client
-import mustEqual from dw::core::Assertions
+
 
 var serverConfig = { host: "localhost", port: dw::io::http::utils::Port::freePort() }
 var LOCALHOST = '$(serverConfig.host):$(serverConfig.port)'
@@ -53,63 +53,45 @@ var server = api(
 
   }
 )
-
-fun then<A, V>(result: A, assertions: (result: A) -> V): V = assertions(result)
-
 ---
 [
   request('POST', 'http://$LOCALHOST/test',
     {
       body: {name: 'Agustin'}
     }
-  ) then [
-    ($).response.body.name mustEqual 'Agustin',
-    $.response.headers."Content-Type" mustEqual 'application/json',
-    ($).response.status mustEqual 302,
-  ],
+  ) then {
+    name: ($).body.name ,
+    headers: $.headers."Content-Type",
+    status: ($).status ,
+  },
+  request('GET', 'http://$LOCALHOST/test', {})
+    then {
+      name: ($).body.name,
+    },
 
-  request('GET', 'http://$LOCALHOST/test', {}) then [
-    ($).response.body.name mustEqual 'Mariano',
-    ($).request.httpVersion mustEqual 'HTTP/1.1'
-  ],
   request('POST', 'http://$LOCALHOST/testXml',
       {
         body: {name: 'Agustin'}
       }
-    ) then [
-      ($).response.body.name mustEqual 'Agustin',
-      $.response.headers."Content-Type" mustEqual 'application/xml',
-      ($).response.status mustEqual 302
-    ],
+    ) then {
+     name: ($).body.name,
+     contentType: $.headers."Content-Type",
+     status: ($).status
+    },
 
-    request('GET', 'http://$LOCALHOST/testXml', {}) then [
-      ($).response.body.name mustEqual 'Mariano',
-      $.response.headers."Content-Type" mustEqual 'application/xml',
-      ($).request.httpVersion mustEqual 'HTTP/1.1'
-    ],
+    request('GET', 'http://$LOCALHOST/testXml', {}) then {
+     name: ($).body.name,
+     contentType : $.headers."Content-Type"
+    },
     request('GET', 'http://$LOCALHOST/properties?some=query&other=value', {
         headers : {
             ("X-Custom"): "headerValue"
         }
-    }) then [
-      ($).request.httpVersion mustEqual 'HTTP/1.1',
-      ($).response.body.method mustEqual 'GET',
-      ($).response.body.path mustEqual '/properties',
-      ($).response.body.params mustEqual {
-                                            some : "query",
-                                            other : "value"
-                                          },
-      ($).response.body.headers mustEqual {
-                                             "X-Custom": "headerValue",
-                                             "Accept-Encoding": "gzip,deflate",
-                                             Host: LOCALHOST,
-                                             Connection: "close",
-                                             "User-Agent": "DataWeave/2.0",
-                                             Accept: "text/html, image/gif, image/jpeg, *; q=.2, */*; q=.2",
-                                             "Cache-Control": "no-cache",
-                                             Pragma: "no-cache",
-                                             "content-length": "0"
-                                           }
-    ],
-  server.stop() mustEqual true
+    }) then {
+      method: ($).body.method ,
+      path: ($).body.path ,
+      params: ($).body.params,
+      headers: ($).body.headers - "host" //We remove host as it changes based on the port
+    },
+  server.stop()
 ]

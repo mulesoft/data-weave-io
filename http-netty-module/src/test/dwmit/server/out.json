@@ -1,0 +1,33 @@
+[
+  {
+    "name": "Agustin",
+    "headers": "application/json",
+    "status": 302
+  },
+  {
+    "name": "Mariano"
+  },
+  {
+    "name": "Agustin",
+    "contentType": "application/xml",
+    "status": 302
+  },
+  {
+    "name": "Mariano",
+    "contentType": "application/xml"
+  },
+  {
+    "method": "GET",
+    "path": "/properties",
+    "params": {
+      
+    },
+    "headers": {
+      "X-Custom": "headerValue",
+      "accept": "*/*",
+      "user-agent": "AHC/2.1",
+      "content-length": "0"
+    }
+  },
+  true
+]
