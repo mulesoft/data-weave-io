@@ -123,10 +123,6 @@ subprojects {
 
 buildscript {
     repositories {
-        mavenCentral()
-        maven {
-            url "https://plugins.gradle.org/m2/"
-        }
         maven {
             name "mule-releases"
             url "https://repository.mulesoft.org/nexus/content/repositories/releases/"
@@ -134,6 +130,10 @@ buildscript {
         maven {
             name "mule-snapshots"
             url "http://repository.mulesoft.org/nexus/content/repositories/snapshots/"
+        }
+        mavenCentral()
+        maven {
+            url "https://plugins.gradle.org/m2/"
         }
     }
     dependencies {
