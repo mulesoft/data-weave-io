@@ -1,5 +1,6 @@
 #!/bin/bash
 
+set -e
 set -x
 
 if [ $# -ne 1 ]
@@ -8,4 +9,8 @@ then
     exit 1
 fi
 
-./gradlew -Pmaven.settings.location=$1 publish
+if [[ "$BRANCH_NAME" =~ ^(master$|support/.|release/.) ]]
+then
+    ./gradlew --stacktrace -Pmaven.settings.location=$1 publish
+fi
+
