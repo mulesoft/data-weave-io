@@ -1,13 +1,7 @@
 package org.mule.weave.v2.module.http.functions
 
-import java.io.InputStream
-import java.net.ConnectException
-import java.net.HttpCookie
-import java.net.UnknownHostException
-import java.util.concurrent.CompletableFuture
-import java.util.concurrent.ExecutionException
 import org.mule.weave.v2.core.functions.TernaryFunctionValue
-import org.mule.weave.v2.io.service.DefaultFileService
+import org.mule.weave.v2.io.service.DefaultWorkingDirectoryService
 import org.mule.weave.v2.model.EvaluationContext
 import org.mule.weave.v2.model.structure.KeyValuePair
 import org.mule.weave.v2.model.structure.ObjectSeq
@@ -41,6 +35,12 @@ import org.mule.weave.v2.util.ObjectValueUtils.selectString
 import org.mule.weave.v2.util.ObjectValueUtils.selectStringAnyMap
 import spire.math.Number
 
+import java.io.InputStream
+import java.net.ConnectException
+import java.net.HttpCookie
+import java.net.UnknownHostException
+import java.util.concurrent.CompletableFuture
+import java.util.concurrent.ExecutionException
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 
@@ -143,7 +143,7 @@ class HttpRequestFunction extends TernaryFunctionValue {
             .getOrElse({
               throw new WeaveRuntimeException(s"Unable to find data format for `${contentType}`", UnknownLocation)
             })
-          val outputStream = new DefaultAutoPersistedOutputStream(DefaultFileService)
+          val outputStream = new DefaultAutoPersistedOutputStream(new DefaultWorkingDirectoryService())
           val writer: Writer = dataFormat.writer(Some(outputStream))
           writerProperties.foreach((prop) => {
             writer.setOption(requestValue.location(), prop._1, prop._2)

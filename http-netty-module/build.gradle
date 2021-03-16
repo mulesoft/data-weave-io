@@ -8,7 +8,7 @@ dependencies {
     compileOnly group: 'org.mule.weave', name: 'runtime', version: weaveVersion
 
 
-    testCompile group: 'org.mule.weave', name: 'wtf', version: '1.0.3-SNAPSHOT'
+    testCompile group: 'org.mule.weave', name: 'wtf', version: wtfVersion
 }
 
 test.dependsOn("weavetest")
