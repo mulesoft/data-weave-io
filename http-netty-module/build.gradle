@@ -3,7 +3,7 @@
 dependencies {
     compile project(":http-module")
     compile group: 'org.scala-lang', name: 'scala-library', version: scalaVersion
-    compile group: 'io.netty', name: 'netty-codec-http', version: '4.1.53.Final'
+    compile group: 'io.netty', name: 'netty-codec-http', version: '4.1.60.Final'
     compile group: 'org.asynchttpclient', name: 'async-http-client', version: '2.12.2'
     compileOnly group: 'org.mule.weave', name: 'runtime', version: weaveVersion
 
