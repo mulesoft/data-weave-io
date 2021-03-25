@@ -60,9 +60,10 @@ class HttpServerFunction extends BinaryFunctionValue {
 
     val port: Int = selectInt(configObject, PORT_KEY_NAME).getOrElse(8081)
     val host: String = selectString(configObject, HOST_KEY_NAME).getOrElse("localhost")
+    val maxContentLength: Int = selectInt(configObject, MAX_CONTENT_LENGTH).getOrElse(65536)
 
     val serverHandler: HttpServerStatus = httpServerService.server(
-      HttpServerConfig(port, host),
+      HttpServerConfig(port, host, maxContentLength),
       (request) => {
         val newThreadContext: ExecutionContext = context.asInstanceOf[ExecutionContext].spawnNewThread()
         try {
@@ -205,6 +206,7 @@ object HttpServerFunction {
   val STATUS_CODE_KEY_NAME = "status"
   val PORT_KEY_NAME = "port"
   val HOST_KEY_NAME = "host"
+  val MAX_CONTENT_LENGTH = "maxContentLength"
 
 }
 

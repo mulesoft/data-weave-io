@@ -36,7 +36,7 @@ class NettyHttpServerService extends HttpServerService {
     bootstrap.group(boss, workers)
       .channel(classOf[NioServerSocketChannel])
       .localAddress(new InetSocketAddress(config.host, config.port))
-      .childHandler(new NettyHttpServerInitializer(callback))
+      .childHandler(new NettyHttpServerInitializer(config, callback))
 
     // TODO: Validate this is not blocking everything and the behavior for the status is correct
     val triedUnit = Try(bootstrap.bind.sync)

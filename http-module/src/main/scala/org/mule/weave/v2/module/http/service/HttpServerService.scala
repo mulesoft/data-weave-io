@@ -14,7 +14,7 @@ trait HttpServerService {
   def server(config: HttpServerConfig, callback: (HttpServerRequest) => HttpServerResponse): HttpServerStatus
 }
 
-case class HttpServerConfig(port: Int, host: String) {}
+case class HttpServerConfig(port: Int, host: String, maxContentLength: Int) {}
 
 case class HttpServerRequest(body: InputStream, path: String, method: String, headers: Seq[(String, String)], queryParams: Seq[(String, String)]) {}
 
