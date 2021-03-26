@@ -1,0 +1,12 @@
+plugins {
+    id "com.github.maiflai.scalatest" version "0.25"
+}
+
+dependencies {
+    compile project(":file-module")
+    compileOnly group: 'org.mule.weave', name: 'wlang', version: weaveVersion
+    compile group: 'com.newrelic.agent.java', name: 'newrelic-api', version: '6.4.2'
+}
+
+
+

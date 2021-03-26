@@ -1,3 +1,4 @@
+include 'newrelic-module'
 include 'http-module'
 include 'http-netty-module'
 include 'file-module'
