@@ -143,7 +143,8 @@ class HttpRequestFunction extends TernaryFunctionValue {
             .getOrElse({
               throw new WeaveRuntimeException(s"Unable to find data format for `${contentType}`", UnknownLocation)
             })
-          val outputStream = new DefaultAutoPersistedOutputStream(ctx.serviceManager.workingDirectoryService, ctx.serviceManager.memoryService)
+          val serviceManager = ctx.serviceManager
+          val outputStream = new DefaultAutoPersistedOutputStream(serviceManager.workingDirectoryService, serviceManager.memoryService, serviceManager.settingsService)
           val writer: Writer = dataFormat.writer(Some(outputStream))
           writerProperties.foreach((prop) => {
             writer.setOption(requestValue.location(), prop._1, prop._2)
