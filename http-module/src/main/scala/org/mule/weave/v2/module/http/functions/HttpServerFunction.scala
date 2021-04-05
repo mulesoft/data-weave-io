@@ -5,7 +5,6 @@ import java.io.InputStream
 import java.io.PrintWriter
 import java.io.StringWriter
 import java.util
-
 import org.mule.weave.v2.core.functions.BinaryFunctionValue
 import org.mule.weave.v2.core.functions.EmptyFunctionValue
 import org.mule.weave.v2.interpreted.ExecutionContext
@@ -37,6 +36,7 @@ import org.mule.weave.v2.module.http.service.HttpServerStatus
 import org.mule.weave.v2.module.http.service.RunningStatus
 import org.mule.weave.v2.module.http.values.HttpBodyValue
 import org.mule.weave.v2.module.reader.AutoPersistedOutputStream
+import org.mule.weave.v2.parser.exception.LocatableException
 import org.mule.weave.v2.parser.exception.WeaveRuntimeException
 import org.mule.weave.v2.parser.location.UnknownLocation
 import org.mule.weave.v2.util.ObjectValueUtils._
@@ -74,13 +74,19 @@ class HttpServerFunction extends BinaryFunctionValue {
           }
           toHttpResponse(callbackResult, closeCallback)(newThreadContext)
         } catch {
+          case e: LocatableException => {
+            val writer = new StringWriter()
+            context.serviceManager.loggingService.logError(e.getMessage())
+            newThreadContext.close()
+            HttpServerResponse(new ByteArrayInputStream(e.getMessage().getBytes("UTF-8")), Map(CONTENT_TYPE_HEADER -> "text/plain"), () => {}, 500)
+          }
           case e: Exception => {
             val writer = new StringWriter()
             e.printStackTrace(new PrintWriter(writer))
             val exceptionMessage = writer.toString
             context.serviceManager.loggingService.logError(exceptionMessage)
             newThreadContext.close()
-            HttpServerResponse(new ByteArrayInputStream(exceptionMessage.getBytes("UTF-8")), Map(), () => {}, 500)
+            HttpServerResponse(new ByteArrayInputStream(exceptionMessage.getBytes("UTF-8")), Map(CONTENT_TYPE_HEADER -> "text/plain"), () => {}, 500)
           }
         }
       })
