@@ -75,7 +75,6 @@ class HttpServerFunction extends BinaryFunctionValue {
           toHttpResponse(callbackResult, closeCallback)(newThreadContext)
         } catch {
           case e: LocatableException => {
-            val writer = new StringWriter()
             context.serviceManager.loggingService.logError(e.getMessage())
             newThreadContext.close()
             HttpServerResponse(new ByteArrayInputStream(e.getMessage().getBytes("UTF-8")), Map(CONTENT_TYPE_HEADER -> "text/plain"), () => {}, 500)
@@ -159,7 +158,7 @@ class HttpServerFunction extends BinaryFunctionValue {
                     headers = headers.+(CONTENT_LENGTH_HEADER -> theSize.toString)
                     stream
                   }
-                  case a: AnyRef => {
+                  case _: AnyRef => {
                     throw new InvalidHttpBodyException(this.location())
                   }
                 }
