@@ -25,25 +25,25 @@ subprojects {
         if (release) {
             // format is: release/{version}[/{weave-version}]
             def branchParts = branch.split("/")
-            ioVersion = branchParts[1]
-            if (!gitTag(ioVersion).isEmpty()) {
+            projectVersion = branchParts[1]
+            if (!gitTag(projectVersion).isEmpty()) {
                 throw new GradleException("Cannot release a tagged version")
             }
             if (branchParts.size() == 3) {
                 weaveVersion = branchParts[2]
             }
-            if (isSnapshot(weaveVersion) || isSnapshot(ioVersion)) {
+            if (isSnapshot(weaveVersion) || isSnapshot(projectVersion)) {
                 throw new GradleException("Cannot release with snapshot dependencies.  WeaveVersion:" + weaveVersion + " Version: "+ version)
             }
 
-        } else if (!isSnapshot(ioVersion)) {
+        } else if (!isSnapshot(projectVersion)) {
             throw new GradleException("Cannot build non snapshot versions from a regular branch")
         }
     }
 
 
     group = "org.mule.weave"
-    version = ioVersion
+    version = projectVersion
 
     repositories {
 //        if(Boolean.getBoolean("mavenLocal")) {
