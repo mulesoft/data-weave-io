@@ -16,12 +16,38 @@ subprojects {
         }
     }
 
+
+    def branch = gitBranch()
+    def release = branch.startsWith("release/")
+
+    ext {
+
+        if (release) {
+            // format is: release/{version}[/{weave-version}]
+            def branchParts = branch.split("/")
+            ioVersion = branchParts[1]
+            if (!gitTag(ioVersion).isEmpty()) {
+                throw new GradleException("Cannot release a tagged version")
+            }
+            if (branchParts.size() == 3) {
+                weaveVersion = branchParts[2]
+            }
+            if (isSnapshot(weaveVersion) || isSnapshot(ioVersion)) {
+                throw new GradleException("Cannot release with snapshot dependencies.  WeaveVersion:" + weaveVersion + " Version: "+ version)
+            }
+
+        } else if (!isSnapshot(ioVersion)) {
+            throw new GradleException("Cannot build non snapshot versions from a regular branch")
+        }
+    }
+
+
     group = "org.mule.weave"
-    version = version
+    version = ioVersion
 
     repositories {
 //        if(Boolean.getBoolean("mavenLocal")) {
-            mavenLocal()
+//            mavenLocal()
 //        }
         mavenCentral()
         maven {
@@ -120,6 +146,40 @@ subprojects {
     build.dependsOn("weavedoc")
 
 }
+
+
+static def isSnapshot(String version) {
+    version.endsWith("-SNAPSHOT")
+}
+
+static def gitBranch() {
+    def ciBranch = System.getenv("BRANCH_NAME")
+    if (ciBranch != null) {
+        ciBranch
+    } else {
+        def branch = ""
+        def proc = "git rev-parse --abbrev-ref HEAD".execute()
+        proc.in.eachLine { line -> branch = line }
+        proc.err.eachLine { line -> println line }
+        proc.waitFor()
+        branch
+    }
+}
+
+static def gitTag(String version) {
+    def tag = ""
+    def fetch = "git fetch --tags".execute()
+    fetch.waitFor()
+    // format is: {dw-version} but used to be {dw-version}-release
+    def escapedVersion = version.replaceAll("\\.", "\\\\.")
+    def grep = "git tag --list | grep '" + escapedVersion + "-release\\|" + escapedVersion + "\$'"
+    def proc = ['bash', '-c', grep].execute()
+    proc.in.eachLine { line -> tag = line }
+    proc.err.eachLine { line -> println line }
+    proc.waitFor()
+    tag
+}
+
 
 buildscript {
     repositories {
