@@ -8,6 +8,7 @@ Map pipelineParams = [
     "mavenSettingsXmlId"                    : "data-weave-maven-settings",
     "projectType"                           : "Shell",
     "devBranchesRegex"                      : "master",
+    "releaseBranchesRegex"                  : "release\\/.+",
     "enableScheduleTrigger"                 : true,
     "scheduleTriggerCommand"                : "@daily",
     "junitTestResults"                      : '**/build/test-results/test/*.xml, **/build/test-results/*.xml',
