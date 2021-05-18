@@ -1,7 +1,6 @@
 package org.mule.weave.v2.module.http.functions
 
 import org.mule.weave.v2.core.functions.TernaryFunctionValue
-import org.mule.weave.v2.io.service.DefaultWorkingDirectoryService
 import org.mule.weave.v2.model.EvaluationContext
 import org.mule.weave.v2.model.structure.KeyValuePair
 import org.mule.weave.v2.model.structure.ObjectSeq
@@ -81,11 +80,11 @@ class HttpRequestFunction extends TernaryFunctionValue {
   }
 
   override protected def doExecute(methodValue: First.V, urlValue: Second.V, requestValue: Third.V)(implicit ctx: EvaluationContext): Value[_] = {
-    val method: String = methodValue.evaluate
+    val method: String = methodValue.evaluate.toString
 
     val (url, queryParams) = urlValue.evaluate match {
       case url: String => {
-        (url, Map[String, Seq[String]]())
+        (url, Map.empty[String, Seq[String]])
       }
       case urlBuilder: ObjectSeq => {
         val queryParams: mutable.Map[String, ArrayBuffer[String]] = mutable.HashMap()
@@ -93,7 +92,7 @@ class HttpRequestFunction extends TernaryFunctionValue {
         val url = selectString(urlBuilder, "url").getOrElse(throw new WeaveRuntimeException("Expecting url", UnknownLocation))
         queryParamsValue.toSeq().foreach((kvp) => {
           val headerName: String = kvp._1.evaluate.name
-          val headerValue: String = StringType.coerce(kvp._2).evaluate
+          val headerValue: String = StringType.coerce(kvp._2).evaluate.toString
           queryParams.getOrElseUpdate(headerName, ArrayBuffer()).+=(headerValue)
         })
         (url, queryParams.toMap)
@@ -107,7 +106,7 @@ class HttpRequestFunction extends TernaryFunctionValue {
     val headersValue = selectObject(request, "headers").getOrElse(ObjectSeq.empty)
     headersValue.toSeq().foreach((kvp) => {
       val headerName: String = kvp._1.evaluate.name
-      val headerValue: String = StringType.coerce(kvp._2).evaluate
+      val headerValue: String = StringType.coerce(kvp._2).evaluate.toString
       headers.getOrElseUpdate(headerName, ArrayBuffer()).+=(headerValue)
     })
 

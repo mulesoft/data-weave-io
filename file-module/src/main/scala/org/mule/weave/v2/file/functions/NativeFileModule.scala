@@ -1,21 +1,10 @@
 package org.mule.weave.v2.file.functions
 
-import java.io.File
-import java.io.FileInputStream
-import java.io.FileOutputStream
-import java.io.IOException
-import java.nio.file.Files
-import java.nio.file.StandardCopyOption
-import java.util.zip.ZipEntry
-import java.util.zip.ZipInputStream
-import java.util.zip.ZipOutputStream
-
 import org.mule.weave.v2.core.functions.BinaryFunctionValue
 import org.mule.weave.v2.core.functions.EmptyFunctionValue
 import org.mule.weave.v2.core.functions.UnaryFunctionValue
 import org.mule.weave.v2.file.functions.exceptions.InvalidFileKindPathException
 import org.mule.weave.v2.file.functions.exceptions.ZipException
-import org.mule.weave.v2.io.SeekableStream
 import org.mule.weave.v2.model.EvaluationContext
 import org.mule.weave.v2.model.types.ArrayType
 import org.mule.weave.v2.model.types.BinaryType
@@ -28,6 +17,16 @@ import org.mule.weave.v2.model.values.NumberValue
 import org.mule.weave.v2.model.values.StringValue
 import org.mule.weave.v2.model.values.Value
 import org.mule.weave.v2.module.native.NativeValueProvider
+
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
+import java.io.IOException
+import java.nio.file.Files
+import java.nio.file.StandardCopyOption
+import java.util.zip.ZipEntry
+import java.util.zip.ZipInputStream
+import java.util.zip.ZipOutputStream
 
 class NativeFileModule extends NativeValueProvider {
 
@@ -58,7 +57,7 @@ class LSFunction extends UnaryFunctionValue {
   override val R = StringType
 
   override def doExecute(path: R.V)(implicit ctx: EvaluationContext): Value[_] = {
-    val pathString = path.evaluate
+    val pathString = path.evaluate.toString
     val files = new File(pathString).listFiles()
     if (files == null) {
       ArrayValue(Seq())
@@ -76,7 +75,7 @@ class FileTypeOfFunction extends UnaryFunctionValue {
   override val R = StringType
 
   override def doExecute(path: R.V)(implicit ctx: EvaluationContext): Value[_] = {
-    val pathString = StringType.coerce(path).evaluate
+    val pathString = path.evaluate.toString
     val file = new File(pathString)
     if (!file.exists()) {
       NullValue
@@ -92,7 +91,7 @@ class NameOfFunction extends UnaryFunctionValue {
   override val R = StringType
 
   override def doExecute(path: R.V)(implicit ctx: EvaluationContext): Value[_] = {
-    val pathString = StringType.coerce(path).evaluate
+    val pathString = path.evaluate.toString
     val file = new File(pathString)
     StringValue(file.getName)
   }
@@ -102,7 +101,7 @@ class ToUrlFunction extends UnaryFunctionValue {
   override val R = StringType
 
   override def doExecute(path: R.V)(implicit ctx: EvaluationContext): Value[_] = {
-    val pathString = path.evaluate
+    val pathString = path.evaluate.toString
     val file = new File(pathString)
     StringValue(file.toURI.toURL.toExternalForm)
   }
@@ -112,7 +111,7 @@ class MakeDirFunction extends UnaryFunctionValue {
   override val R = StringType
 
   override def doExecute(path: R.V)(implicit ctx: EvaluationContext): Value[_] = {
-    val pathString = path.evaluate
+    val pathString = path.evaluate.toString
     val file = new File(pathString)
     file.mkdirs()
     StringValue(pathString)
@@ -124,7 +123,7 @@ class CopyToFunction extends BinaryFunctionValue {
   override val R = StringType
 
   override protected def doExecute(leftValue: Value[L.T], rightValue: Value[R.T])(implicit ctx: EvaluationContext): Value[_] = {
-    val path: String = rightValue.evaluate
+    val path: String = rightValue.evaluate.toString
     val file = new File(path)
     val parentFile = file.getParentFile
     if (parentFile != null && !parentFile.exists()) {
@@ -140,8 +139,8 @@ class PathFunction extends BinaryFunctionValue {
   override val R = StringType
 
   override def doExecute(path: L.V, subPath: R.V)(implicit ctx: EvaluationContext): Value[_] = {
-    val pathString = StringType.coerce(path).evaluate
-    val subPathString = StringType.coerce(subPath).evaluate
+    val pathString = path.evaluate.toString
+    val subPathString = subPath.evaluate.toString
     val file = new File(pathString, subPathString)
     StringValue(file.getAbsolutePath)
   }
@@ -170,7 +169,7 @@ class ZipFunction extends BinaryFunctionValue {
   override val R = StringType
 
   override protected def doExecute(leftValue: L.V, rightValue: R.V)(implicit ctx: EvaluationContext): Value[_] = {
-    val zipPath = rightValue.evaluate
+    val zipPath = rightValue.evaluate.toString
     try {
       val zipFileToCreate = new File(zipPath)
       val parentFile = zipFileToCreate.getParentFile
@@ -185,7 +184,7 @@ class ZipFunction extends BinaryFunctionValue {
         val zipOut = new ZipOutputStream(fos)
         val iterator = leftValue.evaluate.toIterator()
         while (iterator.hasNext) {
-          val sourceFile = StringType.coerce(iterator.next()).evaluate
+          val sourceFile = StringType.coerce(iterator.next()).evaluate.toString
           val fileToZip = new File(sourceFile)
           zipFile(fileToZip, fileToZip.getName, zipOut)
           zipOut.close()
@@ -233,7 +232,7 @@ class RemoveFunction extends UnaryFunctionValue {
   override val R = StringType
 
   override protected def doExecute(v: R.V)(implicit ctx: EvaluationContext): Value[_] = {
-    val filePath = v.evaluate
+    val filePath = v.evaluate.toString
     BooleanValue(deleteDirectory(new File(filePath)))
   }
 
@@ -254,8 +253,8 @@ class UnzipFunction extends BinaryFunctionValue {
   override val R = StringType
 
   override protected def doExecute(leftValue: L.V, rightValue: R.V)(implicit ctx: EvaluationContext): Value[_] = {
-    val fileZip = leftValue.evaluate
-    val destDirPath = rightValue.evaluate
+    val fileZip = leftValue.evaluate.toString
+    val destDirPath = rightValue.evaluate.toString
     unzip(fileZip, destDirPath)
     rightValue
   }
