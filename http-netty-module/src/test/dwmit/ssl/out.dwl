@@ -12,8 +12,8 @@
     statusText: "OK"
   }, 
   {
-    status: 404,
-    statusText: "Not Found"
+    status: 200,
+    statusText: "OK"
   }, 
   {
     status: 401,
