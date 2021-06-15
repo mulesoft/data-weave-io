@@ -26,7 +26,7 @@ fun normalizeHeaders(headers: Null): {_?: String} =
 * |===
 *
 **/
-fun normalizeHeaders(headers: { _?: (SimpleType | Null) }): {_?: String} =
+fun normalizeHeaders(headers: { _*?: (SimpleType | Null) }): {_?: String} =
   headers mapObject {(formatHeader($$ as String)): $ default "" as String}
 
 
