@@ -4,9 +4,9 @@ plugins {
 
 dependencies {
     compile project(':http-module')
-    compile group: 'org.mule.weave', name: 'runtime', version: weaveVersion
-    compile group: 'org.mule.weave', name: 'parser', version: weaveVersion
-    compile group: 'org.mule.weave', name: 'core-modules', version: weaveVersion
+    compileOnly group: 'org.mule.weave', name: 'runtime', version: weaveVersion
+    compileOnly group: 'org.mule.weave', name: 'parser', version: weaveVersion
+    compileOnly group: 'org.mule.weave', name: 'core-modules', version: weaveVersion
 
 
     compile group: 'org.asynchttpclient', name: 'async-http-client', version: '2.12.3'
