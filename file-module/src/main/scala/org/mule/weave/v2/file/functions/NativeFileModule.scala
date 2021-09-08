@@ -4,6 +4,7 @@ import org.mule.weave.v2.core.functions.BinaryFunctionValue
 import org.mule.weave.v2.core.functions.EmptyFunctionValue
 import org.mule.weave.v2.core.functions.UnaryFunctionValue
 import org.mule.weave.v2.file.functions.exceptions.InvalidFileKindPathException
+import org.mule.weave.v2.file.functions.exceptions.UnableToWriteFileException
 import org.mule.weave.v2.file.functions.exceptions.ZipException
 import org.mule.weave.v2.model.EvaluationContext
 import org.mule.weave.v2.model.types.ArrayType
@@ -113,8 +114,11 @@ class MakeDirFunction extends UnaryFunctionValue {
   override def doExecute(path: R.V)(implicit ctx: EvaluationContext): Value[_] = {
     val pathString = path.evaluate.toString
     val file = new File(pathString)
-    file.mkdirs()
-    StringValue(pathString)
+    if (file.mkdirs()) {
+      StringValue(pathString, this)
+    } else {
+      NullValue
+    }
   }
 }
 
@@ -129,8 +133,14 @@ class CopyToFunction extends BinaryFunctionValue {
     if (parentFile != null && !parentFile.exists()) {
       parentFile.mkdirs()
     }
-    val amount = Files.copy(leftValue.evaluate.spinOff(), file.toPath, StandardCopyOption.REPLACE_EXISTING)
-    NumberValue(amount)
+    try {
+      val amount = Files.copy(leftValue.evaluate.spinOff(), file.toPath, StandardCopyOption.REPLACE_EXISTING)
+      NumberValue(amount)
+    } catch {
+      case e: Exception => {
+        throw new UnableToWriteFileException(path, e.getMessage, location())
+      }
+    }
   }
 }
 

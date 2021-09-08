@@ -164,7 +164,12 @@ type FileKind = "File" | "Folder"
 * ----
 **/
 @RuntimePrivilege(requires = "fs.Read")
-fun ls(folder: Path): Array<Path> = native("file::LSFunction")
+fun ls(folder: Path): Array<Path> = do {
+  @RuntimePrivilege(requires = "fs.Read")
+  fun internalLs(folder: Path) = native("file::LSFunction")
+  ---
+  internalLs(folder)
+}
 
 /**
 * Removes the file at the given location. Returns true if the file or folder was removed.
@@ -240,6 +245,7 @@ fun rm(path: Path):Boolean = native("file::RemoveFunction")
 * ["/tmp/dw-input-buffer-0.tmp","/tmp/dw-output-buffer-0.tmp"]
 * ----
 **/
+@RuntimePrivilege(requires = "fs.Read")
 fun ls(folder: Path, filterExpr: Regex): Array<Path> = do {
     ls(folder) filter ((dir) -> nameOf(dir) matches (filterExpr))
 }
@@ -324,14 +330,45 @@ fun exists(path: Path):Boolean = kindOf(path) != null
 * ----
 **/
 @RuntimePrivilege(requires = "fs.Read")
+@Labels(labels = ["cat"])
 fun contentOf(path: Path): Binary = do {
     readUrl(toUrl(path), "binary") as Binary
 }
 
 
 /**
-* Returns the content of the specified file
-*/
+* Transform the specified file path into a valid Url
+*
+* === Parameters
+*
+* [%header, cols="1,3"]
+* |===
+* | Name   | Description
+* | `path` | The path to be converted
+* |===
+*
+* === Example
+*
+* This example shows how the `toUrl` behaves under different inputs.
+*
+* ==== Source
+*
+* [source,DataWeave,linenums]
+* ----
+* %dw 2.0
+* output application/json
+* ---
+* toUrl( "/tmp/Application Test")
+*
+* ----
+*
+* ==== Output
+*
+* [source,Json,linenums]
+* ----
+* "file:/tmp/Application%20Test"
+* ----
+**/
 fun toUrl(path: Path): String = native("file::ToUrlFunction")
 
 /**
@@ -367,12 +404,13 @@ fun toUrl(path: Path): String = native("file::ToUrlFunction")
 * 5
 * ----
 **/
-@Labels(labels = ["write", "copy"])
+@Labels(labels = ["write", "copy", "cp"])
+@RuntimePrivilege(requires = "fs.Write")
 fun copyTo(binary: Binary, path: Path): Number = native("file::CopyToFunction")
 
 //Will be removed soon
-@Deprecated(since = "1.0.0",replacement = "copyTo")
-fun writeTo(path: Path, binary:Binary):Number= binary copyTo  path
+@Deprecated(since = "1.0.0", replacement = "copyTo")
+fun writeTo(path: Path, binary:Binary): Number= binary copyTo  path
 
 /**
 * Creates the a folder in the given path. And returns the path.
@@ -407,7 +445,8 @@ fun writeTo(path: Path, binary:Binary):Number= binary copyTo  path
 * "/tmp/a"
 * ----
 **/
-fun mkdir(path: Path): Path = native("file::MakeDirFunction")
+@RuntimePrivilege(requires = "fs.Write")
+fun mkdir(path: Path): Path | Null = native("file::MakeDirFunction")
 
 
 fun tree(path:Path): Array<Path> =
@@ -636,16 +675,19 @@ fun extensionOf(path: Path): String | Null = do {
 /**
  * Returns the Path value of the tmp directory.
  **/
+@RuntimePrivilege(requires = "fs.Read")
 fun tmp(): Path = native("file::TmpPathFunction")
 
 /**
  * Returns the Path value of the home directory.
  **/
+@RuntimePrivilege(requires = "fs.Read")
 fun home(): Path = native("file::HomePathFunction")
 
 /**
  * Returns the Path value of the working directory.
  **/
+@RuntimePrivilege(requires = "fs.Read")
 fun wd(): Path = native("file::WorkingDirectoryPathFunction")
 
 /**
@@ -683,8 +725,6 @@ fun wd(): Path = native("file::WorkingDirectoryPathFunction")
 * ----
 **/
 fun path(basePath: Path, part: String): Path = native("file::PathFunction")
-
-
 
 
 /**
