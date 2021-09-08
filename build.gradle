@@ -65,7 +65,7 @@ subprojects {
     }
 
     dependencies {
-        compile group: 'org.mule.weave', name: 'wlang', version: weaveVersion
+        compileOnly group: 'org.mule.weave', name: 'wlang', version: weaveVersion
         compile group: 'org.scala-lang', name: 'scala-library', version: scalaVersion
     }
 
