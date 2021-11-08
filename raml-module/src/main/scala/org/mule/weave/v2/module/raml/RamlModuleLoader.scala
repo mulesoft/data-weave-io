@@ -285,7 +285,7 @@ class RamlModuleLoader extends ModuleLoader with WeaveResourceResolverAware {
         val responseType = if (responses.isEmpty) {
           TypeReferenceNode(HttpClientResponseTypeName, Some(Seq(createEmptyBodyType, createEmptyHeaderType)))
         } else {
-          responses.reduce(UnionTypeNode)
+          responses.reduce((l, a) => UnionTypeNode(l, a, None))
         }
 
         val directiveNodes = ArrayBuffer[DirectiveNode]()
@@ -428,7 +428,7 @@ class RamlModuleLoader extends ModuleLoader with WeaveResourceResolverAware {
         val responseType = if (responses.isEmpty) {
           TypeReferenceNode(HttpServerResponseTypeName, Some(Seq(createEmptyBodyType, createEmptyHeaderType)))
         } else {
-          responses.reduce(UnionTypeNode)
+          responses.reduce((a, c) => UnionTypeNode(a, c, None))
         }
 
         //HttpHandler<RequestType, RequestHeaderType <: HttpHeaders, QueryParamsType <: QueryParams, ResponseType, ResponseHeaderType <: HttpHeaders>

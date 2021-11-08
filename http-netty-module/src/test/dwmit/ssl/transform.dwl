@@ -5,8 +5,8 @@ import * from dw::io::http::Client
 
 var result = [
 
-  request('GET', 'https://tls-v1-0.badssl.com:1010/'),
-  request('GET', 'https://tls-v1-1.badssl.com:1011/'),
+//  request('GET', 'https://tls-v1-0.badssl.com:1010/'),
+//  request('GET', 'https://tls-v1-1.badssl.com:1011/'),
 
   // Test against HTTP2 url
   request('GET', 'https://www.cloudflare.com/'),
