@@ -10,7 +10,7 @@ dependencies {
 
 
     compile group: 'org.asynchttpclient', name: 'async-http-client', version: '2.12.3'
-    compile group: 'io.netty', name: 'netty-all', version: '4.1.71.Final'
+    compile group: 'io.netty', name: 'netty-all', version: '4.1.72.Final'
 
     testCompile group: 'org.mule.weave', name: 'runtime-test-helpers', version: weaveVersion     
     testCompile group: 'org.scalatest', name: 'scalatest_2.12', version: '3.0.1'
