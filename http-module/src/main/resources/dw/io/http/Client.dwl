@@ -45,9 +45,66 @@ type OAuth = {token: String}
 
 type BasicAuth = {username: String, password: String}
 
+/**
+* Does a `GET` call the the specified URL
+*
+* === Parameters
+*
+* [%header, cols="1,1,3"]
+* |===
+* | Name | Type | Description
+* | url | String &#124; UrlBuilder | The url to be called
+* | httpRequest | HttpRequest | The request configuration information
+* |===
+*
+* === Example
+*
+* This example shows how the `GET` behaves under different inputs.
+*
+* ==== Source
+*
+* [source,DataWeave,linenums]
+* ----
+* %dw 2.0
+* output application/json
+* ---
+* GET("http://google.com")
+*
+* ----
+*
+**/
 fun GET(url: String | UrlBuilder, httpRequest: HttpRequest = {}): HttpClientResponse =
   request("GET", url, httpRequest)
 
+
+/**
+* Does a `POST` call the the specified URL
+*
+* === Parameters
+*
+* [%header, cols="1,1,3"]
+* |===
+* | Name | Type | Description
+* | url | String &#124; UrlBuilder | The url to be called
+* | httpRequest | HttpRequest | The request configuration information
+* |===
+*
+* === Example
+*
+* This example shows how the `GET` behaves under different inputs.
+*
+* ==== Source
+*
+* [source,DataWeave,linenums]
+* ----
+* %dw 2.0
+* output application/json
+* ---
+* POST("http://google.com")
+*
+* ----
+*
+**/
 fun POST(url: String | UrlBuilder, httpRequest: HttpRequest = {}): HttpClientResponse =
   request("POST", url, httpRequest)
 
@@ -63,28 +120,250 @@ fun POSTMultipart(url: String | UrlBuilder, httpRequest: HttpRequest<Multipart> 
 }
 
 
+/**
+* Does a `HEAD` call the the specified URL
+*
+* === Parameters
+*
+* [%header, cols="1,1,3"]
+* |===
+* | Name | Type | Description
+* | url | String &#124; UrlBuilder | The url to be called
+* | httpRequest | HttpRequest | The request configuration information
+* |===
+*
+* === Example
+*
+* This example shows how the `GET` behaves under different inputs.
+*
+* ==== Source
+*
+* [source,DataWeave,linenums]
+* ----
+* %dw 2.0
+* output application/json
+* ---
+* HEAD("http://google.com")
+*
+* ----
+*
+**/
 fun HEAD(url: String | UrlBuilder, httpRequest: HttpRequest = {}): HttpClientResponse =
   request("HEAD", url, httpRequest)
 
+
+
+/**
+* Does a `PUT` call the the specified URL
+*
+* === Parameters
+*
+* [%header, cols="1,1,3"]
+* |===
+* | Name | Type | Description
+* | url | String &#124; UrlBuilder | The url to be called
+* | httpRequest | HttpRequest | The request configuration information
+* |===
+*
+* === Example
+*
+* This example shows how the `GET` behaves under different inputs.
+*
+* ==== Source
+*
+* [source,DataWeave,linenums]
+* ----
+* %dw 2.0
+* output application/json
+* ---
+* PUT("http://google.com")
+*
+* ----
+*
+**/
 fun PUT(url: String | UrlBuilder, httpRequest: HttpRequest = {}): HttpClientResponse =
   request("PUT", url, httpRequest)
 
+
+
+/**
+* Does a `DELETE` call the the specified URL
+*
+* === Parameters
+*
+* [%header, cols="1,1,3"]
+* |===
+* | Name | Type | Description
+* | url | String &#124; UrlBuilder | The url to be called
+* | httpRequest | HttpRequest | The request configuration information
+* |===
+*
+* === Example
+*
+* This example shows how the `GET` behaves under different inputs.
+*
+* ==== Source
+*
+* [source,DataWeave,linenums]
+* ----
+* %dw 2.0
+* output application/json
+* ---
+* DELETE("http://google.com")
+*
+* ----
+*
+**/
 fun DELETE(url: String | UrlBuilder, httpRequest: HttpRequest = {}): HttpClientResponse =
   request("DELETE", url, httpRequest)
 
+
+
+/**
+* Does a `CONNECT` call the the specified URL
+*
+* === Parameters
+*
+* [%header, cols="1,1,3"]
+* |===
+* | Name | Type | Description
+* | url | String &#124; UrlBuilder | The url to be called
+* | httpRequest | HttpRequest | The request configuration information
+* |===
+*
+* === Example
+*
+* This example shows how the `GET` behaves under different inputs.
+*
+* ==== Source
+*
+* [source,DataWeave,linenums]
+* ----
+* %dw 2.0
+* output application/json
+* ---
+* CONNECT("http://google.com")
+*
+* ----
+*
+**/
 fun CONNECT(url: String | UrlBuilder, httpRequest: HttpRequest = {}): HttpClientResponse =
   request("CONNECT", url, httpRequest)
 
+
+
+/**
+* Does a `OPTIONS` call the the specified URL
+*
+* === Parameters
+*
+* [%header, cols="1,1,3"]
+* |===
+* | Name | Type | Description
+* | url | String &#124; UrlBuilder | The url to be called
+* | httpRequest | HttpRequest | The request configuration information
+* |===
+*
+* === Example
+*
+* This example shows how the `GET` behaves under different inputs.
+*
+* ==== Source
+*
+* [source,DataWeave,linenums]
+* ----
+* %dw 2.0
+* output application/json
+* ---
+* OPTIONS("http://google.com")
+*
+* ----
+*
+**/
 fun OPTIONS(url: String | UrlBuilder, httpRequest: HttpRequest = {}): HttpClientResponse =
   request("OPTIONS", url, httpRequest)
 
+
+
+/**
+* Does a `TRACE` call the the specified URL
+*
+* === Parameters
+*
+* [%header, cols="1,1,3"]
+* |===
+* | Name | Type | Description
+* | url | String &#124; UrlBuilder | The url to be called
+* | httpRequest | HttpRequest | The request configuration information
+* |===
+*
+* === Example
+*
+* This example shows how the `GET` behaves under different inputs.
+*
+* ==== Source
+*
+* [source,DataWeave,linenums]
+* ----
+* %dw 2.0
+* output application/json
+* ---
+* TRACE("http://google.com")
+*
+* ----
+*
+**/
 fun TRACE(url: String | UrlBuilder, httpRequest: HttpRequest = {}): HttpClientResponse =
   request("TRACE", url, httpRequest)
 
+
+
+/**
+* Does a `PATCH` call the the specified URL
+*
+* === Parameters
+*
+* [%header, cols="1,1,3"]
+* |===
+* | Name | Type | Description
+* | url | String &#124; UrlBuilder | The url to be called
+* | httpRequest | HttpRequest | The request configuration information
+* |===
+*
+* === Example
+*
+* This example shows how the `GET` behaves under different inputs.
+*
+* ==== Source
+*
+* [source,DataWeave,linenums]
+* ----
+* %dw 2.0
+* output application/json
+* ---
+* PATCH("http://google.com")
+*
+* ----
+*
+**/
 fun PATCH(url: String | UrlBuilder, httpRequest: HttpRequest = {}): HttpClientResponse =
   request("PATCH", url, httpRequest)
 
 
+/**
+* This is a generic http call
+*
+* === Parameters
+*
+* [%header, cols="1,1,3"]
+* |===
+* | Name | Type | Description
+* | method | HttpMethod |  The method name i.e "GET"
+* | url | String &#124; UrlBuilder |  The url to be called
+* | httpRequest | HttpRequest | The request config
+* |===
+*
+**/
 @RuntimePrivilege(requires = "http.Client")
 fun request(method: HttpMethod, url: String | UrlBuilder, httpRequest: HttpRequest = {}): HttpClientResponse = native("http::HttpRequestFunction")
 

@@ -1,3 +1,6 @@
+/**
+* This module has the types being used for Server and Client
+*/
 %dw 2.0
 
 // COMMON =========================================================

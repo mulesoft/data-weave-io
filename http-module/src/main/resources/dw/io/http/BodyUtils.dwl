@@ -34,35 +34,38 @@ fun generateBody(config: { body?: Any, headers?: Types::HttpHeaders, writerOptio
   body?: Binary,
   headers: Types::HttpHeaders
 } =
-  using(headers = normalizeHeaders(config.headers))
-    if(config.body? == false)
-      { headers: headers }
-    else
-      using(
-        contentType = headers['Content-Type'] default (
-          config.body match {
-            case is Binary -> 'application/octet-stream'
-            case is dw::module::Multipart::Multipart -> 'multipart/form-data; boundary=$(config.writerOptions.boundary default dw::module::Multipart::generateBoundary())'
-            case is String -> 'text/plain'
-            else -> 'application/json'
-          }
-        ),
-        writerOptions =
-          (config.writerOptions default {}) mergeWith {
-            (boundary: (contentType scan /boundary=(.*)/)[0][1]) if contentType startsWith 'multipart/form-data'
-          },
-        body = (config.body match {
-                 case is Binary -> config.body
-                 else -> write(config.body, contentType, log(writerOptions))
-               }) as Binary
-      ) {
-          headers:
-            headers mergeWith {
-              'Content-Type': contentType,
-              ('Content-Length': sizeOf(body)) if body is Binary
-            },
-          body: body
-        }
+  do {
+    var headers = normalizeHeaders(config.headers)
+    ---
+    if (!config.body?)
+      {
+        headers: headers
+      }
+    else do {
+      var contentType = headers['Content-Type'] default (
+                                      config.body match {
+                                        case is Binary -> 'application/octet-stream'
+                                        case is dw::module::Multipart::Multipart -> 'multipart/form-data; boundary=$(config.writerOptions.boundary default dw::module::Multipart::generateBoundary())'
+                                        case is String -> 'text/plain'
+                                        else -> 'application/json'
+                                      })
+      var writerOptions = (config.writerOptions default {}) mergeWith {
+        (boundary: (contentType scan /boundary=(.*)/)[0][1]) if (contentType startsWith 'multipart/form-data')
+      }
+      var body = (config.body match {
+        case is Binary -> config.body
+        else -> write(config.body, contentType, log(writerOptions))
+      }) as Binary
+      ---
+      {
+        headers: headers mergeWith {
+          'Content-Type': contentType,
+          ('Content-Length': sizeOf(body)) if (body is Binary)
+        },
+        body: body
+      }
+  }
+}
 
 fun safeRead(mime: String, payload: String | Binary | Null, readerOptions: Object): Any =
   mime match {

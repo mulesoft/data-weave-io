@@ -1,3 +1,6 @@
+/**
+* Utility module for working with ports
+*/
 %dw 2.0
 
 /**

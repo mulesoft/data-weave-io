@@ -1,3 +1,6 @@
+/**
+* This module has http interceptors that are useful when configuring a server
+*/
 %dw 2.0
 
 import * from dw::io::http::Types
@@ -7,6 +10,23 @@ import * from dw::core::Objects
 fun isOptions(request: HttpServerRequest) =
   request.method == "OPTIONS"
 
+/**
+* Configure CORS intereceptor
+*
+* === Parameters
+*
+* [%header, cols="1,1,3"]
+* |===
+* | Name | Type | Description
+* | allowOrigin | Array<String&#62; &#124; "SameOrigin" |
+* | allowMethods | Array<String&#62; |
+* | allowHTTPHeaders | Array<String&#62; |
+* | exposeHeaders | Array<String&#62; |
+* | maxAge | Number |
+* | allowCredentials | Boolean |
+* |===
+*
+**/
 fun CORS(allowOrigin: Array<String> | "SameOrigin" = ["*"],
          allowMethods: Array<String> = ["POST", "GET", "OPTIONS"],
          allowHTTPHeaders: Array<String> = ["*"],
