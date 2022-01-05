@@ -46,7 +46,9 @@ class NativeFileModule extends NativeValueProvider {
         new HomePathFunction(),
         new ZipFunction(),
         new UnzipFunction(),
-        new RemoveFunction()))
+        new RemoveFunction(),
+        new ParentOfFunction(),
+        new SeparatorFunction()))
   }
 
   override def name() = "file"
@@ -96,6 +98,21 @@ class NameOfFunction extends UnaryFunctionValue {
     val file = new File(pathString)
     StringValue(file.getName)
   }
+}
+
+class ParentOfFunction extends UnaryFunctionValue {
+  override val R = StringType
+
+  override protected def doExecute(path: Value[R.T])(implicit ctx: EvaluationContext): Value[_] = {
+    val pathString = path.evaluate.toString
+    val file = new File(pathString)
+    StringValue(file.getParent)
+  }
+}
+
+class SeparatorFunction extends EmptyFunctionValue {
+
+  override protected def doExecute()(implicit ctx: EvaluationContext): Value[_] = StringValue(File.separator)
 }
 
 class ToUrlFunction extends UnaryFunctionValue {

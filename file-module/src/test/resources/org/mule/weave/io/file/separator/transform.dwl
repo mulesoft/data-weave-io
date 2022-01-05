@@ -1,6 +1,7 @@
 %dw 2.0
 output application/json
+import * from dw::io::file::FileSystem
 ---
 {
-  foo: "bar"
+  sep: separator()
 }

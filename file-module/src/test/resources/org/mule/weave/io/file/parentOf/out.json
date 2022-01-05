@@ -1,5 +1,3 @@
 {
-  "isDefined": false,
-  "kind": "Folder",
-  "isDefined2": true
+  "parent": "/tmp/subfolder"
 }
