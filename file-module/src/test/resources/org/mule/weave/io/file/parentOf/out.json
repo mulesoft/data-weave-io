@@ -1,3 +1,6 @@
 {
-  "parent": "/tmp/subfolder"
+  "parent": "/tmp/subfolder",
+  "nullParent": null,
+  "defaultedParent": "/tmp",
+  "returnsNullType": true
 }

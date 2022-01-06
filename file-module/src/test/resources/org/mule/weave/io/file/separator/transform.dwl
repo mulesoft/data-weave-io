@@ -3,5 +3,5 @@ output application/json
 import * from dw::io::file::FileSystem
 ---
 {
-  sep: separator()
+  sep: ['\\' ,'\/'] contains separator()
 }

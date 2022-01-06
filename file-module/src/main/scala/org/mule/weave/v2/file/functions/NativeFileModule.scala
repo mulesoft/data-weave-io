@@ -106,7 +106,7 @@ class ParentOfFunction extends UnaryFunctionValue {
   override protected def doExecute(path: Value[R.T])(implicit ctx: EvaluationContext): Value[_] = {
     val pathString = path.evaluate.toString
     val file = new File(pathString)
-    StringValue(file.getParent)
+    Option(file.getParent).map(StringValue(_)).getOrElse(NullValue)
   }
 }
 

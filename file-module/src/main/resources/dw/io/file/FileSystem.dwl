@@ -369,7 +369,7 @@ fun contentOf(path: Path): Binary = do {
 * "tmp/someDir"
 * ----
 **/
-fun parentOf(path: Path): String = native("file::ParentOfFunction")
+fun parentOf(path: Path): String | Null = native("file::ParentOfFunction")
 
 /**
 *
