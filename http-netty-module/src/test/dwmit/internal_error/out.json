@@ -1,8 +1,0 @@
-[
-  {
-    "name": "Fail!\n\n50| fun fail (message: String = 'Error'): Nothing = native(\"system::fail\")\n                                                    ^^^^^^^^^^^^^^^^^^^^^^\nTrace:\n  at dw::Runtime::fail (line: 50, column: 49)\n  at internal_error::transform::methodHandler (line: 13, column: 17)\n  at dw::io::http::Server::main (line: 203, column: 26)",
-    "Content-Type": "text/plain",
-    "status": 500
-  },
-  true
-]

@@ -1,7 +1,7 @@
 {
   a: {
     status: 401,
-    body: "" as Binary {base: "64"}
+    body: ""
   },
   b: {
     status: 200,
