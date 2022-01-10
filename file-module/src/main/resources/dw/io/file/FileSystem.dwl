@@ -335,6 +335,71 @@ fun contentOf(path: Path): Binary = do {
     readUrl(toUrl(path), "binary") as Binary
 }
 
+/**
+* Returns the path to the parent folder of a given file.
+*
+* === Parameters
+*
+* [%header, cols="1,1,3"]
+* |===
+* | Name | Type | Description
+* | path | Path | The path to the file of interest.
+* |===
+*
+* === Example
+*
+* This example shows how the `parentOf` behaves under different inputs.
+*
+* ==== Source
+*
+* [source,DataWeave,linenums]
+* ----
+* %dw 2.0
+* output application/json
+* import parentOf from dw::io::file::FileSystem
+* ---
+* parentOf("tmp/someDir/someFile.txt")
+*
+* ----
+*
+* ==== Output
+*
+* [source,Json,linenums]
+* ----
+* "tmp/someDir"
+* ----
+**/
+fun parentOf(path: Path): String | Null = native("file::ParentOfFunction")
+
+/**
+*
+* Returns the system-dependent default name-separator character, represented as a string for convenience.
+*
+* === Example
+*
+* This example shows how the `separator` behaves under different inputs.
+*
+* ==== Source
+*
+* [source,DataWeave,linenums]
+* ----
+* %dw 2.0
+* output application/json
+* import separator from dw::io::file::FileSystem
+* ---
+* // Will return "/" for Unix-based systems, and "\" for Windows-based systems.
+* separator()
+*
+* ----
+*
+* ==== Output
+*
+* [source,Json,linenums]
+* ----
+* "/"
+* ----
+**/
+fun separator(): String = native("file::SeparatorFunction")
 
 /**
 * Transform the specified file path into a valid Url
@@ -671,6 +736,8 @@ fun extensionOf(path: Path): String | Null = do {
     else
         path[lastDotIndex to -1]
 }
+
+
 
 /**
  * Returns the Path value of the tmp directory.
