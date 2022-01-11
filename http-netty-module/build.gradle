@@ -9,6 +9,11 @@ dependencies {
 
 
     testCompile group: 'org.mule.weave', name: 'wtf', version: wtfVersion
+//    These are needed since wtf doesn't package its dependencies
+    testCompile group: 'org.mule.weave', name: 'runtime', version: weaveVersion
+    testCompile group: 'org.mule.weave', name: 'java-module', version: weaveVersion
+    testCompile group: 'org.mule.weave', name: 'core-modules', version: weaveVersion
+    testCompile group: 'org.mule.weave', name: 'wlang', version: weaveVersion
 }
 
 test.dependsOn("weavetest")

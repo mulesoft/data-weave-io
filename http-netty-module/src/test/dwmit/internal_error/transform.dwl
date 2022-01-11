@@ -25,7 +25,7 @@ var server = api(
       body: "{}TATO"
     }
   ) then {
-    name: ($).body ,
+    statusText: ($).statusText ,
     "Content-Type": $.headers."Content-Type",
     status: ($).status ,
   },
