@@ -13,7 +13,6 @@ dependencies {
     testCompile group: 'org.mule.weave', name: 'runtime', version: weaveVersion
     testCompile group: 'org.mule.weave', name: 'java-module', version: weaveVersion
     testCompile group: 'org.mule.weave', name: 'core-modules', version: weaveVersion
-    testCompile group: 'org.mule.weave', name: 'debugger', version: weaveVersion
     testCompile group: 'org.mule.weave', name: 'wlang', version: weaveVersion
 }
 
