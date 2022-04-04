@@ -8,4 +8,4 @@ then
     exit 1
 fi
 
-./gradlew -Pmaven.settings.location=$1 test && ./gradlew -Pmaven.settings.location=$1 -PweaveVersion=2.5.0-SNAPSHOT test
+./gradlew -Pmaven.settings.location=$1 test && ./gradlew -Pmaven.settings.location=$1 -PweaveVersion=2.5.0-SNAPSHOT clean test
