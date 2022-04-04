@@ -20,7 +20,8 @@
     "method": "GET",
     "path": "/properties",
     "params": {
-      
+      "some": "query",
+      "other": "value"
     },
     "headers": {
       "X-Custom": "headerValue",

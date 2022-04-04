@@ -74,8 +74,7 @@ class HttpServiceHandler(callback: HttpServerRequest => HttpServerResponse) exte
   def toWeaveRequest(request: FullHttpRequest): HttpServerRequest = {
     val uriParts = request.uri().split('?').iterator
     val path = uriParts.next()
-    val queryString = if (uriParts.hasNext) uriParts.next() else ""
-    HttpServerRequest(new ByteBufInputStream(request.content()), path, request.method.name, fromHttpHeaders(request.headers()), fromQueryString(queryString))
+    HttpServerRequest(new ByteBufInputStream(request.content()), path, request.method.name, fromHttpHeaders(request.headers()), fromQueryString(request.uri()))
   }
 
   def toHttpHeaders(headers: Map[String, String]): HttpHeaders = {
@@ -91,8 +90,8 @@ class HttpServiceHandler(callback: HttpServerRequest => HttpServerResponse) exte
     headers
   }
 
-  def fromQueryString(queryString: String): Seq[(String, String)] = {
-    val decoder = new QueryStringDecoder(queryString)
+  def fromQueryString(uri: String): Seq[(String, String)] = {
+    val decoder = new QueryStringDecoder(uri)
     val toSeq = decoder.parameters().asScala.toSeq
     toSeq.flatMap((pair) => {
       pair._2.asScala.map((value) => {
