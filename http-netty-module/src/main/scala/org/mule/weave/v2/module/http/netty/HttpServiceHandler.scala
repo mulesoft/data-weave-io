@@ -74,7 +74,6 @@ class HttpServiceHandler(callback: HttpServerRequest => HttpServerResponse) exte
   def toWeaveRequest(request: FullHttpRequest): HttpServerRequest = {
     val uriParts = request.uri().split('?').iterator
     val path = uriParts.next()
-    val queryString = if (uriParts.hasNext) uriParts.next() else ""
     HttpServerRequest(new ByteBufInputStream(request.content()), path, request.method.name, fromHttpHeaders(request.headers()), fromQueryString(request.uri()))
   }
 
