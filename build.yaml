@@ -1,0 +1,18 @@
+projectType: Shell
+devBranchesRegex: "master"
+releaseBranchesRegex: "release\\/.+"
+enableScheduleTrigger: true
+scheduleTriggerCommand: "@daily"
+mavenSettingsXmlId: data-weave-maven-settings
+slackChannel: data-weave-bot
+enableSlackSuccessNotifications: true
+enableSlackFailedTestsNotifications: true
+junitTestResults: "**/build/test-results/test/*.xml, **/build/test-results/*.xml"
+enableAllureTestReportStage: false
+enableSonarQubeStage: false
+enableNexusIqStage: false
+upstreamProjects: "DataWeave/data-weave/master"
+
+additionalTestConfigs:
+  data-weave-2.5.0:
+    jdkTool: OPEN-JDK11
