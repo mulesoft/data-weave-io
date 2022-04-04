@@ -1,9 +1,0 @@
-{
-  "contentType": "application/csv",
-  "content": "name|lastName\nDaniel|Belohlavek",
-  "options": {
-    "separator": "|",
-    "ignoreEmptyLines": true,
-    "bodyStartLineNumber": 1
-  }
-}

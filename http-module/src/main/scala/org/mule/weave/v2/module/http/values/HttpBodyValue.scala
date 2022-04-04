@@ -54,7 +54,8 @@ class HttpBodyValue(val sourceProvider: SourceProvider, mayBeContentType: Option
 
   override def valueType(implicit ctx: EvaluationContext): Type = {
     if (valueTypeValue == null) {
-      valueTypeValue = super.valueType.withSchema(() => Some(SchemaValue(schema.get)))
+      val superValueType = super.valueType
+      valueTypeValue = Type.extend(superValueType.name, superValueType, () => Some(SchemaValue(schema.get)))
     }
     valueTypeValue
   }
