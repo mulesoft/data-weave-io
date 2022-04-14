@@ -1,12 +1,11 @@
 package org.mule.weave.v2.file.functions
 
-import org.mule.weave.v2.core.functions.BinaryFunctionValue
-import org.mule.weave.v2.core.functions.EmptyFunctionValue
-import org.mule.weave.v2.core.functions.UnaryFunctionValue
+import org.mule.weave.v2.core.functions.{ BinaryFunctionValue, EmptyFunctionValue, SecureBinaryFunctionValue, SecureEmptyFunctionValue, SecureUnaryFunctionValue, UnaryFunctionValue }
 import org.mule.weave.v2.file.functions.exceptions.InvalidFileKindPathException
 import org.mule.weave.v2.file.functions.exceptions.UnableToWriteFileException
 import org.mule.weave.v2.file.functions.exceptions.ZipException
 import org.mule.weave.v2.model.EvaluationContext
+import org.mule.weave.v2.model.service.WeaveRuntimePrivilege
 import org.mule.weave.v2.model.types.ArrayType
 import org.mule.weave.v2.model.types.BinaryType
 import org.mule.weave.v2.model.types.StringType
@@ -56,10 +55,12 @@ class NativeFileModule extends NativeValueProvider {
   override def getNativeFunction(name: String): Option[FunctionValue] = functions.get(name)
 }
 
-class LSFunction extends UnaryFunctionValue {
+class LSFunction extends SecureUnaryFunctionValue {
   override val R = StringType
 
-  override def doExecute(path: R.V)(implicit ctx: EvaluationContext): Value[_] = {
+  override val requiredPrivilege: WeaveRuntimePrivilege = FileWeaveRuntimePrivilege.FS_READ
+
+  override protected def onSecureExecution(path: R.V)(implicit ctx: EvaluationContext): Value[_] = {
     val pathString = path.evaluate.toString
     val files = new File(pathString).listFiles()
     if (files == null) {
@@ -73,11 +74,13 @@ class LSFunction extends UnaryFunctionValue {
   }
 }
 
-class FileTypeOfFunction extends UnaryFunctionValue {
+class FileTypeOfFunction extends SecureUnaryFunctionValue {
 
   override val R = StringType
 
-  override def doExecute(path: R.V)(implicit ctx: EvaluationContext): Value[_] = {
+  override val requiredPrivilege: WeaveRuntimePrivilege = FileWeaveRuntimePrivilege.FS_READ
+
+  override protected def onSecureExecution(path: R.V)(implicit ctx: EvaluationContext): Value[_] = {
     val pathString = path.evaluate.toString
     val file = new File(pathString)
     if (!file.exists()) {
@@ -125,10 +128,12 @@ class ToUrlFunction extends UnaryFunctionValue {
   }
 }
 
-class MakeDirFunction extends UnaryFunctionValue {
+class MakeDirFunction extends SecureUnaryFunctionValue {
   override val R = StringType
 
-  override def doExecute(path: R.V)(implicit ctx: EvaluationContext): Value[_] = {
+  override val requiredPrivilege: WeaveRuntimePrivilege = FileWeaveRuntimePrivilege.FS_WRITE
+
+  override protected def onSecureExecution(path: R.V)(implicit ctx: EvaluationContext): Value[_] = {
     val pathString = path.evaluate.toString
     val file = new File(pathString)
     if (file.mkdirs()) {
@@ -139,11 +144,13 @@ class MakeDirFunction extends UnaryFunctionValue {
   }
 }
 
-class CopyToFunction extends BinaryFunctionValue {
+class CopyToFunction extends SecureBinaryFunctionValue {
   override val L = BinaryType
   override val R = StringType
 
-  override protected def doExecute(leftValue: Value[L.T], rightValue: Value[R.T])(implicit ctx: EvaluationContext): Value[_] = {
+  override val requiredPrivilege: WeaveRuntimePrivilege = FileWeaveRuntimePrivilege.FS_WRITE
+
+  override protected def onSecureExecution(leftValue: Value[L.T], rightValue: Value[R.T])(implicit ctx: EvaluationContext): Value[_] = {
     val path: String = rightValue.evaluate.toString
     val file = new File(path)
     val parentFile = file.getParentFile
@@ -173,29 +180,37 @@ class PathFunction extends BinaryFunctionValue {
   }
 }
 
-class TmpPathFunction extends EmptyFunctionValue {
-  override protected def doExecute()(implicit ctx: EvaluationContext): Value[_] = {
+class TmpPathFunction extends SecureEmptyFunctionValue {
+  override val requiredPrivilege: WeaveRuntimePrivilege = FileWeaveRuntimePrivilege.FS_READ
+
+  override protected def onSecureExecution()(implicit ctx: EvaluationContext): Value[_] = {
     StringValue(System.getProperty("java.io.tmpdir"))
   }
 }
 
-class HomePathFunction extends EmptyFunctionValue {
-  override protected def doExecute()(implicit ctx: EvaluationContext): Value[_] = {
+class HomePathFunction extends SecureEmptyFunctionValue {
+  override val requiredPrivilege: WeaveRuntimePrivilege = FileWeaveRuntimePrivilege.FS_READ
+
+  override protected def onSecureExecution()(implicit ctx: EvaluationContext): Value[_] = {
     StringValue(System.getProperty("user.home"))
   }
 }
 
-class WorkingDirectoryPathFunction extends EmptyFunctionValue {
-  override protected def doExecute()(implicit ctx: EvaluationContext): Value[_] = {
+class WorkingDirectoryPathFunction extends SecureEmptyFunctionValue {
+  override val requiredPrivilege: WeaveRuntimePrivilege = FileWeaveRuntimePrivilege.FS_READ
+
+  override protected def onSecureExecution()(implicit ctx: EvaluationContext): Value[_] = {
     StringValue(System.getProperty("user.dir"))
   }
 }
 
-class ZipFunction extends BinaryFunctionValue {
+class ZipFunction extends SecureBinaryFunctionValue {
   override val L = ArrayType
   override val R = StringType
 
-  override protected def doExecute(leftValue: L.V, rightValue: R.V)(implicit ctx: EvaluationContext): Value[_] = {
+  override val requiredPrivilege: WeaveRuntimePrivilege = FileWeaveRuntimePrivilege.FS_WRITE
+
+  override protected def onSecureExecution(leftValue: L.V, rightValue: R.V)(implicit ctx: EvaluationContext): Value[_] = {
     val zipPath = rightValue.evaluate.toString
     try {
       val zipFileToCreate = new File(zipPath)
@@ -255,10 +270,12 @@ class ZipFunction extends BinaryFunctionValue {
   }
 }
 
-class RemoveFunction extends UnaryFunctionValue {
+class RemoveFunction extends SecureUnaryFunctionValue {
   override val R = StringType
 
-  override protected def doExecute(v: R.V)(implicit ctx: EvaluationContext): Value[_] = {
+  override val requiredPrivilege: WeaveRuntimePrivilege = FileWeaveRuntimePrivilege.FS_WRITE
+
+  override protected def onSecureExecution(v: R.V)(implicit ctx: EvaluationContext): Value[_] = {
     val filePath = v.evaluate.toString
     BooleanValue(deleteDirectory(new File(filePath)))
   }
@@ -275,11 +292,13 @@ class RemoveFunction extends UnaryFunctionValue {
 
 }
 
-class UnzipFunction extends BinaryFunctionValue {
+class UnzipFunction extends SecureBinaryFunctionValue {
   override val L = StringType
   override val R = StringType
 
-  override protected def doExecute(leftValue: L.V, rightValue: R.V)(implicit ctx: EvaluationContext): Value[_] = {
+  override val requiredPrivilege: WeaveRuntimePrivilege = FileWeaveRuntimePrivilege.FS_WRITE
+
+  override protected def onSecureExecution(leftValue: L.V, rightValue: R.V)(implicit ctx: EvaluationContext): Value[_] = {
     val fileZip = leftValue.evaluate.toString
     val destDirPath = rightValue.evaluate.toString
     unzip(fileZip, destDirPath)

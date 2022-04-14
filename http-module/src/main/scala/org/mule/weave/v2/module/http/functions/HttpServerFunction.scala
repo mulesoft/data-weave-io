@@ -5,23 +5,17 @@ import java.io.InputStream
 import java.io.PrintWriter
 import java.io.StringWriter
 import java.util
-import org.mule.weave.v2.core.functions.BinaryFunctionValue
-import org.mule.weave.v2.core.functions.EmptyFunctionValue
+import org.mule.weave.v2.core.functions.{ EmptyFunctionValue, SecureBinaryFunctionValue }
 import org.mule.weave.v2.interpreted.ExecutionContext
 import org.mule.weave.v2.model.EvaluationContext
 import org.mule.weave.v2.model.ServiceManager
 import org.mule.weave.v2.model.capabilities.UnknownLocationCapable
+import org.mule.weave.v2.model.service.WeaveRuntimePrivilege
 import org.mule.weave.v2.model.structure.KeyValuePair
 import org.mule.weave.v2.model.types.BinaryType
 import org.mule.weave.v2.model.types.FunctionType
 import org.mule.weave.v2.model.types.ObjectType
-import org.mule.weave.v2.model.values.BooleanValue
-import org.mule.weave.v2.model.values.KeyValue
-import org.mule.weave.v2.model.values.NumberValue
-import org.mule.weave.v2.model.values.ObjectValue
-import org.mule.weave.v2.model.values.StringValue
-import org.mule.weave.v2.model.values.Value
-import org.mule.weave.v2.model.values.ValuesHelper
+import org.mule.weave.v2.model.values.{ BooleanValue, KeyValue, NumberValue, ObjectValue, StringValue, Value, ValuesHelper }
 import org.mule.weave.v2.module.DataFormatManager
 import org.mule.weave.v2.module.http.HttpHeader.CONTENT_LENGTH_HEADER
 import org.mule.weave.v2.module.http.HttpHeader.CONTENT_TYPE_HEADER
@@ -43,13 +37,15 @@ import org.mule.weave.v2.util.ObjectValueUtils._
 
 import scala.collection.JavaConverters._
 
-class HttpServerFunction extends BinaryFunctionValue {
+class HttpServerFunction extends SecureBinaryFunctionValue {
 
   override val L: ObjectType = ObjectType
 
   override val R: FunctionType = FunctionType
 
-  override def doExecute(value1: L.V, value2: R.V)(implicit context: EvaluationContext): Value[_] = {
+  override val requiredPrivilege: WeaveRuntimePrivilege = HttpWeaveRuntimePrivilege.HTTP_SERVER
+
+  override protected def onSecureExecution(value1: L.V, value2: R.V)(implicit context: EvaluationContext): Value[_] = {
     val config = ObjectType.coerce(value1)
     val callBack = FunctionType.coerce(value2)
     val manager: ServiceManager = context.serviceManager
