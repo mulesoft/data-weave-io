@@ -119,7 +119,7 @@ type HttpInterceptor = {onRequest?: (HttpServerRequest) -> InterceptedHttpReques
 * ----
 *
 **/
-@RuntimePrivilege(requires = "http.Server")
+@RuntimePrivilege(requires = "http::Server")
 fun server<HttpHandlerType <: HttpHandler>(configuration: HttpServerOptions, handler: HttpHandlerType): HttpServer = native("http::HttpServerFunction")
 
 

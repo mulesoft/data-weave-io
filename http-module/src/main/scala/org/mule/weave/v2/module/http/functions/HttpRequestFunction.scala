@@ -1,7 +1,8 @@
 package org.mule.weave.v2.module.http.functions
 
-import org.mule.weave.v2.core.functions.TernaryFunctionValue
+import org.mule.weave.v2.core.functions.SecureTernaryFunctionValue
 import org.mule.weave.v2.model.EvaluationContext
+import org.mule.weave.v2.model.service.WeaveRuntimePrivilege
 import org.mule.weave.v2.model.structure.KeyValuePair
 import org.mule.weave.v2.model.structure.ObjectSeq
 import org.mule.weave.v2.model.types._
@@ -44,7 +45,7 @@ import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 
 // request("GET", "URL", headers = "{}", body = Any | Null , config)
-class HttpRequestFunction extends TernaryFunctionValue {
+class HttpRequestFunction extends SecureTernaryFunctionValue {
   override val First: StringType = StringType
 
   override val Second: UnionType = UnionType(Seq(StringType, ObjectType))
@@ -56,6 +57,8 @@ class HttpRequestFunction extends TernaryFunctionValue {
       ObjectValue.empty
     }
   })
+
+  override val requiredPrivilege: WeaveRuntimePrivilege = HttpWeaveRuntimePrivilege.HTTP_CLIENT
 
   def asHeadersValue(headers: HttpClientHeaders): Value[_] = {
     val names = headers.headerNames
@@ -79,7 +82,7 @@ class HttpRequestFunction extends TernaryFunctionValue {
     ObjectValue(entries)
   }
 
-  override protected def doExecute(methodValue: First.V, urlValue: Second.V, requestValue: Third.V)(implicit ctx: EvaluationContext): Value[_] = {
+  override protected def onSecureExecution(methodValue: First.V, urlValue: Second.V, requestValue: Third.V)(implicit ctx: EvaluationContext): Value[_] = {
     val method: String = methodValue.evaluate.toString
 
     val (url, queryParams) = urlValue.evaluate match {
