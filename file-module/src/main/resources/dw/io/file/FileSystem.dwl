@@ -163,9 +163,9 @@ type FileKind = "File" | "Folder"
 * ["/tmp/foo.txt","/tmp/dw-input-buffer-0.tmp","/tmp/dw-output-buffer-0.tmp"]
 * ----
 **/
-@RuntimePrivilege(requires = "fs.Read")
+@RuntimePrivilege(requires = "fs::Read")
 fun ls(folder: Path): Array<Path> = do {
-  @RuntimePrivilege(requires = "fs.Read")
+  @RuntimePrivilege(requires = "fs::Read")
   fun internalLs(folder: Path) = native("file::LSFunction")
   ---
   internalLs(folder)
@@ -207,7 +207,7 @@ fun ls(folder: Path): Array<Path> = do {
 * true
 * ----
 **/
-@RuntimePrivilege(requires = "fs.Write")
+@RuntimePrivilege(requires = "fs::Write")
 fun rm(path: Path):Boolean = native("file::RemoveFunction")
 
 /**
@@ -245,7 +245,7 @@ fun rm(path: Path):Boolean = native("file::RemoveFunction")
 * ["/tmp/dw-input-buffer-0.tmp","/tmp/dw-output-buffer-0.tmp"]
 * ----
 **/
-@RuntimePrivilege(requires = "fs.Read")
+@RuntimePrivilege(requires = "fs::Read")
 fun ls(folder: Path, filterExpr: Regex): Array<Path> = do {
     ls(folder) filter ((dir) -> nameOf(dir) matches (filterExpr))
 }
@@ -253,7 +253,7 @@ fun ls(folder: Path, filterExpr: Regex): Array<Path> = do {
 /**
 * Returns the file type. "File" or "Folder" or null if it doesn't exits
 */
-@RuntimePrivilege(requires = "fs.Read")
+@RuntimePrivilege(requires = "fs::Read")
 fun kindOf(path: Path): FileKind | Null = native("file::FileTypeOfFunction")
 
 /**
@@ -329,7 +329,7 @@ fun exists(path: Path):Boolean = kindOf(path) != null
 * "Hello"
 * ----
 **/
-@RuntimePrivilege(requires = "fs.Read")
+@RuntimePrivilege(requires = "fs::Read")
 @Labels(labels = ["cat"])
 fun contentOf(path: Path): Binary = do {
     readUrl(toUrl(path), "binary") as Binary
@@ -470,7 +470,7 @@ fun toUrl(path: Path): String = native("file::ToUrlFunction")
 * ----
 **/
 @Labels(labels = ["write", "copy", "cp"])
-@RuntimePrivilege(requires = "fs.Write")
+@RuntimePrivilege(requires = "fs::Write")
 fun copyTo(binary: Binary, path: Path): Number = native("file::CopyToFunction")
 
 //Will be removed soon
@@ -510,7 +510,7 @@ fun writeTo(path: Path, binary:Binary): Number= binary copyTo  path
 * "/tmp/a"
 * ----
 **/
-@RuntimePrivilege(requires = "fs.Write")
+@RuntimePrivilege(requires = "fs::Write")
 fun mkdir(path: Path): Path | Null = native("file::MakeDirFunction")
 
 
@@ -552,7 +552,7 @@ fun tree(path:Path): Array<Path> =
 * "/tmp/outputZip.zip"
 * ----
 **/
-@RuntimePrivilege(requires = "fs.Write")
+@RuntimePrivilege(requires = "fs::Write")
 fun zipInto(paths: Array<Path>, zipPath: Path): Path = native("file::ZipFunction")
 
 /**
@@ -590,7 +590,7 @@ fun zipInto(paths: Array<Path>, zipPath: Path): Path = native("file::ZipFunction
 * "/tmp/dw_io_test/outputZip"
 * ----
 **/
-@RuntimePrivilege(requires = "fs.Write")
+@RuntimePrivilege(requires = "fs::Write")
 fun unzipTo(zipPath: Path, targetDirectory: Path): Path = native("file::UnzipFunction")
 
 /**
@@ -742,19 +742,19 @@ fun extensionOf(path: Path): String | Null = do {
 /**
  * Returns the Path value of the tmp directory.
  **/
-@RuntimePrivilege(requires = "fs.Read")
+@RuntimePrivilege(requires = "fs::Read")
 fun tmp(): Path = native("file::TmpPathFunction")
 
 /**
  * Returns the Path value of the home directory.
  **/
-@RuntimePrivilege(requires = "fs.Read")
+@RuntimePrivilege(requires = "fs::Read")
 fun home(): Path = native("file::HomePathFunction")
 
 /**
  * Returns the Path value of the working directory.
  **/
-@RuntimePrivilege(requires = "fs.Read")
+@RuntimePrivilege(requires = "fs::Read")
 fun wd(): Path = native("file::WorkingDirectoryPathFunction")
 
 /**
