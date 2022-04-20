@@ -14,12 +14,11 @@
   },
   "invalidParams": {
     "status": "GRACEFUL",
-    "exitCode": 1,
+    "exitCode": true,
     "out": false
   },
   "timeout": {
     "status": "KILLED",
-    "exitCode": null,
     "out": false
   }
 }
