@@ -1,0 +1,25 @@
+{
+  "ls": {
+    "status": "GRACEFUL",
+    "exitCode": 0,
+    "out": false
+  },
+  "invalid": {
+    "status": "ERROR",
+    "message": "Cannot run program \"xxaaaQQQ\": error=2, No such file or directory"
+  },
+  "emptyArg": {
+    "status": "ERROR",
+    "message": "Invalid argument `cmd` should not be empty or have null values."
+  },
+  "invalidParams": {
+    "status": "GRACEFUL",
+    "exitCode": 1,
+    "out": false
+  },
+  "timeout": {
+    "status": "KILLED",
+    "exitCode": null,
+    "out": false
+  }
+}
