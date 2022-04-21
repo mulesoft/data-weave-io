@@ -18,5 +18,12 @@ import * from dw::io::process::Process
   }) then {
     status: $.status,
     out: isEmpty($.stdErr)
+  },
+  timeoutWithUnit: exec(["sleep", "1234"], {
+      timeout: 2,
+      timeoutUnit: "seconds"
+  }) then {
+    status: $.status,
+    out: isEmpty($.stdErr)
   }
 }

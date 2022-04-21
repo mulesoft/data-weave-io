@@ -1,7 +1,9 @@
 package org.mule.weave.v2.process.functions
 
 import org.mule.weave.v2.core.functions.SecureBinaryFunctionValue
+import org.mule.weave.v2.exception.InvalidUnitException
 import org.mule.weave.v2.model.EvaluationContext
+import org.mule.weave.v2.model.capabilities.UnknownLocationCapable
 import org.mule.weave.v2.model.service.WeaveRuntimePrivilege
 import org.mule.weave.v2.model.types.ArrayType
 import org.mule.weave.v2.model.types.BinaryType
@@ -38,12 +40,16 @@ class NativeProcessModule extends NativeValueProvider {
   override def getNativeFunction(name: String): Option[FunctionValue] = functions.get(name)
 }
 
+object ProcessWeaveRuntimePrivilege {
+  val EXEC: WeaveRuntimePrivilege = new WeaveRuntimePrivilege("Process::exec")
+}
+
 class ExecProcessFunction extends SecureBinaryFunctionValue {
 
   override val L = new ArrayType(StringType)
   override val R = ObjectType
 
-  override val requiredPrivilege: WeaveRuntimePrivilege = new WeaveRuntimePrivilege("Process::exec")
+  override val requiredPrivilege: WeaveRuntimePrivilege = ProcessWeaveRuntimePrivilege.EXEC
 
   def buildResult(process: Process, status: String)(implicit ctx: EvaluationContext): ObjectValue = {
     val result = new ObjectValueBuilder()
@@ -76,48 +82,64 @@ class ExecProcessFunction extends SecureBinaryFunctionValue {
     val maybeWorkingDirectory: Option[String] = selectString(config, "workingDirectory")
     val maybeEnvVars = selectStringMap(config, "envVars")
     val maybeTimeOut = selectNumber(config, "timeout")
+    val maybeTimeOutUnit = selectString(config, "timeoutUnit")
     val maybeStdIn = select(config, "stdIn")
 
-    val commandArgs: Array[String] = args.toSeq().map((v) => StringType.coerce(v).evaluate.toString).toArray
-    val envVarsString: Array[String] = maybeEnvVars.map((envVars) => envVars.map((entry) => entry._1 + "=" + entry._2).toArray).orNull
-    val wd: File = maybeWorkingDirectory.map((fp) => new File(fp)).orNull
-    var process: Process = null
+    val commandArgs: Array[String] = args.toSeq().map(v => StringType.coerce(v).evaluate.toString).toArray
+    val envVarsString: Array[String] = maybeEnvVars.map(envVars => envVars.map(entry => entry._1 + "=" + entry._2).toArray).orNull
+    val wd: File = maybeWorkingDirectory.map(fp => new File(fp)).orNull
+
+    var maybeProcess: Either[Process, ObjectValue] = null
     try {
-      process = Runtime.getRuntime.exec(commandArgs, envVarsString, wd)
+      val process = Runtime.getRuntime.exec(commandArgs, envVarsString, wd)
+      maybeProcess = Left(process)
     } catch {
-      case e: IOException => {
+      case e: IOException =>
         val error = new ObjectValueBuilder()
         error.addPair("status", "ERROR")
         error.addPair("message", e.getMessage)
-        return error.build
-      }
-      case _: IndexOutOfBoundsException | _: NullPointerException => {
+        maybeProcess = Right(error.build)
+      case _: IndexOutOfBoundsException | _: NullPointerException =>
         val error = new ObjectValueBuilder()
         error.addPair("status", "ERROR")
         error.addPair("message", "Invalid argument `cmd` should not be empty or have null values.")
-        return error.build
-      }
+        maybeProcess = Right(error.build)
     }
 
-    //
-    if (maybeStdIn.isDefined) {
-      val standarInput = BinaryType.coerce(maybeStdIn.get)
-      val bytes = BinaryValue.getBytes(standarInput, close = true)
-      process.getOutputStream.write(bytes)
-    }
-    if (maybeTimeOut.isDefined) {
-      if (process.waitFor(maybeTimeOut.get.longValue(), TimeUnit.MILLISECONDS)) {
-        buildResult(process, GRACEFUL_RESULT)
-      } else {
-        process.destroyForcibly()
-        buildResult(process, KILLED_RESULT)
-      }
-    } else {
-      process.waitFor()
-      buildResult(process, GRACEFUL_RESULT)
+    maybeProcess match {
+      case Left(process) =>
+        if (maybeStdIn.isDefined) {
+          val standardInput = BinaryType.coerce(maybeStdIn.get)
+          val bytes = BinaryValue.getBytes(standardInput, close = true)
+          process.getOutputStream.write(bytes)
+        }
+        if (maybeTimeOut.isDefined) {
+          val unit = maybeTimeOutUnit.map(timeUnit).getOrElse(TimeUnit.MILLISECONDS)
+          if (process.waitFor(maybeTimeOut.get.longValue(), unit)) {
+            buildResult(process, GRACEFUL_RESULT)
+          } else {
+            process.destroyForcibly()
+            buildResult(process, KILLED_RESULT)
+          }
+        } else {
+          process.waitFor()
+          buildResult(process, GRACEFUL_RESULT)
+        }
+      case Right(error) =>
+        error
     }
   }
 
+  private def timeUnit(value: String): TimeUnit = {
+    value match {
+      case "nanos"        => TimeUnit.NANOSECONDS
+      case "milliseconds" => TimeUnit.MILLISECONDS
+      case "seconds"      => TimeUnit.SECONDS
+      case "minutes"      => TimeUnit.MINUTES
+      case "hours"        => TimeUnit.HOURS
+      case _              => throw new InvalidUnitException(UnknownLocationCapable.location(), value, "nanos", "milliseconds", "seconds", "minutes", "hours")
+    }
+  }
 }
 
 object ExecProcessFunction {
