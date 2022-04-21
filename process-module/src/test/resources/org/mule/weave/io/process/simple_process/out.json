@@ -20,5 +20,9 @@
   "timeout": {
     "status": "KILLED",
     "out": false
+  }, 
+  "timeoutWithUnit": {
+    "status": "KILLED", 
+    "out": false
   }
 }

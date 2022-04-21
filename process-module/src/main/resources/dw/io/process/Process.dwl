@@ -3,6 +3,8 @@
 */
 %dw 2.0
 
+import PeriodUnits from dw::util::Coercions
+
 type ProcessResult = {
     stdOut: Binary,
     stdErr: Binary,
@@ -19,7 +21,8 @@ type ExecConfig = {
   envVars?: {},
   workingDirectory?: String,
   stdIn?: Binary,
-  timeout?: Number
+  timeout?: Number,
+  timeoutUnit?: PeriodUnits 
 }
 
 /**
@@ -32,8 +35,14 @@ type ExecConfig = {
 * [%header, cols="1,1,3"]
 * |===
 * | Name | Type | Description
-* | `cmd` | Array<String&#62; | The array of strings that builds the command to be executed
-* | `config` | ExecConfig | Used to configure the process. Specifies things like timeout, working directory, environment variables
+* | `cmd` | `Array<String&#62;` | The array of strings that builds the command to be executed
+* | `config` | `ExecConfig` | Used to configure the process. An object that specifies the following key/value pairs:
+*
+* * `envVars`, a key/value pair that set the environment variable for the subprocess.
+* * `workingDirectory`, the working directory of the subprocess.
+* * `stdIn`, the standard input to be used for the subprocess.
+* * `timeout`, the maximum time to wait.
+* * `timeoutUnit`, the time unit of the timeout argument (Uses `milliseconds` by default).
 * |===
 *
 * === Example
