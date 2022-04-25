@@ -133,7 +133,7 @@ subprojects {
     }
 
     dataweave {
-        template = "mule_docs,assciidoc"
+        template = "markdown"
     }
 
     task docs(dependsOn: weavedoc, type: Zip) {
