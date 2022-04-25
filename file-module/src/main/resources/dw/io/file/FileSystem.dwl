@@ -5,6 +5,9 @@
 
 import dataFormatsDescriptor from dw::Runtime
 
+/**
+* Represent a file path with the corresponding file separator.
+*/
 type Path = String
 
 /**
@@ -645,8 +648,8 @@ fun mimeTypeOf(path: Path): String | Null = do {
 *
 * [%header, cols="1,3"]
 * |===
-* | Name   | Description
-* | path |
+* | Name | Description
+* | path | The path    |
 * |===
 *
 * === Example
