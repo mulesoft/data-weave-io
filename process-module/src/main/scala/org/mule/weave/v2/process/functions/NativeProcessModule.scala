@@ -115,7 +115,7 @@ class ExecProcessFunction extends SecureBinaryFunctionValue {
         }
         if (maybeTimeOut.isDefined) {
           val unit = maybeTimeOutUnit.map(timeUnit).getOrElse(TimeUnit.MILLISECONDS)
-          if (process.waitFor(maybeTimeOut.get.longValue(), unit)) {
+          if (process.waitFor(maybeTimeOut.get.toLong, unit)) {
             buildResult(process, GRACEFUL_RESULT)
           } else {
             process.destroyForcibly()
