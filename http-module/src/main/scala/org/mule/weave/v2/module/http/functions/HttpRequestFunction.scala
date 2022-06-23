@@ -7,6 +7,7 @@ import org.mule.weave.v2.model.structure.KeyValuePair
 import org.mule.weave.v2.model.structure.ObjectSeq
 import org.mule.weave.v2.model.types._
 import org.mule.weave.v2.model.values._
+import org.mule.weave.v2.model.values.math.Number
 import org.mule.weave.v2.model.values.wrappers.LazyValue
 import org.mule.weave.v2.module.DataFormat
 import org.mule.weave.v2.module.DataFormatManager
@@ -33,7 +34,6 @@ import org.mule.weave.v2.util.ObjectValueUtils.selectBoolean
 import org.mule.weave.v2.util.ObjectValueUtils.selectObject
 import org.mule.weave.v2.util.ObjectValueUtils.selectString
 import org.mule.weave.v2.util.ObjectValueUtils.selectStringAnyMap
-import spire.math.Number
 
 import java.io.InputStream
 import java.net.ConnectException
