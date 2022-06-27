@@ -13,6 +13,7 @@ import org.mule.weave.v2.model.values.wrappers.DelegateValue
 import org.mule.weave.v2.module.DataFormatManager
 import org.mule.weave.v2.module.http.HttpHeader.CONTENT_TYPE_HEADER
 import org.mule.weave.v2.module.http.service.HttpServerRequest
+import org.mule.weave.v2.module.reader.Reader
 import org.mule.weave.v2.module.reader.SourceProvider
 import org.mule.weave.v2.parser.location.Location
 import org.mule.weave.v2.parser.location.SimpleLocation
@@ -21,13 +22,23 @@ class HttpBodyValue(val sourceProvider: SourceProvider, mayBeContentType: Option
 
   var bodyValue: Value[Any] = _
   var valueTypeValue: Type = _
+  var needsMaterialize: Boolean = false
+
+  override def materialize(implicit ctx: EvaluationContext): Value[_] = {
+    if (bodyValue == null) {
+      needsMaterialize = true
+      this
+    } else {
+      bodyValue.materialize
+    }
+  }
 
   override def value(implicit ctx: EvaluationContext): Value[Any] = {
     if (bodyValue == null) {
       bodyValue = mayBeContentType match {
         case Some(contentType) => {
           DataFormatManager.byContentType(contentType).map((df) => {
-            val reader = df.reader(sourceProvider)
+            val reader: Reader = df.reader(sourceProvider)
             readerProperties.foreach((ro) => {
               reader.setOption(location, ro._1, ro._2)
             })
@@ -39,6 +50,9 @@ class HttpBodyValue(val sourceProvider: SourceProvider, mayBeContentType: Option
         case None => {
           BinaryValue(sourceProvider.asInputStream)
         }
+      }
+      if (needsMaterialize) {
+        bodyValue = bodyValue.materialize
       }
     }
     bodyValue
@@ -67,7 +81,8 @@ class HttpBodyValue(val sourceProvider: SourceProvider, mayBeContentType: Option
 
 object HttpBodyValue {
   def apply(httpRequest: HttpServerRequest): HttpBodyValue = {
-    val mayBeContentType = httpRequest.headers.find((header) => header._1.equalsIgnoreCase(CONTENT_TYPE_HEADER)).map(_._2)
+    val headers: Seq[(String, String)] = httpRequest.headers
+    val mayBeContentType: Option[String] = headers.find((header) => header._1.equalsIgnoreCase(CONTENT_TYPE_HEADER)).map(_._2)
     new HttpBodyValue(SourceProvider(httpRequest.body), mayBeContentType, Map(), SimpleLocation("server.request.body"))
   }
 }
