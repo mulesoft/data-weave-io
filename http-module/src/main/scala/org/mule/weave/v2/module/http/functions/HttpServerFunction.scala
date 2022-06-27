@@ -15,6 +15,7 @@ import org.mule.weave.v2.model.structure.KeyValuePair
 import org.mule.weave.v2.model.types.BinaryType
 import org.mule.weave.v2.model.types.FunctionType
 import org.mule.weave.v2.model.types.ObjectType
+import org.mule.weave.v2.model.values.NullValue
 import org.mule.weave.v2.model.values.BooleanValue
 import org.mule.weave.v2.model.values.KeyValue
 import org.mule.weave.v2.model.values.NumberValue
@@ -23,6 +24,7 @@ import org.mule.weave.v2.model.values.StringValue
 import org.mule.weave.v2.model.values.Value
 import org.mule.weave.v2.model.values.ValuesHelper
 import org.mule.weave.v2.module.DataFormatManager
+import org.mule.weave.v2.module.http.HttpHeader
 import org.mule.weave.v2.module.http.HttpHeader.CONTENT_LENGTH_HEADER
 import org.mule.weave.v2.module.http.HttpHeader.CONTENT_TYPE_HEADER
 import org.mule.weave.v2.module.http.functions.HttpServerFunction._
@@ -118,9 +120,15 @@ class HttpServerFunction extends BinaryFunctionValue {
   }
 
   def toRequestObjectValue(request: HttpServerRequest): ObjectValue = {
+    //If content-length is 0 then just use null
+    val maybeContentLength = request.headers
+      .find((pair) => pair._1.equalsIgnoreCase(HttpHeader.CONTENT_LENGTH_HEADER))
+      .map((pair) => Integer.parseInt(pair._2))
+    val body = if (maybeContentLength.contains(0)) NullValue else HttpBodyValue(request)
+
     ObjectValue(
       Seq(
-        KeyValuePair(KeyValue(BODY_KEY_NAME), HttpBodyValue(request)),
+        KeyValuePair(KeyValue(BODY_KEY_NAME), body),
         KeyValuePair(KeyValue(METHOD_KEY_NAME), StringValue(request.method)),
         KeyValuePair(KeyValue(PATH_KEY_NAME), StringValue(request.path)),
         KeyValuePair(KeyValue(QUERY_PARAMS_KEY_NAME), toSeqObjectValue(request.queryParams)),
