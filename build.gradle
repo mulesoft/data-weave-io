@@ -23,7 +23,7 @@ subprojects {
     ext {
 
         if (release) {
-            // format is: release/{version}[/{weave-version}]
+            // format is: release/{version}[/{weave-version}/{weave-gradle-plugin-version}]
             def branchParts = branch.split("/")
             projectVersion = branchParts[1]
             if (!gitTag(projectVersion).isEmpty()) {
@@ -31,6 +31,9 @@ subprojects {
             }
             if (branchParts.size() == 3) {
                 weaveVersion = branchParts[2]
+            }
+            if (branchParts.size() == 4) {
+                weavedocVersion = branchParts[3]
             }
             if (isSnapshot(weaveVersion) || isSnapshot(projectVersion)) {
                 throw new GradleException("Cannot release with snapshot dependencies.  WeaveVersion:" + weaveVersion + " Version: "+ version)
