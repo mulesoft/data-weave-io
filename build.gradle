@@ -35,7 +35,7 @@ subprojects {
             if (branchParts.size() == 4) {
                 weavedocVersion = branchParts[3]
             }
-            if (isSnapshot(weaveVersion) || isSnapshot(projectVersion)) {
+            if (isSnapshot(weaveVersion) || isSnapshot(projectVersion) || isSnapshot(weavedocVersion)) {
                 throw new GradleException("Cannot release with snapshot dependencies.  WeaveVersion:" + weaveVersion + " Version: "+ version)
             }
 
