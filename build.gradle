@@ -32,7 +32,7 @@ subprojects {
             if (branchParts.size() == 3) {
                 weaveVersion = branchParts[2]
             }
-            if (isSnapshot(weaveVersion) || isSnapshot(projectVersion)) {
+            if (isSnapshot(weaveVersion) || isSnapshot(projectVersion) || isSnapshot(weavedocVersion)) {
                 throw new GradleException("Cannot release with snapshot dependencies.  WeaveVersion:" + weaveVersion + " Version: "+ version)
             }
 
@@ -148,17 +148,18 @@ subprojects {
 }
 
 
-static def isSnapshot(String version) {
+def isSnapshot(String version) {
     version.endsWith("-SNAPSHOT")
 }
 
-static def gitBranch() {
+def gitBranch() {
     def ciBranch = System.getenv("BRANCH_NAME")
     if (ciBranch != null) {
         ciBranch
     } else {
+        def workingDir = new File("${project.projectDir}/.git/")
         def branch = ""
-        def proc = "git rev-parse --abbrev-ref HEAD".execute()
+        def proc = "git rev-parse --abbrev-ref HEAD".execute(null, workingDir)
         proc.in.eachLine { line -> branch = line }
         proc.err.eachLine { line -> println line }
         proc.waitFor()
@@ -166,14 +167,15 @@ static def gitBranch() {
     }
 }
 
-static def gitTag(String version) {
+def gitTag(String version) {
+    def workingDir = new File("${project.projectDir}/.git/")
     def tag = ""
-    def fetch = "git fetch --tags".execute()
+    def fetch = "git fetch --tags".execute(null, workingDir)
     fetch.waitFor()
     // format is: {dw-version} but used to be {dw-version}-release
     def escapedVersion = version.replaceAll("\\.", "\\\\.")
     def grep = "git tag --list | grep '" + escapedVersion + "-release\\|" + escapedVersion + "\$'"
-    def proc = ['bash', '-c', grep].execute()
+    def proc = ['bash', '-c', grep].execute(null, workingDir)
     proc.in.eachLine { line -> tag = line }
     proc.err.eachLine { line -> println line }
     proc.waitFor()

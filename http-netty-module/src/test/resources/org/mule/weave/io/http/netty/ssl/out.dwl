@@ -1,12 +1,4 @@
 [
-//  {
-//    status: 200,
-//    statusText: "OK"
-//  },
-//  {
-//    status: 200,
-//    statusText: "OK"
-//  },
   {
     status: 200,
     statusText: "OK"
