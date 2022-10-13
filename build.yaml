@@ -17,5 +17,3 @@ upstreamProjects:
 additionalTestConfigs:
   ubuntu-jdk11:
     jdkTool: OPEN-JDK11
-  windows-jdk8:
-    agentLabel: windows2019-heavy
