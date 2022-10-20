@@ -157,7 +157,7 @@ def gitBranch() {
     if (ciBranch != null) {
         ciBranch
     } else {
-        def workingDir = new File("${project.projectDir}/.git/")
+        def workingDir = new File("${project.projectDir}/")
         def branch = ""
         def proc = "git rev-parse --abbrev-ref HEAD".execute(null, workingDir)
         proc.in.eachLine { line -> branch = line }
@@ -168,7 +168,7 @@ def gitBranch() {
 }
 
 def gitTag(String version) {
-    def workingDir = new File("${project.projectDir}/.git/")
+    def workingDir = new File("${project.projectDir}/")
     def tag = ""
     def fetch = "git fetch --tags".execute(null, workingDir)
     fetch.waitFor()
