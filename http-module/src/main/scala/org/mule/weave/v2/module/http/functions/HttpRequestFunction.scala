@@ -79,15 +79,15 @@ class HttpRequestFunction extends SecureTernaryFunctionValue {
     val entries = cookie.map((cookie) => {
       KeyValuePair(KeyValue(cookie.getName), StringValue(cookie.getValue))
     })
-    ObjectValue(entries)
+    ObjectValue(entries.toArray)
   }
 
   override protected def onSecureExecution(methodValue: First.V, urlValue: Second.V, requestValue: Third.V)(implicit ctx: EvaluationContext): Value[_] = {
     val method: String = methodValue.evaluate.toString
 
     val (url, queryParams) = urlValue.evaluate match {
-      case url: String => {
-        (url, Map.empty[String, Seq[String]])
+      case url: CharSequence => {
+        (url.toString, Map.empty[String, Seq[String]])
       }
       case urlBuilder: ObjectSeq => {
         val queryParams: mutable.Map[String, ArrayBuffer[String]] = mutable.HashMap()
@@ -125,9 +125,9 @@ class HttpRequestFunction extends SecureTernaryFunctionValue {
 
     val bodyValue = select(request, "body")
     val httpBody: Option[InputStream] = bodyValue.flatMap((body) => {
-      body.valueType match {
-        case nullType if (NullType.isInstanceOf(nullType)) => None
-        case bt if (BinaryType.isInstanceOf(bt)) => {
+      body match {
+        case nullType if (NullType.accepts(nullType)) => None
+        case bt if (BinaryType.accepts(bt)) => {
           Some(BinaryType.coerce(body).evaluate.spinOff())
         }
         case _ => {
@@ -242,7 +242,7 @@ class HttpRequestFunction extends SecureTernaryFunctionValue {
       KeyValuePair(
         KeyValue("contentType"), StringValue(result.contentType)))
 
-    ObjectValue(pairs)
+    ObjectValue(pairs.toArray)
   }
 }
 
