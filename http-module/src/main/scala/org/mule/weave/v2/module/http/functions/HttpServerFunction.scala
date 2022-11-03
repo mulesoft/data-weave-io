@@ -112,7 +112,7 @@ class HttpServerFunction extends SecureBinaryFunctionValue {
   def toSeqObjectValue(headers: Seq[(String, String)]): ObjectValue = {
     ObjectValue(headers.map((entry) => {
       KeyValuePair(KeyValue(entry._1), StringValue(entry._2))
-    }))
+    }).toArray)
   }
 
   def toRequestObjectValue(request: HttpServerRequest): ObjectValue = {
@@ -128,7 +128,7 @@ class HttpServerFunction extends SecureBinaryFunctionValue {
         KeyValuePair(KeyValue(METHOD_KEY_NAME), StringValue(request.method)),
         KeyValuePair(KeyValue(PATH_KEY_NAME), StringValue(request.path)),
         KeyValuePair(KeyValue(QUERY_PARAMS_KEY_NAME), toSeqObjectValue(request.queryParams)),
-        KeyValuePair(KeyValue(HEADERS_KEY_NAME), toSeqObjectValue(request.headers))))
+        KeyValuePair(KeyValue(HEADERS_KEY_NAME), toSeqObjectValue(request.headers))).toArray)
   }
 
   def toHttpResponse(value: Value[_], closeCallback: () => Unit)(implicit ctx: EvaluationContext): HttpServerResponse = {
@@ -142,7 +142,7 @@ class HttpServerFunction extends SecureBinaryFunctionValue {
         case httpBodyValue: HttpBodyValue => {
           httpBodyValue.sourceProvider.asInputStream
         }
-        case binary if binary.valueType.isInstanceOf(BinaryType) => {
+        case binary if BinaryType.accepts(binary) => {
           BinaryType.coerce(binary).evaluate
         }
         case body => {
