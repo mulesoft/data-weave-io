@@ -1,4 +1,4 @@
-# Data Weave IO
+# Data Weave I/O
 This repo will contain everything that is related to IO support for data weave: file, HTTP, Process.
 
 ## Docs
