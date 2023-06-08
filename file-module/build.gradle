@@ -6,8 +6,10 @@ dependencies {
     implementation group: 'org.mule.weave', name: 'runtime', version: weaveVersion
 
     testImplementation group: 'org.mule.weave', name: 'runtime-test-helpers', version: weaveVersion
-    testImplementation group: 'org.scalatest', name: 'scalatest_2.12', version: '3.0.1'
-    testRuntimeOnly 'org.pegdown:pegdown:1.6.0'
+    testImplementation (group: 'org.scalatest', name: 'scalatest_2.12', version: scalaTestVersion) {
+        exclude group: 'org.scala-lang', module: 'scala-library'
+    }
+    testRuntimeOnly 'com.vladsch.flexmark:flexmark-all:0.62.2'
 
 }
 
