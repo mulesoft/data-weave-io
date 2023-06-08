@@ -17,3 +17,5 @@ upstreamProjects:
 additionalTestConfigs:
   ubuntu-jdk11:
     jdkTool: OPEN-JDK11
+  jdk17:
+    jdkTool: OPEN-JDK17
