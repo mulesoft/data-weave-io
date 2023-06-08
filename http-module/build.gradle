@@ -1,11 +1,11 @@
 plugins {
-    id "com.github.maiflai.scalatest" version "0.25"
+    id "com.github.maiflai.scalatest" version "${scalaTestPluginVersion}"
 }
 
 dependencies {
-    compile project(":file-module")
-    compileOnly group: 'org.mule.weave', name: 'runtime', version: weaveVersion
-    compileOnly group: 'org.mule.weave', name: 'core-modules', version: weaveVersion
+    api project(":file-module")
+    implementation group: 'org.mule.weave', name: 'runtime', version: weaveVersion
+    implementation group: 'org.mule.weave', name: 'core-modules', version: weaveVersion
 }
 
 

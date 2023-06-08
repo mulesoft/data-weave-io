@@ -646,10 +646,10 @@ fun mimeTypeOf(path: Path): String | Null = do {
 *
 * === Parameters
 *
-* [%header, cols="1,3"]
+* [%header, cols="1,1,3"]
 * |===
-* | Name | Description
-* | path | The path    |
+* | Name | Type | Description
+* | path | Path | The path
 * |===
 *
 * === Example

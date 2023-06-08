@@ -1,21 +1,21 @@
 plugins {
-    id "com.github.maiflai.scalatest" version "0.25"
+    id "com.github.maiflai.scalatest" version "${scalaTestPluginVersion}"
 }
 
 dependencies {
-    compile project(':http-module')
-    compileOnly group: 'org.mule.weave', name: 'runtime', version: weaveVersion
-    compileOnly group: 'org.mule.weave', name: 'parser', version: weaveVersion
-    compileOnly group: 'org.mule.weave', name: 'core-modules', version: weaveVersion
+    api project(':http-module')
+    implementation group: 'org.mule.weave', name: 'runtime', version: weaveVersion
+    implementation group: 'org.mule.weave', name: 'parser', version: weaveVersion
+    implementation group: 'org.mule.weave', name: 'core-modules', version: weaveVersion
 
 
-    compile group: 'org.asynchttpclient', name: 'async-http-client', version: '2.12.3'
-    compile group: 'io.netty', name: 'netty-all', version: '4.1.77.Final'
+    implementation group: 'org.asynchttpclient', name: 'async-http-client', version: '2.12.3'
+    implementation group: 'io.netty', name: 'netty-all', version: '4.1.77.Final'
 
-    testCompile group: 'org.mule.weave', name: 'runtime-test-helpers', version: weaveVersion     
-    testCompile group: 'org.scalatest', name: 'scalatest_2.12', version: '3.0.1'
+    testImplementation group: 'org.mule.weave', name: 'runtime-test-helpers', version: weaveVersion
+    testImplementation group: 'org.scalatest', name: 'scalatest_2.12', version: '3.0.1'
 
-    testRuntime 'org.pegdown:pegdown:1.6.0'
+    testRuntimeOnly 'org.pegdown:pegdown:1.6.0'
 
 }
 
