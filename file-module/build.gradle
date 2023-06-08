@@ -1,17 +1,22 @@
 plugins {
-    id "com.github.maiflai.scalatest" version "0.25"
+    id "com.github.maiflai.scalatest" version "${scalaTestPluginVersion}"
 }
 
 dependencies {
-    compile group: 'org.scala-lang', name: 'scala-library', version: scalaVersion
-    compileOnly group: 'org.mule.weave', name: 'runtime', version: weaveVersion
+    implementation group: 'org.mule.weave', name: 'runtime', version: weaveVersion
 
-    testCompile group: 'org.mule.weave', name: 'runtime-test-helpers', version: weaveVersion     
-    testCompile group: 'org.scalatest', name: 'scalatest_2.12', version: '3.0.1'
-
-    testRuntime 'org.pegdown:pegdown:1.6.0'
+    testImplementation group: 'org.mule.weave', name: 'runtime-test-helpers', version: weaveVersion
+    testImplementation (group: 'org.scalatest', name: 'scalatest_2.12', version: scalaTestVersion) {
+        exclude group: 'org.scala-lang', module: 'scala-library'
+    }
+    testRuntimeOnly 'com.vladsch.flexmark:flexmark-all:0.62.2'
 
 }
+
+tasks.withType(Copy).all {
+    duplicatesStrategy 'exclude'
+}
+
 test {
     reports {
         junitXml.enabled = true
