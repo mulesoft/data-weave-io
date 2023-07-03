@@ -4,8 +4,8 @@ plugins {
 
 dependencies {
     api project(":http-module")
-    implementation group: 'io.netty', name: 'netty-codec-http', version: '4.1.77.Final'
-    implementation group: 'org.asynchttpclient', name: 'async-http-client', version: '2.12.3'
+    api group: 'io.netty', name: 'netty-codec-http', version: '4.1.77.Final'
+    api group: 'org.asynchttpclient', name: 'async-http-client', version: '2.12.3'
     implementation group: 'org.mule.weave', name: 'runtime', version: weaveVersion
 
     testImplementation group: 'org.mule.weave', name: 'runtime-test-helpers', version: weaveVersion
