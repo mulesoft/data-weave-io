@@ -9,7 +9,8 @@ import org.asynchttpclient.ListenableFuture
 import org.asynchttpclient.RequestBuilder
 import org.asynchttpclient.Response
 import org.asynchttpclient.proxy.ProxyServer
-import org.mule.weave.v2.model.ServiceRegistration
+
+import org.mule.weave.v2.core.model.ServiceRegistration
 import org.mule.weave.v2.module.http.service.HttpClientHeaders
 import org.mule.weave.v2.module.http.service.HttpClientOptions
 import org.mule.weave.v2.module.http.service.HttpClientResponse
