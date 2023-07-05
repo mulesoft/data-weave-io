@@ -11,9 +11,10 @@ import io.netty.bootstrap.ServerBootstrap
 import io.netty.channel.ChannelFuture
 import io.netty.channel.nio.NioEventLoopGroup
 import io.netty.channel.socket.nio.NioServerSocketChannel
+
+import org.mule.weave.v2.core.model.ServiceRegistration
 import org.mule.weave.v2.module.http.service.FailedStatus
 import org.mule.weave.v2.module.http.service.RunningStatus
-import org.mule.weave.v2.model.ServiceRegistration
 
 import scala.util.Failure
 import scala.util.Success
