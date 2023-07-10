@@ -1,20 +1,20 @@
 package org.mule.weave.v2.module.http.values
 
-import org.mule.weave.v2.core.model.EvaluationContext
-import org.mule.weave.v2.core.model.structure.schema.Schema
-import org.mule.weave.v2.core.model.structure.schema.SchemaProperty
-import org.mule.weave.v2.core.model.types.Type
-import org.mule.weave.v2.core.model.values.BinaryValue
-import org.mule.weave.v2.core.model.values.NullValue
-import org.mule.weave.v2.core.model.values.SchemaValue
-import org.mule.weave.v2.core.model.values.StringValue
-import org.mule.weave.v2.core.model.values.Value
-import org.mule.weave.v2.core.model.values.wrappers.DelegateValue
-import org.mule.weave.v2.core.module.DataFormatManager
-import org.mule.weave.v2.core.module.reader.Reader
-import org.mule.weave.v2.core.module.reader.SourceProvider
+import org.mule.weave.v2.model.EvaluationContext
+import org.mule.weave.v2.model.structure.schema.Schema
+import org.mule.weave.v2.model.structure.schema.SchemaProperty
+import org.mule.weave.v2.model.types.Type
+import org.mule.weave.v2.model.values.BinaryValue
+import org.mule.weave.v2.model.values.NullValue
+import org.mule.weave.v2.model.values.SchemaValue
+import org.mule.weave.v2.model.values.StringValue
+import org.mule.weave.v2.model.values.Value
+import org.mule.weave.v2.model.values.wrappers.DelegateValue
+import org.mule.weave.v2.module.DataFormatManager
 import org.mule.weave.v2.module.http.HttpHeader.CONTENT_TYPE_HEADER
 import org.mule.weave.v2.module.http.service.HttpServerRequest
+import org.mule.weave.v2.module.reader.Reader
+import org.mule.weave.v2.module.reader.SourceProvider
 import org.mule.weave.v2.parser.location.Location
 import org.mule.weave.v2.parser.location.SimpleLocation
 
