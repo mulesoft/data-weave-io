@@ -1,26 +1,26 @@
 package org.mule.weave.v2.module.http.functions
 
 import org.mule.weave.v2.core.functions.SecureTernaryFunctionValue
-import org.mule.weave.v2.core.model.EvaluationContext
-import org.mule.weave.v2.core.model.service.WeaveRuntimePrivilege
-import org.mule.weave.v2.core.model.structure.KeyValuePair
-import org.mule.weave.v2.core.model.structure.ObjectSeq
-import org.mule.weave.v2.core.model.types._
-import org.mule.weave.v2.core.model.values._
-import org.mule.weave.v2.core.model.values.math.Number
-import org.mule.weave.v2.core.model.values.wrappers.LazyValue
-import org.mule.weave.v2.core.module.DataFormat
-import org.mule.weave.v2.core.module.DataFormatManager
-import org.mule.weave.v2.core.module.reader.DefaultAutoPersistedOutputStream
-import org.mule.weave.v2.core.module.reader.SourceProvider
-import org.mule.weave.v2.core.module.writer.Writer
+
 import org.mule.weave.v2.core.util.ObjectValueUtils
 import org.mule.weave.v2.core.util.ObjectValueUtils.select
 import org.mule.weave.v2.core.util.ObjectValueUtils.selectBoolean
 import org.mule.weave.v2.core.util.ObjectValueUtils.selectObject
 import org.mule.weave.v2.core.util.ObjectValueUtils.selectString
 import org.mule.weave.v2.core.util.ObjectValueUtils.selectStringAnyMap
-import org.mule.weave.v2.module.MimeType
+import org.mule.weave.v2.model.EvaluationContext
+import org.mule.weave.v2.model.service.WeaveRuntimePrivilege
+import org.mule.weave.v2.model.structure.KeyValuePair
+import org.mule.weave.v2.model.structure.ObjectSeq
+import org.mule.weave.v2.model.types._
+import org.mule.weave.v2.model.values._
+import org.mule.weave.v2.model.values.math.Number
+import org.mule.weave.v2.model.values.wrappers.LazyValue
+import org.mule.weave.v2.module.http.values.HttpBodyValue
+import org.mule.weave.v2.module.core.multipart.MultiPartDataFormat
+import org.mule.weave.v2.module.core.multipart.MultiPartWriterSettings
+import org.mule.weave.v2.module.DataFormat
+import org.mule.weave.v2.module.DataFormatManager
 import org.mule.weave.v2.module.http.HttpHeader
 import org.mule.weave.v2.module.http.functions.exceptions.InvalidUrlException
 import org.mule.weave.v2.module.http.functions.exceptions.UrlConnectionException
@@ -28,12 +28,13 @@ import org.mule.weave.v2.module.http.service.HttpClientHeaders
 import org.mule.weave.v2.module.http.service.HttpClientOptions
 import org.mule.weave.v2.module.http.service.HttpClientResponse
 import org.mule.weave.v2.module.http.service.HttpClientService
-import org.mule.weave.v2.module.http.values.HttpBodyValue
-import org.mule.weave.v2.module.core.multipart.MultiPartDataFormat
-import org.mule.weave.v2.module.core.multipart.MultiPartWriterSettings
+import org.mule.weave.v2.module.reader.DefaultAutoPersistedOutputStream
+import org.mule.weave.v2.module.reader.SourceProvider
+import org.mule.weave.v2.module.writer.Writer
 import org.mule.weave.v2.parser.exception.WeaveRuntimeException
 import org.mule.weave.v2.parser.location.SimpleLocation
 import org.mule.weave.v2.parser.location.UnknownLocation
+import org.mule.weave.v2.parser.module.MimeType
 
 import java.io.InputStream
 import java.net.ConnectException
