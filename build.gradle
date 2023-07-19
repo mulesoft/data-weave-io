@@ -93,6 +93,11 @@ subprojects {
     }
 
     jar {
+        def moduleName = "$project.group.${moduleNameSanitizer(project.name)}"
+        println("Module: " + moduleName)
+        manifest {
+            attributes 'Automatic-Module-Name': moduleName
+        }
         into("META-INF/maven/$project.group/$project.name") {
             from "$project.buildDir/publications/mavenJava"
             include "*.pom"
@@ -180,6 +185,27 @@ def gitTag(String version) {
     tag
 }
 
+static String moduleNameSanitizer(String name) {
+    def replaced = name.replaceAll("-", ".")
+    def parts = replaced.split("\\.")
+    if (parts.length > 1) {
+        String last = parts[parts.length - 1]
+        // Replace 'modules' by 'module'
+        if ("modules".equalsIgnoreCase(last)) {
+            last = "module"
+        }
+        // If ends with 'module' reorder parts
+        if ("module".equalsIgnoreCase(last)) {
+            for (int i = parts.length - 2 ; i >= 0 ; i--) {
+                def part = parts[i]
+                parts[i + 1] = part
+            }
+            parts[0] = last
+        }
+    }
+    def joined = String.join(".", parts)
+    joined
+}
 
 buildscript {
     repositories {
