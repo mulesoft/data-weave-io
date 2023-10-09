@@ -15,6 +15,18 @@ fun normalizeHeaders(headers: Null): {_?: String} =
   {}
 
 /**
+* Removes all the parameters from a given MIME type
+**/
+fun mimeWithoutParameters(mime: String) = do {
+    var separator = indexOf(mime, ';')
+    ---
+    if (separator == -1)
+        mime
+    else
+        mime[0 to separator - 1]
+}
+
+/**
 * Normalize the object to be compliant with the http header
 *
 * === Parameters
@@ -77,5 +89,9 @@ fun safeRead(mime: String, payload: String | Binary | Null, readerOptions: Objec
                   ).result
             }
         }
-
+  } <~ {
+      contentLength: sizeOf(payload),
+      mediaType: mime,
+      mimeType: mimeWithoutParameters(mime),
+      raw: payload,
   }
