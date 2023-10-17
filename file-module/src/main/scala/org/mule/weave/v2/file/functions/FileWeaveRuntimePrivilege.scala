@@ -1,6 +1,6 @@
 package org.mule.weave.v2.file.functions
 
-import org.mule.weave.v2.core.model.service.WeaveRuntimePrivilege
+import org.mule.weave.v2.model.service.WeaveRuntimePrivilege
 
 object FileWeaveRuntimePrivilege {
 
