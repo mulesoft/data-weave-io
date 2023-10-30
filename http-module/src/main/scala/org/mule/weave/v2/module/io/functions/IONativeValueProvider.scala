@@ -1,7 +1,7 @@
 package org.mule.weave.v2.module.io.functions
 
 import org.mule.weave.v2.model.values.FunctionValue
-import org.mule.weave.v2.module.native.NativeValueProvider
+import org.mule.weave.v2.model.values.NativeValueProvider
 
 class IONativeValueProvider extends NativeValueProvider {
 

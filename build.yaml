@@ -1,4 +1,4 @@
-projectType: Shell
+projectType: shell
 devBranchesRegex: "master|support\\/.+"
 releaseBranchesRegex: "release\\/.+"
 mavenSettingsXmlId: data-weave-maven-settings
