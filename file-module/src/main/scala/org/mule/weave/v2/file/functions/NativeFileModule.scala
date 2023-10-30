@@ -12,11 +12,11 @@ import org.mule.weave.v2.model.types.StringType
 import org.mule.weave.v2.model.values.ArrayValue
 import org.mule.weave.v2.model.values.BooleanValue
 import org.mule.weave.v2.model.values.FunctionValue
+import org.mule.weave.v2.model.values.NativeValueProvider
 import org.mule.weave.v2.model.values.NullValue
 import org.mule.weave.v2.model.values.NumberValue
 import org.mule.weave.v2.model.values.StringValue
 import org.mule.weave.v2.model.values.Value
-import org.mule.weave.v2.module.native.NativeValueProvider
 
 import java.io.File
 import java.io.FileInputStream

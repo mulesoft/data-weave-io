@@ -16,10 +16,10 @@ import org.mule.weave.v2.model.types.StringType
 import org.mule.weave.v2.model.values.BinaryValue
 import org.mule.weave.v2.model.values.BinaryValue.getBytesFromInputStream
 import org.mule.weave.v2.model.values.FunctionValue
+import org.mule.weave.v2.model.values.NativeValueProvider
 import org.mule.weave.v2.model.values.ObjectValue
 import org.mule.weave.v2.model.values.ObjectValueBuilder
 import org.mule.weave.v2.model.values.Value
-import org.mule.weave.v2.module.native.NativeValueProvider
 import org.mule.weave.v2.process.functions.ExecProcessFunction.GRACEFUL_RESULT
 import org.mule.weave.v2.process.functions.ExecProcessFunction.KILLED_RESULT
 
