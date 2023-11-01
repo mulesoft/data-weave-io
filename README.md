@@ -9,7 +9,8 @@ For documentation please read [Documentation](./docs/home.md) That contains all 
 
 Today we have two supported versions based on different dataweave versions.
 Releases should be based of one of these branches:
-- master -> DataWeave 2.5.0
+- master -> DataWeave 2.6.x
+- support/0.9.x -> DataWeave 2.5.x
 - support/0.6.x -> DataWeave 2.4.0
 
 ### Steps to release:
