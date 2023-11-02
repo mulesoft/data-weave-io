@@ -12,8 +12,8 @@ enableNexusIqStage: false
 enableScheduleTrigger: true
 scheduleTriggerCommand : "@daily"
 upstreamProjects:
-    DataWeave/data-weave/master
-    DataWeave/data-weave-tooling-extra/master
+    DataWeave/data-weave/support/2.4.0
+    DataWeave/data-weave-tooling-extra/support/2.4.0
 additionalTestConfigs:
   ubuntu-jdk11:
     jdkTool: OPEN-JDK11
