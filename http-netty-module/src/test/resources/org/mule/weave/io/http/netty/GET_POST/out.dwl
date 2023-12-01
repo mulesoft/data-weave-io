@@ -51,5 +51,20 @@
       url: "http://httpbin.org/post?asd=123&space=Mariano de Achaval"
     },
     contentType: "application/json"
+  },
+  g: {
+    mimeType: "application/json",
+    body: {
+      args: {
+        asd: "123",
+        space: "Mariano de Achaval"
+      },
+      data: "",
+      files: {},
+      form: {},
+      json: null,
+      url: "http://httpbin.org/post?asd=123&space=Mariano de Achaval"
+    },
+    contentType: "application/json"
   }
 }
