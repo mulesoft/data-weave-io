@@ -55,6 +55,11 @@ fun then<A, V>(result: A, assertions: (result: A) -> V): V = assertions(result)
       mimeType : $.body.^mimeType,
       body : $.body - "headers" - "origin",
       contentType : $.contentType,
+  },
+  g: POST({url: "http://httpbin.org/post", queryParams: {asd: "123", space: "Mariano de Achaval"} }) then {
+    mimeType : $.body.^mimeType,
+    body : $.body - "headers" - "origin",
+    contentType : $.contentType,
   }
 }
 

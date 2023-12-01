@@ -92,8 +92,9 @@ class HttpRequestFunction extends SecureTernaryFunctionValue {
       }
       case urlBuilder: ObjectSeq => {
         val queryParams: mutable.Map[String, ArrayBuffer[String]] = mutable.HashMap()
-        val queryParamsValue = selectObject(urlBuilder, "queryParams").getOrElse(ObjectSeq.empty)
-        val url = selectString(urlBuilder, "url").getOrElse(throw new WeaveRuntimeException("Expecting url", UnknownLocation))
+        val urlObjectSeq: ObjectSeq = urlBuilder.materialize()
+        val queryParamsValue = selectObject(urlObjectSeq, "queryParams").getOrElse(ObjectSeq.empty)
+        val url = selectString(urlObjectSeq, "url").getOrElse(throw new WeaveRuntimeException("Expecting url", UnknownLocation))
         queryParamsValue.toSeq().foreach((kvp) => {
           val headerName: String = kvp._1.evaluate.name
           val headerValue: String = StringType.coerce(kvp._2).evaluate.toString

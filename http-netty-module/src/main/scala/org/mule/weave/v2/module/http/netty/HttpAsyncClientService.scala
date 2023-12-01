@@ -1,7 +1,5 @@
 package org.mule.weave.v2.module.http.netty
 
-import java.io.InputStream
-import java.util.concurrent.CompletableFuture
 import io.netty.handler.codec.http.HttpHeaders
 import org.asynchttpclient.AsyncHttpClient
 import org.asynchttpclient.Dsl._
@@ -9,13 +7,14 @@ import org.asynchttpclient.ListenableFuture
 import org.asynchttpclient.RequestBuilder
 import org.asynchttpclient.Response
 import org.asynchttpclient.proxy.ProxyServer
-
 import org.mule.weave.v2.model.ServiceRegistration
 import org.mule.weave.v2.module.http.service.HttpClientHeaders
 import org.mule.weave.v2.module.http.service.HttpClientOptions
 import org.mule.weave.v2.module.http.service.HttpClientResponse
 import org.mule.weave.v2.module.http.service.HttpClientService
 
+import java.io.InputStream
+import java.util.concurrent.CompletableFuture
 import scala.collection.JavaConverters._
 
 class HttpAsyncClientService extends HttpClientService {
@@ -38,7 +37,9 @@ class HttpAsyncClientService extends HttpClientService {
 
     config.queryParams.foreach((qp) => {
       val paramName = qp._1
-      paramName
+      qp._2.foreach(v => {
+        builder.addQueryParam(paramName, v)
+      })
     })
 
     config.proxyConfig.foreach((proxy) => {
