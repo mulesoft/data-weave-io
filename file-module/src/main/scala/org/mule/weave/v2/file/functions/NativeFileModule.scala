@@ -1,6 +1,6 @@
 package org.mule.weave.v2.file.functions
 
-import org.mule.weave.v2.core.functions.{BinaryFunctionValue, EmptyFunctionValue, SecureBinaryFunctionValue, SecureEmptyFunctionValue, SecureUnaryFunctionValue, UnaryFunctionValue}
+import org.mule.weave.v2.core.functions.{ BinaryFunctionValue, EmptyFunctionValue, SecureBinaryFunctionValue, SecureEmptyFunctionValue, SecureUnaryFunctionValue, UnaryFunctionValue }
 import org.mule.weave.v2.file.functions.exceptions.InvalidFileKindPathException
 import org.mule.weave.v2.file.functions.exceptions.UnableToWriteFileException
 import org.mule.weave.v2.file.functions.exceptions.ZipException
