@@ -8,4 +8,5 @@ then
     exit 1
 fi
 
-./gradlew -Pmaven.settings.location=$1 clean build -x test
+./gradlew -Pmaven.settings.location=$1 clean
+./gradlew -Pmaven.settings.location=$1 build -x test
