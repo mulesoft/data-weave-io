@@ -9,25 +9,20 @@ import org.mule.weave.v2.helper.AbstractEngineTest
 class FileSystemTest extends AbstractEngineTest {
 
   {
-    //
-    val tmpDir = new File(System.getProperty("java.io.tmpdir"), "dw_io_test")
-    deleteDirectory(tmpDir)
-    tmpDir.mkdirs()
-    createFileWithContent(new File(tmpDir, "test1.txt"), "Test")
-    createFileWithContent(new File(tmpDir, "test2.json"), "{}")
-    createFileWithContent(new File(tmpDir, "test3.unknown"), "---")
+    val tmpDir = Files.createTempDirectory("FileSystemTest")
+    val ioTestDir = tmpDir.resolve("dw_io_test")
+    ioTestDir.toFile.mkdirs()
+    createFileWithContent(ioTestDir.resolve("test1.txt").toFile, "Test")
+    createFileWithContent(ioTestDir.resolve("test2.json").toFile, "{}")
+    createFileWithContent(ioTestDir.resolve("test3.unknown").toFile, "---")
     val inputStream = getClass.getClassLoader.getResourceAsStream("zips/test.zip")
-    val zipDirectory = new File(tmpDir, "zips")
+    val zipDirectory = ioTestDir.resolve("zips").toFile
     zipDirectory.mkdirs()
     Files.copy(inputStream, new File(zipDirectory, "test.zip").toPath)
-  }
 
-   def deleteDirectory(directoryToBeDeleted: File):Unit = {
-    val allContents = directoryToBeDeleted.listFiles
-    if (allContents != null) for (file <- allContents) {
-      deleteDirectory(file)
-    }
-    directoryToBeDeleted.delete
+    val tmpDirAbsolutePath = tmpDir.toAbsolutePath
+    println(s"Using temp folder $tmpDirAbsolutePath")
+    System.setProperty("java.io.tmpdir", tmpDirAbsolutePath.toString)
   }
 
   private def createFileWithContent(test: File, content: String): Unit = {

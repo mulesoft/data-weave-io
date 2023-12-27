@@ -23,6 +23,8 @@ import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.IOException
+import java.io.PrintWriter
+import java.io.StringWriter
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
 import java.util.zip.ZipEntry
@@ -220,7 +222,9 @@ class ZipFunction extends BinaryFunctionValue {
       StringValue(zipFileToCreate.getAbsolutePath)
     } catch {
       case io: IOException => {
-        throw new ZipException(zipPath, io.getMessage, location())
+        val stringWriter = new StringWriter()
+        io.printStackTrace(new PrintWriter(stringWriter))
+        throw new ZipException(zipPath, io.getMessage + "\n" + stringWriter.toString, location())
       }
     }
   }
@@ -316,7 +320,9 @@ class UnzipFunction extends BinaryFunctionValue {
 
     } catch {
       case e: IOException =>
-        throw new ZipException(zipFilePath, e.getMessage, location())
+        val stringWriter = new StringWriter()
+        e.printStackTrace(new PrintWriter(stringWriter))
+        throw new ZipException(zipFilePath, e.getMessage + "\n" + stringWriter.toString, location())
     } finally {
       if (zis != null) {
         zis.closeEntry()
