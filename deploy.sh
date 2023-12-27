@@ -24,6 +24,7 @@ jar -xfv ../libs/file-module-${projectVersion}.jar
 cd $dir
 if [[ "$BRANCH_NAME" =~ ^(master$|support/.|release/.) ]]
 then
+    ./gradlew -Pmaven.settings.location=$1 clean
     ./gradlew --stacktrace -Pmaven.settings.location=$1 publish
 fi
 
