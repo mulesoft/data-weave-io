@@ -2,7 +2,8 @@
   {
     "name": "Agustin",
     "headers": "application/json",
-    "status": 302
+    "status": 302,
+    "raw": "{\n  \"name\": \"Agustin\"\n}"
   },
   {
     "name": "Mariano"

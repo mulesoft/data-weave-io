@@ -9,6 +9,6 @@
       req: {
         name: "Agustin"
       }
-    } as Object {mimeType: "application/json", raw: "" as Binary {base: "64"}}
+    } as Object {mimeType: "application/json", raw: "ewogICJyZXEiOiB7CiAgICAibmFtZSI6ICJBZ3VzdGluIgogIH0KfQ==" as Binary {base: "64"}}
   }
 }
