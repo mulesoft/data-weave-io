@@ -1,7 +1,7 @@
 package org.mule.weave.v2.module.http.functions
 
 import org.mule.weave.v2.core.functions.SecureTernaryFunctionValue
-
+import org.mule.weave.v2.core.io.SeekableStream
 import org.mule.weave.v2.core.util.ObjectValueUtils
 import org.mule.weave.v2.core.util.ObjectValueUtils.select
 import org.mule.weave.v2.core.util.ObjectValueUtils.selectBoolean
@@ -16,11 +16,10 @@ import org.mule.weave.v2.model.types._
 import org.mule.weave.v2.model.values._
 import org.mule.weave.v2.model.values.math.Number
 import org.mule.weave.v2.model.values.wrappers.LazyValue
-import org.mule.weave.v2.module.http.values.HttpBodyValue
-import org.mule.weave.v2.module.core.multipart.MultiPartDataFormat
-import org.mule.weave.v2.module.core.multipart.MultiPartWriterSettings
 import org.mule.weave.v2.module.DataFormat
 import org.mule.weave.v2.module.DataFormatManager
+import org.mule.weave.v2.module.core.multipart.MultiPartDataFormat
+import org.mule.weave.v2.module.core.multipart.MultiPartWriterSettings
 import org.mule.weave.v2.module.http.HttpHeader
 import org.mule.weave.v2.module.http.functions.exceptions.InvalidUrlException
 import org.mule.weave.v2.module.http.functions.exceptions.UrlConnectionException
@@ -28,6 +27,7 @@ import org.mule.weave.v2.module.http.service.HttpClientHeaders
 import org.mule.weave.v2.module.http.service.HttpClientOptions
 import org.mule.weave.v2.module.http.service.HttpClientResponse
 import org.mule.weave.v2.module.http.service.HttpClientService
+import org.mule.weave.v2.module.http.values.HttpBodyValue
 import org.mule.weave.v2.module.reader.DefaultAutoPersistedOutputStream
 import org.mule.weave.v2.module.reader.SourceProvider
 import org.mule.weave.v2.module.writer.Writer
@@ -72,8 +72,8 @@ class HttpRequestFunction extends SecureTernaryFunctionValue {
     ObjectValue(entries)
   }
 
-  def asBodyValue(body: InputStream, contentType: String, readerProperties: Map[String, Any]): Value[_] = {
-    new HttpBodyValue(SourceProvider(body), Option(contentType), readerProperties, SimpleLocation("client.request.body"))
+  def asBodyValue(body: InputStream, contentType: String, readerProperties: Map[String, Any])(implicit ctx: EvaluationContext): Value[_] = {
+    new HttpBodyValue(SourceProvider(SeekableStream(body)), Option(contentType), readerProperties, SimpleLocation("client.request.body"))
   }
 
   def asCookieValue(cookie: Seq[HttpCookie]): Value[_] = {
@@ -213,7 +213,7 @@ class HttpRequestFunction extends SecureTernaryFunctionValue {
     }
   }
 
-  private def processResult(result: HttpClientResponse, readerProperties: Map[String, Any]) = {
+  private def processResult(result: HttpClientResponse, readerProperties: Map[String, Any])(implicit ctx: EvaluationContext) = {
     val pairs = new ArrayBuffer[KeyValuePair]()
 
     pairs.+=(
