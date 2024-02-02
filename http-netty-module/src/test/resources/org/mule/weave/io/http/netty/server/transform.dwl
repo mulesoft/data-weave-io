@@ -63,6 +63,7 @@ var server = api(
     name: ($).body.name ,
     headers: $.headers."Content-Type",
     status: ($).status ,
+    raw: ($).body.^raw
   },
   request('GET', 'http://$LOCALHOST/test', {})
     then {

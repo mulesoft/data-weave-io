@@ -116,7 +116,7 @@ class HttpServerFunction extends SecureBinaryFunctionValue {
     }).toArray)
   }
 
-  def toRequestObjectValue(request: HttpServerRequest): ObjectValue = {
+  def toRequestObjectValue(request: HttpServerRequest)(implicit ctx: EvaluationContext): ObjectValue = {
     //If content-length is 0 then just use null
     val maybeContentLength = request.headers
       .find((pair) => pair._1.equalsIgnoreCase(HttpHeader.CONTENT_LENGTH_HEADER))

@@ -1,14 +1,11 @@
 package org.mule.weave.v2.module.http.values
 
+import org.mule.weave.v2.core.io.SeekableStream
 import org.mule.weave.v2.model.EvaluationContext
 import org.mule.weave.v2.model.structure.schema.Schema
 import org.mule.weave.v2.model.structure.schema.SchemaProperty
 import org.mule.weave.v2.model.types.Type
-import org.mule.weave.v2.model.values.BinaryValue
-import org.mule.weave.v2.model.values.NullValue
-import org.mule.weave.v2.model.values.SchemaValue
-import org.mule.weave.v2.model.values.StringValue
-import org.mule.weave.v2.model.values.Value
+import org.mule.weave.v2.model.values._
 import org.mule.weave.v2.model.values.wrappers.DelegateValue
 import org.mule.weave.v2.module.DataFormatManager
 import org.mule.weave.v2.module.http.HttpHeader.CONTENT_TYPE_HEADER
@@ -80,9 +77,9 @@ class HttpBodyValue(val sourceProvider: SourceProvider, mayBeContentType: Option
 }
 
 object HttpBodyValue {
-  def apply(httpRequest: HttpServerRequest): HttpBodyValue = {
+  def apply(httpRequest: HttpServerRequest)(implicit ctx: EvaluationContext): HttpBodyValue = {
     val headers: Seq[(String, String)] = httpRequest.headers
     val mayBeContentType: Option[String] = headers.find((header) => header._1.equalsIgnoreCase(CONTENT_TYPE_HEADER)).map(_._2)
-    new HttpBodyValue(SourceProvider(httpRequest.body), mayBeContentType, Map(), SimpleLocation("server.request.body"))
+    new HttpBodyValue(SourceProvider(SeekableStream(httpRequest.body)), mayBeContentType, Map(), SimpleLocation("server.request.body"))
   }
 }
