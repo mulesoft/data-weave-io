@@ -43,7 +43,10 @@ var server = api(
     'GET', 'http://$LOCALHOST/test1', {}
   ) then {
      status: ($).status,
-     body: $.body
+     body: $.body,
+     (contentType: $.contentType) if ($.contentType?),
+     cookies: $.cookies,
+     headers: $.headers
   },
   b: POST('http://$LOCALHOST/test1', {
     headers: {
@@ -54,6 +57,9 @@ var server = api(
     }
   }) then {
      status: ($).status,
-     body: $.body
+     body: $.body,
+     contentType: $.contentType,
+     cookies: $.cookies,
+     headers: $.headers
   }
 }

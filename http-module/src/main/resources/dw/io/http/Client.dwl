@@ -12,12 +12,12 @@ import * from dw::module::Multipart
 import * from dw::io::http::utils::HttpHeaders
 
 type HttpClientResponse<BodyType <: HttpBody, HeadersType <: HttpHeaders> = {
-    contentType: String,
+    contentType?: String,
     status: Number,
     statusText?: String,
     headers: HeadersType,
     body?: BodyType,
-    cookies?: HttpCookies
+    cookies: HttpCookies
 }
 
 
