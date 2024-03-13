@@ -66,8 +66,8 @@ class HttpAsyncResponse(response: Response) extends HttpClientResponse {
     response.getStatusCode
   }
 
-  def contentType: String = {
-    response.getContentType
+  def contentType: Option[String] = {
+    Option(response.getContentType)
   }
 
   /** Response headers * */

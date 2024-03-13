@@ -64,7 +64,7 @@ trait HttpClientResponse {
   /** Response headers * */
   def headers: HttpClientHeaders
 
-  def contentType: String
+  def contentType: Option[String]
 
   /** Response's raw body */
   def body: Option[InputStream]

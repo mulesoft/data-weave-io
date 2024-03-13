@@ -72,8 +72,8 @@ class HttpRequestFunction extends SecureTernaryFunctionValue {
     ObjectValue(entries)
   }
 
-  def asBodyValue(body: InputStream, contentType: String, readerProperties: Map[String, Any])(implicit ctx: EvaluationContext): Value[_] = {
-    new HttpBodyValue(SourceProvider(SeekableStream(body)), Option(contentType), readerProperties, SimpleLocation("client.request.body"))
+  def asBodyValue(body: InputStream, maybeContentType: Option[String], readerProperties: Map[String, Any])(implicit ctx: EvaluationContext): Value[_] = {
+    new HttpBodyValue(SourceProvider(SeekableStream(body)), maybeContentType, readerProperties, SimpleLocation("client.request.body"))
   }
 
   def asCookieValue(cookie: Seq[HttpCookie]): Value[_] = {
@@ -216,34 +216,41 @@ class HttpRequestFunction extends SecureTernaryFunctionValue {
   private def processResult(result: HttpClientResponse, readerProperties: Map[String, Any])(implicit ctx: EvaluationContext) = {
     val pairs = new ArrayBuffer[KeyValuePair]()
 
+    // status
     pairs.+=(
       KeyValuePair(
         KeyValue("status"), NumberValue(Number(result.status))))
 
-    result.statusText.foreach((st) => {
+    // statusText?
+    result.statusText.foreach(st => {
       pairs.+=(
         KeyValuePair(
           KeyValue("statusText"), StringValue(st)))
     })
 
+    // headers
     pairs.+=(
       KeyValuePair(
         KeyValue("headers"), asHeadersValue(result.headers)))
 
-    result.body.foreach((body) => {
+    // body?
+    result.body.foreach(body => {
       pairs.+=(KeyValuePair(
         KeyValue("body"), asBodyValue(body, result.contentType, readerProperties)))
     })
 
+    // cookies
     pairs.+=(
       KeyValuePair(
         KeyValue("cookies"),
         asCookieValue(result.cookies)))
 
-    pairs.+=(
-      KeyValuePair(
-        KeyValue("contentType"), StringValue(result.contentType)))
-
+    // contentType?
+    result.contentType.foreach(contentType => {
+      pairs.+=(
+        KeyValuePair(
+          KeyValue("contentType"), StringValue(contentType)))
+    })
     ObjectValue(pairs.toArray)
   }
 }
