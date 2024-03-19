@@ -1,7 +1,6 @@
 package org.mule.weave.v2.module.http.functions
 
 import org.mule.weave.v2.core.functions.SecureTernaryFunctionValue
-import org.mule.weave.v2.core.io.SeekableStream
 import org.mule.weave.v2.core.util.ObjectValueUtils
 import org.mule.weave.v2.core.util.ObjectValueUtils.select
 import org.mule.weave.v2.core.util.ObjectValueUtils.selectBoolean
@@ -10,11 +9,9 @@ import org.mule.weave.v2.core.util.ObjectValueUtils.selectString
 import org.mule.weave.v2.core.util.ObjectValueUtils.selectStringAnyMap
 import org.mule.weave.v2.model.EvaluationContext
 import org.mule.weave.v2.model.service.WeaveRuntimePrivilege
-import org.mule.weave.v2.model.structure.KeyValuePair
 import org.mule.weave.v2.model.structure.ObjectSeq
 import org.mule.weave.v2.model.types._
 import org.mule.weave.v2.model.values._
-import org.mule.weave.v2.model.values.math.Number
 import org.mule.weave.v2.model.values.wrappers.LazyValue
 import org.mule.weave.v2.module.DataFormat
 import org.mule.weave.v2.module.DataFormatManager
@@ -23,22 +20,18 @@ import org.mule.weave.v2.module.core.multipart.MultiPartWriterSettings
 import org.mule.weave.v2.module.http.HttpHeader
 import org.mule.weave.v2.module.http.functions.exceptions.InvalidUrlException
 import org.mule.weave.v2.module.http.functions.exceptions.UrlConnectionException
-import org.mule.weave.v2.module.http.service.HttpClientHeaders
+import org.mule.weave.v2.module.http.functions.utils.HttpClientResponseConverter
 import org.mule.weave.v2.module.http.service.HttpClientOptions
 import org.mule.weave.v2.module.http.service.HttpClientResponse
 import org.mule.weave.v2.module.http.service.HttpClientService
-import org.mule.weave.v2.module.http.values.HttpBodyValue
 import org.mule.weave.v2.module.reader.DefaultAutoPersistedOutputStream
-import org.mule.weave.v2.module.reader.SourceProvider
 import org.mule.weave.v2.module.writer.Writer
 import org.mule.weave.v2.parser.exception.WeaveRuntimeException
-import org.mule.weave.v2.parser.location.SimpleLocation
 import org.mule.weave.v2.parser.location.UnknownLocation
 import org.mule.weave.v2.parser.module.MimeType
 
 import java.io.InputStream
 import java.net.ConnectException
-import java.net.HttpCookie
 import java.net.UnknownHostException
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ExecutionException
@@ -60,28 +53,6 @@ class HttpRequestFunction extends SecureTernaryFunctionValue {
   })
 
   override val requiredPrivilege: WeaveRuntimePrivilege = HttpWeaveRuntimePrivilege.HTTP_CLIENT
-
-  def asHeadersValue(headers: HttpClientHeaders): Value[_] = {
-    val names = headers.headerNames
-
-    val entries = names.flatMap((name) => {
-      headers.headerValues(name).map((value) => {
-        KeyValuePair(KeyValue(name), StringValue(value))
-      })
-    })
-    ObjectValue(entries)
-  }
-
-  def asBodyValue(body: InputStream, maybeContentType: Option[String], readerProperties: Map[String, Any])(implicit ctx: EvaluationContext): Value[_] = {
-    new HttpBodyValue(SourceProvider(SeekableStream(body)), maybeContentType, readerProperties, SimpleLocation("client.request.body"))
-  }
-
-  def asCookieValue(cookie: Seq[HttpCookie]): Value[_] = {
-    val entries = cookie.map((cookie) => {
-      KeyValuePair(KeyValue(cookie.getName), StringValue(cookie.getValue))
-    })
-    ObjectValue(entries.toArray)
-  }
 
   override protected def onSecureExecution(methodValue: First.V, urlValue: Second.V, requestValue: Third.V)(implicit ctx: EvaluationContext): Value[_] = {
     val method: String = methodValue.evaluate.toString
@@ -179,14 +150,44 @@ class HttpRequestFunction extends SecureTernaryFunctionValue {
     val maybeReadTimeOut = ObjectValueUtils.selectInt(config, "readTimeout")
     val maybeRequestTimeout = ObjectValueUtils.selectInt(config, "requestTimeout")
     try {
+
+      val builder = new HttpClientOptions.Builder()
+        .withUrl(url)
+        .withMethod(method)
+        .withAllowRedirect(followRedirects)
+
+      headers.toMap.foreach(entry => {
+        entry._2.foreach(value => {
+          builder.withHeader(entry._1, value)
+        })
+      })
+
+      queryParams.foreach(entry => {
+        entry._2.foreach(value => {
+          builder.withQueryParam(entry._1, value)
+        })
+      })
+
+      if (httpBody.isDefined) {
+        builder.withBody(httpBody.get)
+      }
+
+      if (maybeReadTimeOut.isDefined) {
+        builder.withReadTimeout(maybeRequestTimeout.get)
+      }
+
+      if (maybeRequestTimeout.isDefined) {
+        builder.withRequestTimeout(maybeRequestTimeout.get)
+      }
+
+      val options: HttpClientOptions = builder.build()
       val future: CompletableFuture[_ <: HttpClientResponse] = httpClientService
-        .request(
-          HttpClientOptions(url, method, headers.toMap, queryParams, httpBody, followRedirects, maybeReadTimeOut, maybeRequestTimeout))
+        .request(options)
       new LazyValue({
         try {
           future
             .thenApply[ObjectValue]((result: HttpClientResponse) => {
-              processResult(result, readerProperties)
+              HttpClientResponseConverter().convert(result, readerProperties)
             })
             .get()
         } catch {
@@ -211,47 +212,6 @@ class HttpRequestFunction extends SecureTernaryFunctionValue {
         throw new UrlConnectionException(url, ce.getMessage, this.location())
       }
     }
-  }
-
-  private def processResult(result: HttpClientResponse, readerProperties: Map[String, Any])(implicit ctx: EvaluationContext) = {
-    val pairs = new ArrayBuffer[KeyValuePair]()
-
-    // status
-    pairs.+=(
-      KeyValuePair(
-        KeyValue("status"), NumberValue(Number(result.status))))
-
-    // statusText?
-    result.statusText.foreach(st => {
-      pairs.+=(
-        KeyValuePair(
-          KeyValue("statusText"), StringValue(st)))
-    })
-
-    // headers
-    pairs.+=(
-      KeyValuePair(
-        KeyValue("headers"), asHeadersValue(result.headers)))
-
-    // body?
-    result.body.foreach(body => {
-      pairs.+=(KeyValuePair(
-        KeyValue("body"), asBodyValue(body, result.contentType, readerProperties)))
-    })
-
-    // cookies
-    pairs.+=(
-      KeyValuePair(
-        KeyValue("cookies"),
-        asCookieValue(result.cookies)))
-
-    // contentType?
-    result.contentType.foreach(contentType => {
-      pairs.+=(
-        KeyValuePair(
-          KeyValue("contentType"), StringValue(contentType)))
-    })
-    ObjectValue(pairs.toArray)
   }
 }
 

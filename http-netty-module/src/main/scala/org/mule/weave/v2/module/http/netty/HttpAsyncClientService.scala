@@ -6,100 +6,117 @@ import org.asynchttpclient.Dsl._
 import org.asynchttpclient.ListenableFuture
 import org.asynchttpclient.RequestBuilder
 import org.asynchttpclient.Response
-import org.asynchttpclient.proxy.ProxyServer
 import org.mule.weave.v2.model.ServiceRegistration
+import org.mule.weave.v2.module.http.service.HttpClientConfiguration
 import org.mule.weave.v2.module.http.service.HttpClientHeaders
 import org.mule.weave.v2.module.http.service.HttpClientOptions
+import org.mule.weave.v2.module.http.service.HttpClientRequest
 import org.mule.weave.v2.module.http.service.HttpClientResponse
 import org.mule.weave.v2.module.http.service.HttpClientService
 
 import java.io.InputStream
+import java.util
+import java.util.Optional
 import java.util.concurrent.CompletableFuture
-import scala.collection.JavaConverters._
 
 class HttpAsyncClientService extends HttpClientService {
 
   //Make it lazy don't create if it is not required
-  lazy val client: AsyncHttpClient = asyncHttpClient()
+  private lazy val client: AsyncHttpClient = asyncHttpClient()
 
-  override def request(config: HttpClientOptions): CompletableFuture[_ <: HttpClientResponse] = {
+  override def request(config: HttpClientOptions): CompletableFuture[HttpClientResponse] = {
     val builder = new RequestBuilder()
-    builder.setUrl(config.url)
-    builder.setMethod(config.method)
+    builder.setUrl(config.getUrl)
+    builder.setMethod(config.getMethod)
 
-    builder.setFollowRedirect(config.allowRedirect)
-    config.body.foreach((is) => builder.setBody(is))
-    config.headers.foreach((header) => {
-      builder.addHeader(header._1, header._2.asJava)
+    builder.setFollowRedirect(config.isAllowRedirect)
+    config.getBody.ifPresent((is) => builder.setBody(is))
+
+    config.getHeaders.forEach((name, values) => {
+      builder.addHeader(name, values)
     })
-    config.readTimeout.foreach((timeout) => builder.setReadTimeout(timeout))
-    config.requestTimeout.foreach((timeout) => builder.setRequestTimeout(timeout))
 
-    config.queryParams.foreach((qp) => {
-      val paramName = qp._1
-      qp._2.foreach(v => {
-        builder.addQueryParam(paramName, v)
+    config.getReadTimeout.ifPresent((timeout) => builder.setReadTimeout(timeout))
+    config.getRequestTimeout.ifPresent((timeout) => builder.setRequestTimeout(timeout))
+
+    config.getQueryParams.forEach((name, values) => {
+      values.forEach(v => {
+        builder.addQueryParam(name, v)
       })
     })
 
-    config.proxyConfig.foreach((proxy) => {
-      val server = new ProxyServer.Builder(proxy.host, proxy.port)
-      //TODO configure proxy correctly
-      builder.setProxyServer(server)
-    })
-
     val value: ListenableFuture[Response] = client.executeRequest(builder)
-    value.toCompletableFuture.thenApply[HttpAsyncResponse]((response) => {
+    value.toCompletableFuture.thenApply[HttpClientResponse](response => {
       new HttpAsyncResponse(response)
-    }).toCompletableFuture
+    })
+  }
+
+  override def sendRequest(request: HttpClientRequest, configuration: HttpClientConfiguration): HttpAsyncResponse = {
+    val builder = new RequestBuilder()
+    builder.setUrl(request.getUrl)
+    builder.setMethod(request.getMethod)
+    getAsyncHttpClient(configuration).executeRequest(builder).toCompletableFuture
+      .thenApply[HttpAsyncResponse](response => {
+        new HttpAsyncResponse(response)
+      })
+      .get()
   }
 
   def stop(): Unit = {
     client.close()
+  }
+
+  private def getAsyncHttpClient(configuration: HttpClientConfiguration): AsyncHttpClient = {
+    if (configuration.getConnectionTimeout.isPresent) {
+      asyncHttpClient(config()
+        .setConnectTimeout(configuration.getConnectionTimeout.get()))
+    } else {
+      client
+    }
   }
 }
 
 class HttpAsyncResponse(response: Response) extends HttpClientResponse {
 
   /** Example: 200 */
-  override def status: Int = {
+  override def getStatus: Int = {
     response.getStatusCode
   }
 
-  override def contentType: Option[String] = {
-    Option(response.getContentType)
+  override def getContentType: Optional[String] = {
+    Optional.ofNullable(response.getContentType)
   }
 
   /** Response headers * */
-  override def headers: HttpClientHeaders = {
+  override def getHeaders: HttpClientHeaders = {
     new HttpAsyncHeaders(response.getHeaders)
   }
 
   /** Response's raw body */
-  override def body: Option[InputStream] = {
-    Option(response.getResponseBodyAsStream)
+  override def getBody: Optional[InputStream] = {
+    Optional.ofNullable(response.getResponseBodyAsStream)
   }
 
-  override def statusText: Option[String] = {
-    Option(response.getStatusText)
+  override def getStatusText: Optional[String] = {
+    Optional.ofNullable(response.getStatusText)
   }
 
 }
 
 class HttpAsyncHeaders(headers: HttpHeaders) extends HttpClientHeaders {
 
-  override def headerNames: Array[String] = {
+  override def getHeaderNames: util.Set[String] = {
     val names = headers.names()
-    names.toArray(new Array[String](names.size()))
+    names
   }
 
-  override def headerValues(name: String): Array[String] = {
+  override def getHeaderValues(name: String): util.List[String] = {
     val values = headers.getAll(name)
-    values.toArray(new Array[String](values.size()))
+    values
   }
 
-  override def headerValue(name: String): Option[String] = {
-    Option(headers.get(name))
+  override def getHeaderValue(name: String): Optional[String] = {
+    Optional.ofNullable(headers.get(name))
   }
 }
 

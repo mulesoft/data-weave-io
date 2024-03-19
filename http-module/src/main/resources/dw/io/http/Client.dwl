@@ -115,3 +115,28 @@ fun createAuthorizationHeader(kind: OAuth | BasicAuth): {| Authorization: String
         }
     }
 }
+
+
+type HttpClientConfiguration = {
+    connectionTimeout?: Number
+}
+
+type Request<T <: HttpBody> = {
+    method: HttpMethod,
+    url: String | UrlBuilder,
+    headers?: HttpHeaders,
+    body?: T
+}
+
+type HttpClient = {
+    config: HttpClientConfiguration,
+    send: (request: Request) -> HttpClientResponse
+}
+
+fun Http(config: HttpClientConfiguration): HttpClient = {
+    config: config,
+    send: (request: Request) -> sendRequest(request, config)
+}
+
+@RuntimePrivilege(requires = "http::Client")
+fun sendRequest(request: Request, config: HttpClientConfiguration): HttpClientResponse = native("http::HttpSendRequestFunction")
