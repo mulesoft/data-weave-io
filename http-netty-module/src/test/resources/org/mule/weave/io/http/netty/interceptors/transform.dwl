@@ -39,23 +39,15 @@ var server = api(
 )
 ---
 {
-  a: request(
-    'GET', 'http://$LOCALHOST/test1', {}
-  ) then {
+  a: request( { method: "GET", url: 'http://$LOCALHOST/test1'})
+    then {
      status: ($).status,
      body: $.body,
      (contentType: $.contentType) if ($.contentType?),
      cookies: $.cookies,
      headers: $.headers
   },
-  b: POST('http://$LOCALHOST/test1', {
-    headers: {
-      Authorization: 'Bearer 123',
-    },
-    body: {
-      name: 'Agustin'
-    }
-  }) then {
+  b: post('http://$LOCALHOST/test1',{ name: 'Agustin' }, { Authorization: 'Bearer 123'}) then {
      status: ($).status,
      body: $.body,
      contentType: $.contentType,

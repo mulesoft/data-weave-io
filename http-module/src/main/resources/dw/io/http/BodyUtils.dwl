@@ -1,7 +1,10 @@
 %dw 2.0
 
-import dw::io::http::Types
 import * from dw::core::Objects
+import * from dw::io::http::Types
+import * from dw::io::http::utils::HttpHeaders
+import * from dw::module::Multipart
+import * from dw::Runtime
 
 fun formatHeader(header: String): String =
   lower(header)
@@ -11,8 +14,7 @@ fun formatHeader(header: String): String =
 /**
 * Helper method of `normalizeHeaders` to work with Null
 **/
-fun normalizeHeaders(headers: Null): {_?: String} =
-  {}
+fun normalizeHeaders<H <: HttpHeaders>(headers: Null): {_?: String} = {}
 
 /**
 * Normalize the object to be compliant with the http header
@@ -26,56 +28,53 @@ fun normalizeHeaders(headers: Null): {_?: String} =
 * |===
 *
 **/
-fun normalizeHeaders(headers: { _*?: (SimpleType | Null) }): {_?: String} =
+fun normalizeHeaders<H <: HttpHeaders>(headers: H): {_?: String} =
   headers mapObject {(formatHeader($$ as String)): $ default "" as String}
 
+type BinaryBodyType = {
+ body: Binary,
+ contentType: String
+}
 
-fun generateBody(config: { body?: Any, headers?: Types::HttpHeaders, writerOptions?: Dictionary<Any> }): {
-  body?: Binary,
-  headers: Types::HttpHeaders
-} =
-  using(headers = normalizeHeaders(config.headers))
-    if(config.body? == false)
-      { headers: headers }
-    else
-      using(
-        contentType = headers['Content-Type'] default (
-          config.body match {
-            case is Binary -> 'application/octet-stream'
-            case is dw::module::Multipart::Multipart -> 'multipart/form-data; boundary=$(config.writerOptions.boundary default dw::module::Multipart::generateBoundary())'
-            case is String -> 'text/plain'
-            else -> 'application/json'
-          }
-        ),
-        writerOptions =
-          (config.writerOptions default {}) mergeWith {
-            (boundary: (contentType scan /boundary=(.*)/)[0][1]) if contentType startsWith 'multipart/form-data'
-          },
-        body = (config.body match {
-                 case is Binary -> config.body
-                 else -> write(config.body, contentType, log(writerOptions))
-               }) as Binary
-      ) {
-          headers:
-            headers mergeWith {
-              'Content-Type': contentType,
-              ('Content-Length': sizeOf(body)) if body is Binary
-            },
-          body: body
-        }
+fun toBinaryBody(body: HttpBody, headers: HttpHeaders, config: SerializationConfig): BinaryBodyType = do {
+  var normalizedHeaders = normalizeHeaders(headers)
+  var contentType = normalizedHeaders[CONTENT_TYPE_HEADER] default (
+    body match {
+      case is Binary -> 'application/octet-stream'
+      case is Multipart -> 'multipart/form-data; boundary=$(config.writerProperties.boundary default generateBoundary())'
+      case is String -> 'text/plain'
+      else -> 'application/json'
+  })
 
-fun safeRead(mime: String, payload: String | Binary | Null, readerOptions: Object): Any =
-  mime match {
-    case matches /.*\/octet-stream/ -> payload as Binary
-    case matches /.*\/x-binary/ -> payload as Binary
+  // TODO: review boundary, is it OK to force it? Use custom function to extract boundary (see Mime class at DW)
+  var sanitizedContentType = if (contentType == "multipart/form-data") 'multipart/form-data; boundary=$(config.writerProperties.boundary default generateBoundary())' else contentType
+
+  var writerProperties = (config.writerProperties default {})
+    mergeWith {
+      (boundary: (sanitizedContentType scan /boundary=(.*)/)[0][1]) if (sanitizedContentType startsWith 'multipart/form-data')
+    }
+  var binaryBody = (body match {
+    case is Binary -> body
+    else -> write(body, sanitizedContentType, writerProperties)
+  }) as Binary
+  ---
+  { body: binaryBody, contentType: sanitizedContentType}
+}
+
+fun safeReadBody(contentType: String, payload: Binary, config: SerializationConfig): Any = do {
+  var readerProperties = config.readerProperties default {}
+  ---
+  // TODO: Should use custom function Mime ???
+  contentType match {
+    case matches /.*\/octet-stream/ -> payload
+    case matches /.*\/x-binary/ -> payload
     else ->
-        payload match {
-            case is Null -> null
-            case content is String | Binary -> do {
-                dw::Runtime::try(
-                    () -> read(content, mime, readerOptions)
-                  ).result
-            }
+      payload match {
+        case is Null -> null
+        // TODO: Remove try, we should fail if we can read it.
+        case content is String | Binary -> do {
+          try( () -> read(content, contentType, readerProperties)).result
         }
-
+      }
   }
+}

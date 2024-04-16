@@ -9,14 +9,16 @@ var result = [
 //  request('GET', 'https://tls-v1-1.badssl.com:1011/'),
 
   // Test against HTTP2 url
-  request('GET', 'https://www.cloudflare.com/'),
+  get('https://www.cloudflare.com/'),
 
   // our server has a weird https behavior.
-  request('GET', 'https://anypoint.mulesoft.com/accounts/me'),
-  request('POST', 'https://anypoint.mulesoft.com/accounts/login', { body: {user: 'data-weave', password: 'data-weave'} }),
+  get('https://anypoint.mulesoft.com/accounts/me'),
 
-  request('GET', 'https://github.com/'),
-  request('GET', 'https://google.com/')
+  post('https://anypoint.mulesoft.com/accounts/login',  { user: 'data-weave', password: 'data-weave' }),
+
+  request({ method: 'GET', url: 'https://github.com/'}),
+
+  request({ method: 'GET', url: 'https://google.com/'})
 ]
 
 ---
