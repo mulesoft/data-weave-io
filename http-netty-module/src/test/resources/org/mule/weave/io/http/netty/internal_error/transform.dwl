@@ -20,11 +20,11 @@ var server = api(
 )
 ---
 [
-  request('POST', 'http://$LOCALHOST/test',
-    {
-      body: "{}TATO"
-    }
-  ) then {
+  request({
+    method: 'POST',
+    url: 'http://$LOCALHOST/test',
+    body: "{}TATO"
+  }) then {
     statusText: ($).statusText ,
     "Content-Type": $.headers."Content-Type",
     status: ($).status ,

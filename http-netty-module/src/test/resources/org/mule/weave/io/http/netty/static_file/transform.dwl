@@ -16,7 +16,7 @@ var server = api(
 fun then<A, V>(result: A, assertions: (result: A) -> V): V = assertions(result)
 ---
 {
-  a: GET('http://$LOCALHOST/www/index.html')
+  a: get('http://$LOCALHOST/www/index.html')
    then {
     contentType: $.headers."Content-Type" ,
     status: $.status,

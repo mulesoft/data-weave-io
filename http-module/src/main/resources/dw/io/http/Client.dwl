@@ -3,90 +3,215 @@
 */
 %dw 2.0
 
-import dw::core::Objects
-import * from dw::io::http::Types
-import * from dw::io::http::BodyUtils
 import * from dw::core::Binaries
+import * from dw::core::Objects
 import * from dw::core::URL
-import * from dw::module::Multipart
+import * from dw::io::http::BodyUtils
+import * from dw::io::http::Types
 import * from dw::io::http::utils::HttpHeaders
+import * from dw::module::Multipart
 
-type HttpClientResponse<BodyType <: HttpBody, HeadersType <: HttpHeaders> = {
-    contentType?: String,
-    status: Number,
-    statusText?: String,
-    headers: HeadersType,
-    body?: BodyType,
-    cookies: HttpCookies
+fun customClientConfig(config: HttpClientConfig, prefix: String = "CUSTOM"): HttpClientConfig & {id: String} = { id: "$(prefix)-$(uuid())" } ++ config
+
+var DEFAULT_HTTP_CLIENT_CONFIG = customClientConfig({}, "DEFAULT")
+
+var DEFAULT_HTTP_REQUEST_CONFIG = {}
+
+var DEFAULT_SERIALIZATION_CONFIG = {
+  contentType: "application/json",
+  readerProperties: {},
+  writerProperties: {}
 }
 
-
-type HttpRequest<T <: HttpBody> = {
-    headers?: HttpHeaders,
-    body?: T,
-    //Config properties
-    config?: {
-        defaultContentType?: String,
-        followRedirects?: Boolean,
-        readerProperties?: Object,
-        writerProperties?: Object,
-        readTimeout?: Number,
-        requestTimeout?: Number
-
-    }
+fun get<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder, headers: HttpHeaders | Null = null): HttpResponse<B, H> = do {
+  var requestHeaders = if (headers == null) {}  else { headers: headers }
+  var httpRequest = {
+    method: "GET",
+    url: url
+  } mergeWith requestHeaders
+  ---
+  request(httpRequest)
 }
 
-type UrlBuilder = {
-   url: String,
-   queryParams?: QueryParams
+fun post<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder, body: HttpBody | Null = null, headers: HttpHeaders | Null = null): HttpResponse<B, H> = do {
+  var requestHeaders = if (headers == null) {} else { headers: headers }
+  var requestBody = if (body == null) {} else { body: body }
+  var httpRequest = {
+    method: "POST",
+    url: url
+  } mergeWith
+      requestHeaders
+    mergeWith
+      requestBody
+  ---
+  request(httpRequest)
 }
 
-type OAuth = {token: String}
+fun postMultipart<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder, body: Multipart, headers: HttpHeaders | Null = null): HttpResponse<B, H> = do {
+  // TODO: Review header, is it OK to add it?
+  var httpHeaders = if (headers == null) { headers: { (CONTENT_TYPE_HEADER): "multipart/form-data" } } else { headers: headers }
+  var newHeaders = if (httpHeaders.headers[CONTENT_TYPE_HEADER]?)
+      httpHeaders
+    else
+      httpHeaders update {
+        case .headers.CONTENT_TYPE_HEADER! -> "multipart/form-data"
+      }
+  var httpRequest = {
+    method: "POST",
+    url: url,
+    body: body
+  } mergeWith
+    newHeaders
+  ---
+  request(httpRequest)
+}
 
-type BasicAuth = {username: String, password: String}
-
-fun GET(url: String | UrlBuilder, httpRequest: HttpRequest = {}): HttpClientResponse =
-  request("GET", url, httpRequest)
-
-fun POST(url: String | UrlBuilder, httpRequest: HttpRequest = {}): HttpClientResponse =
-  request("POST", url, httpRequest)
-
-fun POSTMultipart(url: String | UrlBuilder, httpRequest: HttpRequest<Multipart> = {}): HttpClientResponse = do {
-    var newRequest = if(httpRequest.headers[CONTENT_TYPE_HEADER]?)
-                      httpRequest
-                     else
-                      httpRequest update {
-                        case .headers.CONTENT_TYPE_HEADER! -> "multipart/form-data"
-                      }
+fun head<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder, headers: HttpHeaders | Null = null): HttpResponse<B, H> = do {
+    var requestHeaders = if (headers == null) {} else { headers: headers }
+    var httpRequest = {
+        method: "HEAD",
+        url: url
+    } mergeWith
+        requestHeaders
     ---
-    request("POST", url, httpRequest)
+    request(httpRequest)
 }
 
+fun put<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder, body: HttpBody | Null = null, headers: HttpHeaders | Null = null): HttpResponse<B, H> = do {
+  var requestHeaders = if (headers == null) {} else { headers: headers }
+  var requestBody = if (body == null) {} else { body: body }
+  var httpRequest = {
+    method: "PUT",
+    url: url
+  } mergeWith
+      requestHeaders
+    mergeWith
+      requestBody
+  ---
+  request(httpRequest)
+}
 
-fun HEAD(url: String | UrlBuilder, httpRequest: HttpRequest = {}): HttpClientResponse =
-  request("HEAD", url, httpRequest)
+fun delete<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder, body: HttpBody | Null = null, headers: HttpHeaders | Null = null): HttpResponse<B, H> = do {
+  var requestHeaders = if (headers == null) {} else { headers: headers }
+  var requestBody = if (body == null) {} else { body: body }
+  var httpRequest = {
+    method: "DELETE",
+    url: url
+  } mergeWith
+     requestHeaders
+    mergeWith
+      requestBody
+  ---
+  request(httpRequest)
+}
 
-fun PUT(url: String | UrlBuilder, httpRequest: HttpRequest = {}): HttpClientResponse =
-  request("PUT", url, httpRequest)
+fun connect<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder, headers: HttpHeaders | Null = null): HttpResponse<B, H> = do {
+  var requestHeaders = if (headers == null) {} else { headers: headers }
+  var httpRequest = {
+    method: "CONNECT",
+    url: url
+  } mergeWith
+     requestHeaders
+  ---
+  request(httpRequest)
+}
 
-fun DELETE(url: String | UrlBuilder, httpRequest: HttpRequest = {}): HttpClientResponse =
-  request("DELETE", url, httpRequest)
+fun options<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder, headers: HttpHeaders | Null = null): HttpResponse<B, H> = do {
+  var requestHeaders = if (headers == null) {} else { headers: headers }
+  var httpRequest = {
+    method: "OPTIONS",
+    url: url
+  } mergeWith
+      requestHeaders
+  ---
+  request(httpRequest)
+}
 
-fun CONNECT(url: String | UrlBuilder, httpRequest: HttpRequest = {}): HttpClientResponse =
-  request("CONNECT", url, httpRequest)
+fun trace<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder, headers: HttpHeaders | Null = null): HttpResponse<B, H> = do {
+  var requestHeaders = if (headers == null) {} else { headers: headers }
+  var httpRequest = {
+    method: "TRACE",
+    url: url
+  } mergeWith
+      requestHeaders
+  ---
+  request(httpRequest)
+}
 
-fun OPTIONS(url: String | UrlBuilder, httpRequest: HttpRequest = {}): HttpClientResponse =
-  request("OPTIONS", url, httpRequest)
-
-fun TRACE(url: String | UrlBuilder, httpRequest: HttpRequest = {}): HttpClientResponse =
-  request("TRACE", url, httpRequest)
-
-fun PATCH(url: String | UrlBuilder, httpRequest: HttpRequest = {}): HttpClientResponse =
-  request("PATCH", url, httpRequest)
-
+fun patch<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder, body: HttpBody | Null = null, headers: HttpHeaders | Null = null): HttpResponse<B, H> = do {
+  var requestHeaders = if (headers == null) {} else { headers: headers }
+  var requestBody = if (body == null) {} else { body: body }
+  var httpRequest = {
+    method: "PATCH",
+    url: url
+  } mergeWith
+      requestHeaders
+    mergeWith
+      requestBody
+  ---
+  request(httpRequest)
+}
 
 @RuntimePrivilege(requires = "http::Client")
-fun request(method: HttpMethod, url: String | UrlBuilder, httpRequest: HttpRequest = {}): HttpClientResponse = native("http::HttpRequestFunction")
+fun httpRequest<H <: HttpHeaders>(
+  request: HttpRequest<Binary>,
+  requestConfig: HttpRequestConfig = DEFAULT_HTTP_REQUEST_CONFIG,
+  clientConfig: HttpClientConfig & {id: String} = DEFAULT_HTTP_CLIENT_CONFIG): HttpResponse<Binary, H> = native("http::HttpRequestFunction")
+
+fun request<B <: HttpBody, H <: HttpHeaders>(
+  request: HttpRequest,
+  requestConfig: HttpRequestConfig = DEFAULT_HTTP_REQUEST_CONFIG,
+  serializationConfig: SerializationConfig = DEFAULT_SERIALIZATION_CONFIG,
+  clientConfig: HttpClientConfig & {id: String} = DEFAULT_HTTP_CLIENT_CONFIG): HttpResponse<B, H> = do {
+  var requestBody = request.body
+  var requestWithBody = if (requestBody != null) do {
+    var requestHeaders = request.headers default {}
+    var binaryBody = toBinaryBody(requestBody, requestHeaders, serializationConfig)
+    var headersWithContentType = requestHeaders
+      mergeWith {
+        (CONTENT_TYPE_HEADER): binaryBody.contentType,
+      }
+    ---
+    {
+      method: request.method,
+      url: request.url,
+      headers: headersWithContentType,
+      body: binaryBody.body
+    }
+    } else {
+      method: request.method,
+      url: request.url,
+      (headers: request.headers!) if (request.headers?)
+    }
+
+  var httpResponse = httpRequest(requestWithBody, requestConfig, clientConfig)
+  var responseBody = httpResponse.body
+  ---
+  if (responseBody == null)
+    httpResponse as HttpResponse<B, H>
+  else do {
+    var responseHeaders = normalizeHeaders(httpResponse.headers)
+    var contentType = responseHeaders[CONTENT_TYPE_HEADER]
+    var httpResponseWithBody = httpResponse mergeWith
+      if (contentType != null) do {
+        // TODO: Shoud use custom Mime function
+        var mime = (contentType splitBy ";")[0]
+        // TODO: Add test for lazyness (e.g a broken json response using just the raw). Alternative see HttpResponse2
+        @Lazy
+        var body = (safeReadBody(mime, responseBody, serializationConfig) as B) <~ { "mimeType": mime, "raw": responseBody }
+        ---
+        { body: body }
+      } else do {
+        @Lazy
+        var body = responseBody <~ { "mimeType": null, "raw": responseBody }
+        ---
+        { body: body }
+      }
+    ---
+    httpResponseWithBody as HttpResponse<B, H>
+  }
+}
+
 
 //UTILITY FUNCTIONS
 /**

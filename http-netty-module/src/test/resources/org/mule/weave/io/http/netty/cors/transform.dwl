@@ -29,21 +29,13 @@ var server = api(
 )
 ---
 [
-  GET( 'http://$LOCALHOST/test1', {
-      headers: {
-        Origin: "localhost"
-      }
-    }
-  ) then {
+  get( 'http://$LOCALHOST/test1', { Origin: "localhost" })
+    then {
       status: $.status,
       "Access-Control-Allow-Origin": $.headers."Access-Control-Allow-Origin"
   },
-  OPTIONS('http://$LOCALHOST/test1', {
-        headers: {
-          Origin: "localhost"
-        }
-      }
-    ) then {
+  options('http://$LOCALHOST/test1', { Origin: "localhost" })
+    then {
        status: $.status,
        "Access-Control-Allow-Origin": $.headers."Access-Control-Allow-Origin"
   },
