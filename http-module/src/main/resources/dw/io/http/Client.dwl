@@ -1,5 +1,9 @@
 /**
-* Http client module allows to make http calls
+* HTTP client module allows to make HTTP calls
+*
+* To use this module, you must import it to your DataWeave code, for example,
+* by adding the line `import * from dw::io::http::Client` to the header of your
+* DataWeave script.
 */
 %dw 2.0
 
@@ -9,14 +13,39 @@ import * from dw::core::URL
 import * from dw::io::http::BodyUtils
 import * from dw::io::http::Types
 import * from dw::io::http::utils::HttpHeaders
+import fromString, MimeType, MimeTypeError from dw::module::Mime
 import * from dw::module::Multipart
+import fail from dw::Runtime
 
+
+/**
+* Create a custom a `HttpClientConfig`.
+*
+*
+* === Parameters
+*
+* [%header, cols="1,1,3"]
+* |===
+* | Name | Type | Description
+* | config | `HttpClientConfig` | The desired HTTP client configuration.
+* | prefix | `String` | The `prefix` to be used for creating the HTTP client configuration's `id`.
+* |===
+*/
 fun customClientConfig(config: HttpClientConfig, prefix: String = "CUSTOM"): HttpClientConfig & {id: String} = { id: "$(prefix)-$(uuid())" } ++ config
 
+/**
+* Variable used to identify the default HTTP client configuration.
+*/
 var DEFAULT_HTTP_CLIENT_CONFIG = customClientConfig({}, "DEFAULT")
 
+/**
+* Variable used to identify the default HTTP request configuration.
+*/
 var DEFAULT_HTTP_REQUEST_CONFIG = {}
 
+/**
+* Variable used to identify the default HTTP serialization configuration.
+*/
 var DEFAULT_SERIALIZATION_CONFIG = {
   contentType: "application/json",
   readerProperties: {},
@@ -166,7 +195,7 @@ fun request<B <: HttpBody, H <: HttpHeaders>(
   var requestBody = request.body
   var requestWithBody = if (requestBody != null) do {
     var requestHeaders = request.headers default {}
-    var binaryBody = toBinaryBody(requestBody, requestHeaders, serializationConfig)
+    var binaryBody = writeToBinary(requestBody, requestHeaders, serializationConfig)
     var headersWithContentType = requestHeaders
       mergeWith {
         (CONTENT_TYPE_HEADER): binaryBody.contentType,
@@ -194,11 +223,12 @@ fun request<B <: HttpBody, H <: HttpHeaders>(
     var contentType = responseHeaders[CONTENT_TYPE_HEADER]
     var httpResponseWithBody = httpResponse mergeWith
       if (contentType != null) do {
-        // TODO: Should use custom Mime function
-        var mime = (contentType splitBy ";")[0]
         // TODO: Add test for lazyness (e.g a broken json response using just the raw). Alternative see HttpResponse2
+        var mime: Result<MimeType, MimeTypeError> = fromString(contentType)
         @Lazy
-        var body = (safeReadBody(mime, responseBody, serializationConfig) as B) <~ { "mimeType": mime, "raw": responseBody }
+        var body = if (mime.success)
+            (readFromBinary(mime.result!, responseBody, serializationConfig) as B) <~ { "mimeType": "$(mime.result.'type')/$(mime.result.subtype)", "raw": responseBody }
+        else fail("Enable to parse `Content-Type`: $(contentType) caused by: $(mime.error.message)")
         ---
         { body: body }
       } else do {

@@ -19,10 +19,16 @@ public class HttpClientConfiguration {
         this.connectionTimeout = connectionTimeout;
     }
 
+    /**
+     * @return the id of the {@link HttpClient}.
+     */
     public String getId() {
         return id;
     }
 
+    /**
+     * @return the maximum time in millisecond an {@link HttpClient} can wait when connecting to a remote host.
+     */
     public Optional<Integer> getConnectionTimeout() {
         return connectionTimeout;
     }
