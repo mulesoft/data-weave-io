@@ -194,7 +194,7 @@ fun request<B <: HttpBody, H <: HttpHeaders>(
     var contentType = responseHeaders[CONTENT_TYPE_HEADER]
     var httpResponseWithBody = httpResponse mergeWith
       if (contentType != null) do {
-        // TODO: Shoud use custom Mime function
+        // TODO: Should use custom Mime function
         var mime = (contentType splitBy ";")[0]
         // TODO: Add test for lazyness (e.g a broken json response using just the raw). Alternative see HttpResponse2
         @Lazy

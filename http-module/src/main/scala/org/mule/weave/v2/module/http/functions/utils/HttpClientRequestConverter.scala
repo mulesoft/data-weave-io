@@ -30,37 +30,37 @@ class HttpClientRequestConverter(
     val method = selectString(request, METHOD).getOrElse(throw new WeaveRuntimeException(s"Expecting $METHOD", location.location()))
 
     val builder = new HttpClientRequest.Builder()
-      .withMethod(method)
+      .setMethod(method)
 
     val url = extractUrl(request, location)
-    builder.withUrl(url.url)
+    builder.setUrl(url.url)
     url.queryParams.foreach(entry => {
       entry._2.foreach(value => {
-        builder.withQueryParam(entry._1, value)
+        builder.addQueryParam(entry._1, value)
       })
     })
 
     val headers = extractHeaders(request)
     headers.foreach(entry => {
       entry._2.foreach(value => {
-        builder.withHeader(entry._1, value)
+        builder.addHeader(entry._1, value)
       })
     })
 
     val maybeBody = extractBody(request)
     if (maybeBody.isDefined) {
       val body = maybeBody.get
-      builder.withBody(body)
+      builder.setBody(body)
     }
 
-    builder.withFollowRedirect(requestConfig.followRedirects)
+    builder.setFollowRedirect(requestConfig.followRedirects)
 
     if (requestConfig.readTimeout.isDefined) {
-      builder.withReadTimeout(requestConfig.readTimeout.get)
+      builder.setReadTimeout(requestConfig.readTimeout.get)
     }
 
     if (requestConfig.requestTimeout.isDefined) {
-      builder.withRequestTimeout(requestConfig.requestTimeout.get)
+      builder.setRequestTimeout(requestConfig.requestTimeout.get)
     }
 
     builder.build()
