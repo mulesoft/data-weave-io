@@ -65,7 +65,6 @@ class NettyHttpClient(client: AsyncHttpClient) extends HttpClient {
 
 class HttpAsyncResponse(response: Response) extends HttpClientResponse {
 
-  /** Example: 200 */
   override def getStatus: Int = {
     response.getStatusCode
   }
@@ -74,7 +73,6 @@ class HttpAsyncResponse(response: Response) extends HttpClientResponse {
     Optional.ofNullable(response.getStatusText)
   }
 
-  /** Response headers * */
   override def getHeaders: HttpClientHeaders = {
     new HttpAsyncHeaders(response.getHeaders)
   }
@@ -83,7 +81,6 @@ class HttpAsyncResponse(response: Response) extends HttpClientResponse {
     Optional.ofNullable(response.getContentType)
   }
 
-  /** Response's raw body */
   override def getBody: Optional[InputStream] = {
     Optional.ofNullable(response.getResponseBodyAsStream)
   }

@@ -14,8 +14,8 @@ class HttpClientConfigurationConverter(config: ObjectSeq, location: LocationCapa
   def convert()(implicit ctx: EvaluationContext): HttpClientConfiguration = {
     val builder = new HttpClientConfiguration.Builder()
     val id = selectString(config, ID).getOrElse(throw new WeaveRuntimeException(s"Expecting $ID", location.location()))
-    builder.withId(id)
-    selectInt(config, CONNECTION_TIMEOUT).foreach(connectionTimeout => builder.withConnectionTimeout(connectionTimeout))
+    builder.setId(id)
+    selectInt(config, CONNECTION_TIMEOUT).foreach(connectionTimeout => builder.setConnectionTimeout(connectionTimeout))
 
     builder.build()
   }

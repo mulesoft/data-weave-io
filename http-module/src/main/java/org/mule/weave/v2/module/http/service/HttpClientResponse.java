@@ -8,26 +8,54 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Representation of an HTTP response.
+ */
 public interface HttpClientResponse {
 
     String LOCATION = "Location";
 
     String SET_COOKIE = "Set-Cookie";
 
-    /** Example: 200 */
+    /**
+     * Returns the status code for the request.
+     *
+     * @return The status code
+     */
     int getStatus();
 
+    /**
+     * Returns the status text for the request.
+     *
+     * @return The status text
+     */
     Optional<String> getStatusText();
 
-    /** Response headers * */
+    /**
+     * Return a {@link List} of the {@link HttpClientHeaders} response header value.
+     * @return the {@link List} of the {@link HttpClientHeaders}
+     */
     HttpClientHeaders getHeaders();
 
+    /**
+     * Return the content-type header value.
+     *
+     * @return the content-type header value.
+     */
     Optional<String> getContentType();
 
-    /** Response's raw body */
+    /**
+     *  Returns an {@link Optional} input stream for the response body. Note that you should not try to get this more than once, and that you should not close the stream.
+     *
+     * @return The {@link Optional} input stream
+     */
     Optional<InputStream> getBody();
 
-    /** Location header value sent for redirects. By default, this library will not follow redirects. */
+    /**
+     * Location header value sent for redirects. By default, this library will not follow redirects
+     *
+     * @return the location header value
+     */
     default Optional<String> getLocation() {
         return getHeaders()
                 .getHeaderValues(LOCATION)
@@ -35,8 +63,11 @@ public interface HttpClientResponse {
                 .findFirst();
     }
 
-
-    /** Get the parsed cookies from the "Set-Cookie" header * */
+    /**
+     * Get the parsed cookies from the "Set-Cookie" header
+     *
+     * @return the {@link List} of the {@link HttpCookie}
+     */
     default List<HttpCookie> getCookies() {
         return getHeaders()
                 .getHeaderValues(SET_COOKIE)
