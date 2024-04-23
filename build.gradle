@@ -136,7 +136,7 @@ subprojects {
     }
 
     dataweave {
-        template = "markdown"
+        template = "markdown,assciidoc"
     }
 
     task docs(dependsOn: weavedoc, type: Zip) {

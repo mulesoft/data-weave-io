@@ -1,6 +1,5 @@
 %dw 2.0
 
-// COMMON =========================================================
 type HttpBody = Any
 
 type HttpMethod = "GET" | "HEAD" | "POST" | "PUT" | "DELETE" | "CONNECT" | "OPTIONS" | "TRACE" | "PATCH"
@@ -21,8 +20,12 @@ type QueryParams = {
   _ ?: String
 }
 
-// CLIENT =========================================================
-
+/**
+ * DataWeave type for representing an HTTP client configuration.
+ * Supports the following fields:
+ *
+ * * `connectionTimeout`: The maximum time in millisecond an `HttpClient` can wait when connecting to a remote host.
+ */
 type HttpClientConfig = {
     connectionTimeout?: Number
 }
