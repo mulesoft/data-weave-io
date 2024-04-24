@@ -15,9 +15,17 @@ import * from dw::module::Mime
 import * from dw::module::Multipart
 import * from dw::Runtime
 
+
+/**
+ * DataWeave type for representing a `Binary` body.
+ * Supports the following fields:
+ *
+ * * `body`: Represents the `Binary` body.
+ * * `contentType`: Identifies body content type.
+ */
 type BinaryBodyType = {
  body: Binary,
- contentType: String
+ mime: MimeType
 }
 
 fun formatHeader(header: String): String =
@@ -46,33 +54,51 @@ fun normalizeHeaders<H <: HttpHeaders>(headers: H): {_?: String} =
   headers mapObject {(formatHeader($$ as String)): $ default "" as String}
 
 fun writeToBinary(body: HttpBody, headers: HttpHeaders, config: SerializationConfig): BinaryBodyType = do {
+  fun internalWriteToBinary(body: HttpBody, mime: MimeType, writerProperties: Object): BinaryBodyType = body match {
+    case b is Binary ->
+      { body: b, mime: mime }
+    else -> do {
+     var df = findDataFormatDescriptorByMime(mime)
+     ---
+       if (df == null)
+         fail("Unable to find data format for: $(mime.'type')/$(mime.subtype)")
+       else do {
+         var additionalWriterProperties = mime.'type' match {
+           case "multipart" -> { boundary: mime.parameters["boundary"] default generateBoundary() }
+           else -> {}
+         }
+         var writerProperties = (config.writerProperties) default {}
+             mergeWith additionalWriterProperties
+
+         var binaryBody = write(body, df.id, writerProperties) as Binary
+         var mimeWithAdditionalProperties =
+           mime update {
+             case p at .parameters -> p mergeWith additionalWriterProperties
+           }
+         ---
+         { body: binaryBody, mime: mimeWithAdditionalProperties }
+       }
+     }
+  }
+
   var normalizedHeaders = normalizeHeaders(headers)
   var contentType = normalizedHeaders[CONTENT_TYPE_HEADER] default (
     body match {
       case is Binary -> 'application/octet-stream'
       case is Multipart -> 'multipart/form-data; boundary=$(config.writerProperties.boundary default generateBoundary())'
       case is String -> 'text/plain'
-      else -> 'application/json'
+      else -> config.contentType
   })
 
-  // TODO: review boundary, is it OK to force it? Use custom function to extract boundary (see Mime class at DW)
-  var sanitizedContentType = if (contentType == "multipart/form-data") 'multipart/form-data; boundary=$(config.writerProperties.boundary default generateBoundary())' else contentType
-
-  var writerProperties = (config.writerProperties default {})
-    mergeWith {
-      (boundary: (sanitizedContentType scan /boundary=(.*)/)[0][1]) if (sanitizedContentType startsWith 'multipart/form-data')
-    }
-  var binaryBody = (body match {
-    case is Binary -> body
-    else -> write(body, sanitizedContentType, writerProperties)
-  }) as Binary
+  var mime = fromString(contentType)
   ---
-  { body: binaryBody, contentType: sanitizedContentType}
+  if (mime.success)
+   internalWriteToBinary(body, mime.result!, config)
+  else
+    fail("Unable to parse MIME type: $(contentType) caused by: $(mime.error.message)")
 }
 
 fun readFromBinary(mime: MimeType, payload: Binary, config: SerializationConfig): Any = do {
-  var readerProperties = config.readerProperties default {}
-
   fun internalReadFromBinary(payload: Binary, mime: MimeType, readerProperties: Object): Any = payload match {
      case is Null -> null
      case content is String | Binary -> do {
@@ -81,10 +107,11 @@ fun readFromBinary(mime: MimeType, payload: Binary, config: SerializationConfig)
        if (df == null)
          payload
        else
-       	// TODO: What about mime type properties ?? (e.g: Multipart boundary)
-        read(content, df.id, readerProperties)
-     }
-   }
+         // TODO: What about mime type properties ?? (e.g: Multipart boundary)
+         read(content, df.id, readerProperties)
+    }
+  }
+  var readerProperties = config.readerProperties default {}
   ---
   mime.'type' match {
     case "application" ->

@@ -13,7 +13,7 @@ import * from dw::core::URL
 import * from dw::io::http::BodyUtils
 import * from dw::io::http::Types
 import * from dw::io::http::utils::HttpHeaders
-import fromString, MimeType, MimeTypeError from dw::module::Mime
+import * from dw::module::Mime
 import * from dw::module::Multipart
 import fail from dw::Runtime
 
@@ -198,7 +198,7 @@ fun request<B <: HttpBody, H <: HttpHeaders>(
     var binaryBody = writeToBinary(requestBody, requestHeaders, serializationConfig)
     var headersWithContentType = requestHeaders
       mergeWith {
-        (CONTENT_TYPE_HEADER): binaryBody.contentType,
+        (CONTENT_TYPE_HEADER): dw::module::Mime::toString(binaryBody.mime)
       }
     ---
     {
@@ -226,9 +226,11 @@ fun request<B <: HttpBody, H <: HttpHeaders>(
         // TODO: Add test for lazyness (e.g a broken json response using just the raw). Alternative see HttpResponse2
         var mime: Result<MimeType, MimeTypeError> = fromString(contentType)
         @Lazy
-        var body = if (mime.success)
+        var body =
+          if (mime.success)
             (readFromBinary(mime.result!, responseBody, serializationConfig) as B) <~ { "mimeType": "$(mime.result.'type')/$(mime.result.subtype)", "raw": responseBody }
-        else fail("Enable to parse `Content-Type`: $(contentType) caused by: $(mime.error.message)")
+          else
+            fail("Unable to parse MIME type: $(contentType) caused by: $(mime.error.message)")
         ---
         { body: body }
       } else do {
