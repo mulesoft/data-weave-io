@@ -6,12 +6,12 @@
   },
   b: {
     message: true,
-    stack: 3,
+    stack: 4,
     kind: "UrlConnectionException"
   },
   c: {
     message: false,
-    stack: 3,
+    stack: 4,
     kind: "UrlConnectionException"
   }
 }
