@@ -11,7 +11,7 @@ object HttpClientRunner extends App {
     client.request(new HttpClientRequest.Builder()
       .setMethod("GET")
       .setUrl("https://google.com")
-      .build()).get()
+      .build())
     println("<<<< Google")
 
 
@@ -22,7 +22,7 @@ object HttpClientRunner extends App {
       .addQueryParam("a", "1")
       .addQueryParam("a", "2")
       .setBody(new ByteArrayInputStream("{}".getBytes("UTF-8")))
-      .build()).get()
+      .build())
     println("<<< Httpbin")
 
     service.stop()

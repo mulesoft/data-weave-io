@@ -13,14 +13,12 @@ import org.mule.weave.v2.module.http.functions.exceptions.UrlConnectionException
 import org.mule.weave.v2.module.http.functions.utils.HttpClientConfigurationConverter
 import org.mule.weave.v2.module.http.functions.utils.HttpClientRequestConverter
 import org.mule.weave.v2.module.http.functions.utils.HttpClientResponseConverter
-import org.mule.weave.v2.module.http.service.HttpClientResponse
 import org.mule.weave.v2.module.http.service.HttpClientService
 import org.mule.weave.v2.parser.exception.WeaveRuntimeException
 import org.mule.weave.v2.parser.location.UnknownLocation
 
 import java.net.ConnectException
 import java.net.UnknownHostException
-import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ExecutionException
 
 class HttpRequestFunction extends SecureTernaryFunctionValue {
@@ -47,15 +45,12 @@ class HttpRequestFunction extends SecureTernaryFunctionValue {
       .getOrElse(throw new WeaveRuntimeException("HttpClientService was not registered", UnknownLocation))
 
     try {
-      val future: CompletableFuture[_ <: HttpClientResponse] = httpClientService
-        .getClient(clientConfiguration).request(request)
+      val httpResponse = httpClientService
+        .getClient(clientConfiguration)
+        .request(request)
       new LazyValue({
         try {
-          future
-            .thenApply[ObjectValue]((result: HttpClientResponse) => {
-              HttpClientResponseConverter(result).convert()
-            })
-            .get()
+          HttpClientResponseConverter(httpResponse).convert()
         } catch {
           case ee: ExecutionException =>
             ee.getCause match {
@@ -72,6 +67,11 @@ class HttpRequestFunction extends SecureTernaryFunctionValue {
         throw new InvalidUrlException(request.getUrl, this.location())
       case ce: ConnectException =>
         throw new UrlConnectionException(request.getUrl, ce.getMessage, this.location())
+      case ee: ExecutionException =>
+        ee.getCause match {
+          case ce: Exception =>
+            throw new UrlConnectionException(request.getUrl, ce.getMessage, this.location())
+        }
     }
   }
 }

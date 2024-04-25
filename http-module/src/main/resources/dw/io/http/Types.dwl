@@ -30,12 +30,28 @@ type HttpClientConfig = {
     connectionTimeout?: Number
 }
 
+/**
+ * DataWeave type for representing an HTTP request configuration.
+ * Supports the following fields:
+ *
+ * * `followRedirects`: Indicates if the HTTP request is to follow redirects.
+ * * `readTimeout`: The desired HTTP request read timeout in millisecond.
+ * * `requestTimeout`: The desired HTTP request timeout in millisecond.
+ */
 type HttpRequestConfig = {
   followRedirects?: Boolean,
   readTimeout?: Number,
   requestTimeout?: Number
 }
 
+/**
+ * DataWeave type for representing an HTTP request configuration.
+ * Supports the following fields:
+ *
+ * * `contentType`: The ContentType used for HTTP request serialization.
+ * * `readerProperties`: The reader configuration properties used for read the HTTP response body.
+ * * `writerProperties`: The writer configuration properties used for write the HTTP request body.
+ */
 type SerializationConfig = {
   contentType: String,
   readerProperties?: Object,

@@ -17,7 +17,6 @@ import * from dw::module::Mime
 import * from dw::module::Multipart
 import fail from dw::Runtime
 
-
 /**
 * Create a custom a `HttpClientConfig`.
 *
@@ -53,7 +52,7 @@ var DEFAULT_SERIALIZATION_CONFIG = {
 }
 
 fun get<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder, headers: HttpHeaders | Null = null): HttpResponse<B, H> = do {
-  var requestHeaders = if (headers == null) {}  else { headers: headers }
+  var requestHeaders = if (headers == null) {} else { headers: headers }
   var httpRequest = {
     method: "GET",
     url: url
@@ -77,7 +76,6 @@ fun post<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder, body: HttpBo
 }
 
 fun postMultipart<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder, body: Multipart, headers: HttpHeaders | Null = null): HttpResponse<B, H> = do {
-  // TODO: Review header, is it OK to add it?
   var httpHeaders = if (headers == null) { headers: { (CONTENT_TYPE_HEADER): "multipart/form-data" } } else { headers: headers }
   var newHeaders = if (httpHeaders.headers[CONTENT_TYPE_HEADER]?)
       httpHeaders
@@ -230,7 +228,7 @@ fun request<B <: HttpBody, H <: HttpHeaders>(
           if (mime.success)
             (readFromBinary(mime.result!, responseBody, serializationConfig) as B) <~ { "mimeType": "$(mime.result.'type')/$(mime.result.subtype)", "raw": responseBody }
           else
-            fail("Unable to parse MIME type: $(contentType) caused by: $(mime.error.message)")
+            responseBody <~ { "mimeType": contentType, "raw": responseBody }
         ---
         { body: body }
       } else do {

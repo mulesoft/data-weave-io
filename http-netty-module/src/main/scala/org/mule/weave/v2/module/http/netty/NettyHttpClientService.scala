@@ -2,7 +2,6 @@ package org.mule.weave.v2.module.http.netty
 
 import io.netty.handler.codec.http.HttpHeaders
 import org.asynchttpclient.AsyncHttpClient
-import org.asynchttpclient.ListenableFuture
 import org.asynchttpclient.RequestBuilder
 import org.asynchttpclient.Response
 import org.mule.weave.v2.model.ServiceRegistration
@@ -16,7 +15,6 @@ import org.mule.weave.v2.module.http.service.HttpClientService
 import java.io.InputStream
 import java.util
 import java.util.Optional
-import java.util.concurrent.CompletableFuture
 
 class NettyHttpClientService extends HttpClientService {
 
@@ -33,7 +31,7 @@ class NettyHttpClientService extends HttpClientService {
 
 class NettyHttpClient(client: AsyncHttpClient) extends HttpClient {
 
-  override def request(request: HttpClientRequest): CompletableFuture[HttpClientResponse] = {
+  override def request(request: HttpClientRequest): HttpClientResponse = {
     val builder = new RequestBuilder()
     builder.setUrl(request.getUrl)
     builder.setMethod(request.getMethod)
@@ -52,10 +50,12 @@ class NettyHttpClient(client: AsyncHttpClient) extends HttpClient {
       })
     })
 
-    val value: ListenableFuture[Response] = client.executeRequest(builder)
-    value.toCompletableFuture.thenApply[HttpClientResponse](response => {
-      new HttpAsyncResponse(response)
-    }).toCompletableFuture
+    client.executeRequest(builder)
+      .toCompletableFuture
+      .thenApply[HttpClientResponse](response => {
+        new NettyHttpClientResponse(response)
+      })
+      .get()
   }
 
   def close(): Unit = {
@@ -63,7 +63,7 @@ class NettyHttpClient(client: AsyncHttpClient) extends HttpClient {
   }
 }
 
-class HttpAsyncResponse(response: Response) extends HttpClientResponse {
+class NettyHttpClientResponse(response: Response) extends HttpClientResponse {
 
   override def getStatus: Int = {
     response.getStatusCode
@@ -74,7 +74,7 @@ class HttpAsyncResponse(response: Response) extends HttpClientResponse {
   }
 
   override def getHeaders: HttpClientHeaders = {
-    new HttpAsyncHeaders(response.getHeaders)
+    new NettyHttpClientHeaders(response.getHeaders)
   }
 
   override def getContentType: Optional[String] = {
@@ -86,7 +86,7 @@ class HttpAsyncResponse(response: Response) extends HttpClientResponse {
   }
 }
 
-class HttpAsyncHeaders(headers: HttpHeaders) extends HttpClientHeaders {
+class NettyHttpClientHeaders(headers: HttpHeaders) extends HttpClientHeaders {
 
   override def getHeaderNames: util.Set[String] = {
     headers.names()
