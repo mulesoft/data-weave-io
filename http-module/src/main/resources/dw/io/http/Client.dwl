@@ -18,7 +18,8 @@ import * from dw::module::Multipart
 import fail from dw::Runtime
 
 /**
-* Creates an identifiable HTTP client configuration with the desired `prefix`
+* Helper function to create an identifiable HTTP client configuration with the desired `prefix`.
+* This function returns the given `HttpClientConfig` with and an `id`.
 *
 * === Parameters
 *
@@ -50,132 +51,91 @@ var DEFAULT_SERIALIZATION_CONFIG = {
   writerProperties: {}
 }
 
-fun get<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder, headers: HttpHeaders | Null = null): HttpResponse<B, H> = do {
-  var requestHeaders = if (headers == null) {} else { headers: headers }
-  var httpRequest = {
-    method: "GET",
-    url: url
-  } mergeWith requestHeaders
+fun get<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder, headers: HttpHeaders = {}): HttpResponse<B, H> = do {
+  var httpRequest =  createHttpRequest("GET", url, headers)
   ---
   request(httpRequest)
 }
 
-fun post<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder, body: HttpBody | Null = null, headers: HttpHeaders | Null = null): HttpResponse<B, H> = do {
-  var requestHeaders = if (headers == null) {} else { headers: headers }
-  var requestBody = if (body == null) {} else { body: body }
-  var httpRequest = {
-    method: "POST",
-    url: url
-  } mergeWith
-      requestHeaders
-    mergeWith
-      requestBody
+fun post<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder, headers: HttpHeaders = {}, body: HttpBody | Null = null): HttpResponse<B, H> = do {
+  var httpRequest =  createHttpRequest("POST", url, headers, body)
   ---
   request(httpRequest)
 }
 
-fun postMultipart<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder, body: Multipart, headers: HttpHeaders | Null = null): HttpResponse<B, H> = do {
-  var httpHeaders = if (headers == null) { headers: { (CONTENT_TYPE_HEADER): "multipart/form-data" } } else { headers: headers }
-  var newHeaders = if (httpHeaders.headers[CONTENT_TYPE_HEADER]?)
-      httpHeaders
-    else
-      httpHeaders update {
-        case .headers.CONTENT_TYPE_HEADER! -> "multipart/form-data"
-      }
-  var httpRequest = {
-    method: "POST",
-    url: url,
-    body: body
-  } mergeWith
-    newHeaders
+fun postMultipart<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder, body: Multipart, headers: HttpHeaders = {}): HttpResponse<B, H> = do {
+  var newHeaders = if (headers[CONTENT_TYPE_HEADER]?)
+    headers
+  else
+    headers update {
+      case ."$(CONTENT_TYPE_HEADER)"! -> "multipart/form-data"
+    }
+  var httpRequest =  createHttpRequest("POST", url, newHeaders, body)
   ---
   request(httpRequest)
 }
 
-fun head<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder, headers: HttpHeaders | Null = null): HttpResponse<B, H> = do {
-    var requestHeaders = if (headers == null) {} else { headers: headers }
-    var httpRequest = {
-        method: "HEAD",
-        url: url
-    } mergeWith
-        requestHeaders
-    ---
-    request(httpRequest)
+fun head<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder, headers: HttpHeaders = {}): HttpResponse<B, H> = do {
+ var httpRequest =  createHttpRequest("HEAD", url, headers)
+ ---
+ request(httpRequest)
 }
 
-fun put<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder, body: HttpBody | Null = null, headers: HttpHeaders | Null = null): HttpResponse<B, H> = do {
-  var requestHeaders = if (headers == null) {} else { headers: headers }
-  var requestBody = if (body == null) {} else { body: body }
-  var httpRequest = {
-    method: "PUT",
-    url: url
-  } mergeWith
-      requestHeaders
-    mergeWith
-      requestBody
+fun put<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder, headers: HttpHeaders = {}, body: HttpBody | Null = null): HttpResponse<B, H> = do {
+  var httpRequest =  createHttpRequest("PUT", url, headers, body)
   ---
   request(httpRequest)
 }
 
-fun delete<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder, body: HttpBody | Null = null, headers: HttpHeaders | Null = null): HttpResponse<B, H> = do {
-  var requestHeaders = if (headers == null) {} else { headers: headers }
-  var requestBody = if (body == null) {} else { body: body }
-  var httpRequest = {
-    method: "DELETE",
-    url: url
-  } mergeWith
-     requestHeaders
-    mergeWith
-      requestBody
+fun delete<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder, headers: HttpHeaders = {}, body: HttpBody | Null = null): HttpResponse<B, H> = do {
+  var httpRequest =  createHttpRequest("DELETE", url, headers, body)
   ---
   request(httpRequest)
 }
 
-fun connect<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder, headers: HttpHeaders | Null = null): HttpResponse<B, H> = do {
-  var requestHeaders = if (headers == null) {} else { headers: headers }
-  var httpRequest = {
-    method: "CONNECT",
-    url: url
-  } mergeWith
-     requestHeaders
+fun connect<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder, headers: HttpHeaders = {}): HttpResponse<B, H> = do {
+  var httpRequest =  createHttpRequest("CONNECT", url, headers)
   ---
   request(httpRequest)
 }
 
-fun options<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder, headers: HttpHeaders | Null = null): HttpResponse<B, H> = do {
-  var requestHeaders = if (headers == null) {} else { headers: headers }
-  var httpRequest = {
-    method: "OPTIONS",
-    url: url
-  } mergeWith
-      requestHeaders
+fun options<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder, headers: HttpHeaders = {}): HttpResponse<B, H> = do {
+  var httpRequest =  createHttpRequest("OPTIONS", url, headers)
   ---
   request(httpRequest)
 }
 
-fun trace<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder, headers: HttpHeaders | Null = null): HttpResponse<B, H> = do {
-  var requestHeaders = if (headers == null) {} else { headers: headers }
-  var httpRequest = {
-    method: "TRACE",
-    url: url
-  } mergeWith
-      requestHeaders
+fun trace<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder, headers: HttpHeaders = {}): HttpResponse<B, H> = do {
+  var httpRequest =  createHttpRequest("TRACE", url, headers)
   ---
   request(httpRequest)
 }
 
-fun patch<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder, body: HttpBody | Null = null, headers: HttpHeaders | Null = null): HttpResponse<B, H> = do {
-  var requestHeaders = if (headers == null) {} else { headers: headers }
-  var requestBody = if (body == null) {} else { body: body }
-  var httpRequest = {
-    method: "PATCH",
-    url: url
-  } mergeWith
-      requestHeaders
-    mergeWith
-      requestBody
+fun patch<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder, headers: HttpHeaders = {}, body: HttpBody | Null = null): HttpResponse<B, H> = do {
+  var httpRequest = createHttpRequest("PATCH", url, headers, body)
   ---
   request(httpRequest)
+}
+
+/**
+* Helper function to create an `HttpRequest` instance.
+*
+* === Parameters
+*
+* [%header, cols="1,1,3"]
+* |===
+* | Name | Type | Description
+* | method | `HttpMethod` | The desired HTTP request method.
+* | url | `String &#124; UrlBuilder` | The desired HTTP request url.
+* | headers | `HttpHeaders` | The HTTP request header to send.
+* | body | `HttpBody &#124; Null` |  The HTTP request body to send.
+* |===
+*/
+fun createHttpRequest<T <: HttpBody>(method: HttpMethod, url: String | UrlBuilder, headers: HttpHeaders = {}, body:  HttpBody | Null = null): HttpRequest = {
+  method: method,
+  url: url,
+  headers: headers,
+  (body: body) if (body != null)
 }
 
 @RuntimePrivilege(requires = "http::Client")
@@ -192,7 +152,6 @@ fun request<B <: HttpBody, H <: HttpHeaders>(
   var requestBody = request.body
   var requestWithBody = if (requestBody != null) do {
     var requestHeaders = request.headers default {}
-
     var normalizedRequestHeaders = normalizeHeaders(requestHeaders)
     var requestContentType = normalizedRequestHeaders[CONTENT_TYPE_HEADER] default serializationConfig.contentType
     var binaryBody = writeToBinary(requestBody, requestContentType, serializationConfig.writerProperties default {})
@@ -244,11 +203,8 @@ fun request<B <: HttpBody, H <: HttpHeaders>(
   }
 }
 
-
-//UTILITY FUNCTIONS
 /**
 * String interpolator function to build a URL
-*
 **/
 fun url(parts: Array<String>, interpolation: Array<StringCoerceable>): String =
   parts[0] ++ (interpolation map (encodeURIComponent($ as String) ++ parts[($$ + 1)]) joinBy '')
