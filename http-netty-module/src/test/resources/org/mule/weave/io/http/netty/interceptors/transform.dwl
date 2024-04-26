@@ -47,7 +47,7 @@ var server = api(
      cookies: $.cookies,
      headers: $.headers
   },
-  b: post('http://$LOCALHOST/test1',{ name: 'Agustin' }, { Authorization: 'Bearer 123'}) then {
+  b: post('http://$LOCALHOST/test1', { Authorization: 'Bearer 123'}, { name: 'Agustin' }) then {
      status: ($).status,
      body: $.body,
      contentType: $.contentType,

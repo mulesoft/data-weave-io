@@ -14,7 +14,7 @@ var result = [
   // our server has a weird https behavior.
   get('https://anypoint.mulesoft.com/accounts/me'),
 
-  post('https://anypoint.mulesoft.com/accounts/login',  { user: 'data-weave', password: 'data-weave' }),
+  post('https://anypoint.mulesoft.com/accounts/login', {}, { user: 'data-weave', password: 'data-weave' }),
 
   request({ method: 'GET', url: 'https://github.com/'}),
 

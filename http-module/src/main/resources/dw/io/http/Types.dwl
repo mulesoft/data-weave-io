@@ -1,9 +1,18 @@
 %dw 2.0
 
+/**
+ * DataWeave type for representing a HTTP body.
+ */
 type HttpBody = Any
 
+/**
+ * DataWeave type for representing a HTTP request methods.
+ */
 type HttpMethod = "GET" | "HEAD" | "POST" | "PUT" | "DELETE" | "CONNECT" | "OPTIONS" | "TRACE" | "PATCH"
 
+/**
+ * DataWeave type for representing a HTTP headers.
+ */
 type HttpHeaders = {
   "Content-Type"?: String,
   Authorization?: String,
@@ -12,10 +21,16 @@ type HttpHeaders = {
    _ ?: SimpleType
 }
 
+/**
+ * DataWeave type for representing a HTTP cookies.
+ */
 type HttpCookies = {
   _ ?: SimpleType
 }
 
+/**
+ * DataWeave type for representing a HTTP request query parameters.
+ */
 type QueryParams = {
   _ ?: String
 }
@@ -58,6 +73,17 @@ type SerializationConfig = {
   writerProperties?: Object
 }
 
+/**
+ * DataWeave type for representing an HTTP respose.
+ * Supports the following fields:
+ *
+ * * `contentType`: The HTTP response `Content-Type`.
+ * * `status`: The HTTP response status.
+ * * `statusText`: The HTTP response status message.
+ * * `headers`: The HTTP response headers.
+ * * `body`: The HTTP response body.
+ * * `cookies`: The HTTP response cookies.
+ */
 type HttpResponse<BodyType <: HttpBody, HeadersType <: HttpHeaders> = {
   contentType?: String,
   status: Number,
@@ -80,6 +106,16 @@ type HttpResponse2<BodyType <: HttpBody, HeadersType <: HttpHeaders> = HttpRespo
   payload: () -> BodyType
 }
 */
+
+/**
+ * DataWeave type for representing an HTTP request.
+ * Supports the following fields:
+ *
+ * * `method`: The HTTP request method.
+ * * `url`: The HTTP request url.
+ * * `headers`: The HTTP request header.
+ * * `body`: The HTTP request body.
+ */
 type HttpRequest<T <: HttpBody> = {
   method: HttpMethod,
   url: String | UrlBuilder,
@@ -87,15 +123,26 @@ type HttpRequest<T <: HttpBody> = {
   body?: T
 }
 
+/**
+ * DataWeave type for representing an HTTP request URL.
+ * Supports the following fields:
+ *
+ * * `url`: The HTTP request url.
+ * * `queryParams`: The HTTP request query parameters.
+ */
 type UrlBuilder = {
   url: String,
   queryParams?: QueryParams
 }
 
+/**
+ * DataWeave type for representing an OAuth.
+ */
 type OAuth = {token: String}
 
+/**
+ * DataWeave type for representing an basic Authorization.
+ */
 type BasicAuth = {username: String, password: String}
-
-// SERVER IMPLEMENTATION
 
 

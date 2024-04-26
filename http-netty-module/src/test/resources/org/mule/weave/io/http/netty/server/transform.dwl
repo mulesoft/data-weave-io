@@ -55,7 +55,7 @@ var server = api(
 )
 ---
 [
-  post('http://$LOCALHOST/test', {name: 'Agustin'})
+  post('http://$LOCALHOST/test', {},{name: 'Agustin'})
     then {
       name: ($).body.name ,
       headers: $.headers."Content-Type",
@@ -68,7 +68,7 @@ var server = api(
       name: ($).body.name,
   },
 
-  post('http://$LOCALHOST/testXml', {name: 'Agustin'})
+  post('http://$LOCALHOST/testXml', {}, {name: 'Agustin'})
     then {
      name: ($).body.name,
      contentType: $.headers."Content-Type",

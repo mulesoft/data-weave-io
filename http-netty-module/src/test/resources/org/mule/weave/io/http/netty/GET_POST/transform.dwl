@@ -33,20 +33,18 @@ fun then<A, V>(result: A, assertions: (result: A) -> V): V = assertions(result)
        bodySize: sizeOf($.body!) == 1024,
        contentType: $.contentType
   },
-  e: post( 'http://httpbin.org/post',
-    form([
-        field('field', 'value'),
-        field({name: 'field2', value:'value2'}),
-        file({name: 'fileX', path: 'MyApi.dwl' }),
-        file('fileY','MyApi.dwl')
-      ]),
-    { "Content-Type": "multipart/form-data"}
+  e: post( 'http://httpbin.org/post', { "Content-Type": "multipart/form-data"},form([
+    field('field', 'value'),
+    field({name: 'field2', value:'value2'}),
+    file({name: 'fileX', path: 'MyApi.dwl' }),
+    file('fileY','MyApi.dwl')
+  ])
   ) then {
      mimeType : $.body.^mimeType,
      body : $.body as Object - "headers" - "origin",
      contentType : $.contentType,
   },
-  f: post(url `http://httpbin.org/post?asd=$(123)&space=$("Mariano de Achaval")`) then {
+  f: post(`http://httpbin.org/post?asd=$(123)&space=$("Mariano de Achaval")`) then {
       mimeType : $.body.^mimeType,
       body : $.body as Object - "headers" - "origin",
       contentType : $.contentType,
