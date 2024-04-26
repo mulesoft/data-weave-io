@@ -175,7 +175,7 @@ fun normalizeHeaders<H <: HttpHeaders>(headers: Null): {_?: String} = {}
 * multipart: writeToBinary(
 *    form([
 *      field('field', 'value'),
-*      field({name: 'field2', value:'value2'})]), "multipart/form-data", {boundary: "LzP7te0jXjhG0Uy2QrO_2ST7fzWvf-4pkALoKZq7m1ce5PkGogES6_9nPUp5DHrAnnoe_j"})
+*      field({name: 'field2', value:'value2'})]), "multipart/form-data", {boundary: "boundary"})
 * }
 * ----
 *
@@ -201,12 +201,12 @@ fun normalizeHeaders<H <: HttpHeaders>(headers: Null): {_?: String} = {}
 *     }
 *   },
 *   "multipart": {
-*     "body": "--LzP7te0jXjhG0Uy2QrO_2ST7fzWvf-4pkALoKZq7m1ce5PkGogES6_9nPUp5DHrAnnoe_j\r\nContent-Disposition: form-data; name=\"field\"\r\n\r\nvalue\r\n--LzP7te0jXjhG0Uy2QrO_2ST7fzWvf-4pkALoKZq7m1ce5PkGogES6_9nPUp5DHrAnnoe_j\r\nContent-Disposition: form-data; name=\"field2\"\r\n\r\nvalue2\r\n--LzP7te0jXjhG0Uy2QrO_2ST7fzWvf-4pkALoKZq7m1ce5PkGogES6_9nPUp5DHrAnnoe_j--\r\n",
+*     "body": "--boundary\r\nContent-Disposition: form-data; name=\"field\"\r\n\r\nvalue\r\n--boundary\r\nContent-Disposition: form-data; name=\"field2\"\r\n\r\nvalue2\r\n--boundary--\r\n",
 *     "mime": {
 *       "type": "multipart",
 *       "subtype": "form-data",
 *       "parameters": {
-*         "boundary": "LzP7te0jXjhG0Uy2QrO_2ST7fzWvf-4pkALoKZq7m1ce5PkGogES6_9nPUp5DHrAnnoe_j"
+*         "boundary": "boundary"
 *       }
 *     }
 *   }
