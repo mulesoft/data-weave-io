@@ -29,7 +29,7 @@ type BinaryBodyType = {
 
 /**
 * Formats the given HTTP header value with the following rules:
-*  * The first char of every word is in upper case and the remaining chars are in lower case
+* * The first char of every word is in upper case and the remaining chars are in lower case.
 *
 *
 * === Parameters
@@ -140,7 +140,7 @@ fun normalizeHeaders<H <: HttpHeaders>(headers: Null): {_?: String} = {}
 /**
 * Transforms the given HTTP body to a `BinaryBodyType` using:
 * * `contentType`: to select the proper DataFormat
-* * `writerProperties`: the set of configuration properties specified by the DataFormat to write the current body.
+* * `properties`: the set of configuration properties specified by the DataFormat to write the current body.
 *
 * A failure will be thrown if there is no valid DataFormat for the given `contentType` value.
 *
@@ -151,12 +151,12 @@ fun normalizeHeaders<H <: HttpHeaders>(headers: Null): {_?: String} = {}
 * | Name | Type | Description
 * | body | `HttpBody` | The HTTP request body to transform to a `Binary` value.
 * | contentType | `String` | The `Content-Type` used to select the proper DataFormat.
-* | writerProperties | `Object` | The set of configuration properties specified by the DataFormat to write the current body.
+* | properties | `Object` | The set of configuration properties specified by the DataFormat to write the current body.
 * |===
 *
 * === Example
 *
-* This example transform several HTTP body using different `Content-Type`.
+* This example transforms a JSON HTTP request body to a `BinaryBodyType` value.
 *
 * ==== Source
 *
@@ -165,17 +165,11 @@ fun normalizeHeaders<H <: HttpHeaders>(headers: Null): {_?: String} = {}
 * %dw 2.0
 * import * from dw::io::http::BodyUtils
 * import * from dw::io::http::Client
-* import * from dw::module::Multipart
 *
 * output application/json
 * ---
 * {
-* json: writeToBinary({name: "Mariano", lastname: "Lischetti"}, DEFAULT_SERIALIZATION_CONFIG.contentType, DEFAULT_SERIALIZATION_CONFIG.writerProperties),
-* xml: writeToBinary(root: {name: "Mariano", lastname: "Lischetti"}, "application/xml", {}),
-* multipart: writeToBinary(
-*    form([
-*      field('field', 'value'),
-*      field({name: 'field2', value:'value2'})]), "multipart/form-data", {boundary: "boundary"})
+*   json: writeToBinary({name: "Mariano", lastname: "Lischetti"}, DEFAULT_SERIALIZATION_CONFIG.contentType, DEFAULT_SERIALIZATION_CONFIG.writerProperties)
 * }
 * ----
 *
@@ -191,15 +185,37 @@ fun normalizeHeaders<H <: HttpHeaders>(headers: Null): {_?: String} = {}
 *       "subtype": "json",
 *       "parameters": {}
 *     }
-*   },
-*   "xml": {
-*     "body": "<?xml version='1.0' encoding='UTF-8'?>\n<root>\n  <name>Mariano</name>\n  <lastname>Lischetti</lastname>\n</root>",
-*     "mime": {
-*       "type": "application",
-*       "subtype": "xml",
-*       "parameters": {}
-*     }
-*   },
+*   }
+* }
+* ----
+*
+* === Example
+*
+* This example transforms a Multipart HTTP body to a `BinaryBodyType` value using the `boundary` writer configuration.
+*
+* ==== Source
+*
+* [source,DataWeave,linenums]
+* ----
+* %dw 2.0
+* import * from dw::io::http::BodyUtils
+* import * from dw::module::Multipart
+*
+* output application/json
+* ---
+* {
+*   multipart: writeToBinary(
+*    form([
+*      field('field', 'value'),
+*      field({name: 'field2', value:'value2'})]), "multipart/form-data", {boundary: "boundary"})
+* }
+* ----
+*
+* ==== Output
+*
+* [source,Json,linenums]
+* ----
+* {
 *   "multipart": {
 *     "body": "--boundary\r\nContent-Disposition: form-data; name=\"field\"\r\n\r\nvalue\r\n--boundary\r\nContent-Disposition: form-data; name=\"field2\"\r\n\r\nvalue2\r\n--boundary--\r\n",
 *     "mime": {
@@ -212,10 +228,9 @@ fun normalizeHeaders<H <: HttpHeaders>(headers: Null): {_?: String} = {}
 *   }
 * }
 * ----
-*
 **/
-fun writeToBinary(body: HttpBody, contentType: String, writerProperties: Object = {}): BinaryBodyType = do {
-  fun internalWriteToBinary(body: HttpBody, mime: MimeType, baseWriterProperties: Object): BinaryBodyType = body match {
+fun writeToBinary(body: HttpBody, contentType: String, properties: Object = {}): BinaryBodyType = do {
+  fun internalWriteToBinary(body: HttpBody, mime: MimeType, properties: Object): BinaryBodyType = body match {
     case b is Binary ->
       { body: b, mime: mime }
     else -> do {
@@ -228,7 +243,7 @@ fun writeToBinary(body: HttpBody, contentType: String, writerProperties: Object 
          var boundaryConfig = mime.'type' match {
            case "multipart" -> do {
              var boundary = if (mime.parameters.boundary?) mime.parameters.boundary!
-               else if (baseWriterProperties.boundary?) baseWriterProperties.boundary! as String
+               else if (properties.boundary?) properties.boundary! as String
                else generateBoundary()
              ---
              { boundary: boundary }
@@ -241,7 +256,7 @@ fun writeToBinary(body: HttpBody, contentType: String, writerProperties: Object 
            else -> {}
          }
 
-         var writerProperties = baseWriterProperties
+         var writerProperties = properties
              mergeWith boundaryConfig
              mergeWith encodingConfig
 
@@ -259,17 +274,31 @@ fun writeToBinary(body: HttpBody, contentType: String, writerProperties: Object 
      }
   }
 
-  // var normalizedHeaders = normalizeHeaders(headers)
-  // var contentType = normalizedHeaders[CONTENT_TYPE_HEADER] default config.contentType
   var mime = fromString(contentType)
   ---
   if (mime.success)
-    internalWriteToBinary(body, mime.result!, writerProperties)
+    internalWriteToBinary(body, mime.result!, properties)
   else
     fail("Unable to parse MIME type: $(contentType) caused by: $(mime.error.message)")
 }
 
-fun readFromBinary(mime: MimeType, payload: Binary, config: SerializationConfig): Any = do {
+/**
+* Reads a `Binary` body value and returns the parsed content.
+*
+* If this function can cannot determine the DataFormat to use by the `MimeType` value returns the received `Binary` value.
+*
+* === Parameters
+*
+* [%header, cols="1,1,3"]
+* |===
+* | Name | Type | Description
+* | mime | `MimeType` | The MIME type value used to select the proper DataFormat.
+* | payload | `Binary` | The body value to be parsed.
+* | properties | `Object` | The set of configuration properties specified by the DataFormat to read the current body.
+* |===
+*
+**/
+fun readFromBinary(mime: MimeType, payload: Binary, properties: Object = {}): Any = do {
    var df = findDataFormatDescriptorByMime(mime)
    ---
    if (df == null)
@@ -277,7 +306,7 @@ fun readFromBinary(mime: MimeType, payload: Binary, config: SerializationConfig)
    else do {
      // Extract boundary
      var boundaryConfig = mime.'type' match {
-       case "multipart" -> {(boundary: mime.parameters["boundary"]) if (mime.parameters["boundary"]?)}
+       case "multipart" -> { (boundary: mime.parameters["boundary"]) if (mime.parameters["boundary"]?) }
        else -> {}
      }
      // Extract encoding
@@ -285,7 +314,7 @@ fun readFromBinary(mime: MimeType, payload: Binary, config: SerializationConfig)
        case charset is String -> { encoding: charset }
        else -> {}
      }
-     var readerProperties = config.readerProperties default {}
+     var readerProperties = properties default {}
        mergeWith boundaryConfig
        mergeWith encodingConfig
      ---

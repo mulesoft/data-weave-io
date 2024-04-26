@@ -1,0 +1,11 @@
+{
+  "pets": [
+    "Rollo",
+    "Tana",
+    "Donna"
+  ],
+  "user": {
+    "name": "Mariano",
+    "lastname": "Lischetti"
+  }
+}

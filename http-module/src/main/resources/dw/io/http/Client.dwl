@@ -229,7 +229,7 @@ fun request<B <: HttpBody, H <: HttpHeaders>(
         @Lazy
         var body =
           if (mime.success)
-            (readFromBinary(mime.result!, responseBody, serializationConfig) as B) <~ { "mimeType": "$(mime.result.'type')/$(mime.result.subtype)", "raw": responseBody }
+            (readFromBinary(mime.result!, responseBody, serializationConfig.readerProperties default {}) as B) <~ { "mimeType": "$(mime.result.'type')/$(mime.result.subtype)", "raw": responseBody }
           else
             responseBody <~ { "mimeType": contentType, "raw": responseBody }
         ---
