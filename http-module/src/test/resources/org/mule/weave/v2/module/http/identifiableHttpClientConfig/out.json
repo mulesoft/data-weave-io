@@ -1,9 +1,9 @@
 {
   "a": {
-    "id": "my-prefix-08c4c0e5-7953-4187-b81d-872a0f8add54",
-    "connectionTimeout": 2000
+    "connectionTimeout": 2000,
+    "id": true
   },
   "b": {
-    "id": "CUSTOM-5304a6f6-2ecd-479a-830a-a1bc5594ce23"
+    "id": true
   }
 }
