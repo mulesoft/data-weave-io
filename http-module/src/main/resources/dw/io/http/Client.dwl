@@ -18,8 +18,7 @@ import * from dw::module::Multipart
 import fail from dw::Runtime
 
 /**
-* Create a custom a `HttpClientConfig`.
-*
+* Creates an identifiable HTTP client configuration with the desired `prefix`
 *
 * === Parameters
 *
@@ -30,12 +29,12 @@ import fail from dw::Runtime
 * | prefix | `String` | The `prefix` to be used for creating the HTTP client configuration's `id`.
 * |===
 */
-fun customClientConfig(config: HttpClientConfig, prefix: String = "CUSTOM"): HttpClientConfig & {id: String} = { id: "$(prefix)-$(uuid())" } ++ config
+fun identifiableHttpClientConfig(config: HttpClientConfig, prefix: String = "CUSTOM"): HttpClientConfig & {id: String} = { id: "$(prefix)-$(uuid())" } ++ config
 
 /**
 * Variable used to identify the default HTTP client configuration.
 */
-var DEFAULT_HTTP_CLIENT_CONFIG = customClientConfig({}, "DEFAULT")
+var DEFAULT_HTTP_CLIENT_CONFIG = identifiableHttpClientConfig({}, "DEFAULT")
 
 /**
 * Variable used to identify the default HTTP request configuration.
