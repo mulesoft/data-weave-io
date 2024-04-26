@@ -193,7 +193,10 @@ fun request<B <: HttpBody, H <: HttpHeaders>(
   var requestBody = request.body
   var requestWithBody = if (requestBody != null) do {
     var requestHeaders = request.headers default {}
-    var binaryBody = writeToBinary(requestBody, requestHeaders, serializationConfig)
+
+    var normalizedRequestHeaders = normalizeHeaders(requestHeaders)
+    var requestContentType = normalizedRequestHeaders[CONTENT_TYPE_HEADER] default serializationConfig.contentType
+    var binaryBody = writeToBinary(requestBody, requestContentType, serializationConfig.writerProperties default {})
     var headersWithContentType = requestHeaders
       mergeWith {
         (CONTENT_TYPE_HEADER): dw::module::Mime::toString(binaryBody.mime)
