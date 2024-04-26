@@ -1,0 +1,50 @@
+{
+  "json": {
+    "body": "{\n  \"name\": \"Mariano\",\n  \"lastname\": \"Lischetti\"\n}",
+    "mime": {
+      "type": "application",
+      "subtype": "json",
+      "parameters": {
+        
+      }
+    }
+  },
+  "xml": {
+    "body": "<?xml version='1.0' encoding='UTF-8'?>\n<root>\n  <name>Mariano</name>\n  <lastname>Lischetti</lastname>\n</root>",
+    "mime": {
+      "type": "application",
+      "subtype": "xml",
+      "parameters": {
+        
+      }
+    }
+  },
+  "multipart": {
+    "body": "--boundary\r\nContent-Disposition: form-data; name=\"field\"\r\n\r\nvalue\r\n--boundary\r\nContent-Disposition: form-data; name=\"field2\"\r\n\r\nvalue2\r\n--boundary--\r\n",
+    "mime": {
+      "type": "multipart",
+      "subtype": "form-data",
+      "parameters": {
+        "boundary": "boundary"
+      }
+    }
+  },
+  "multipartBoundaryContentType": {
+    "body": "--my-boundary\r\nContent-Disposition: form-data; name=\"field\"\r\n\r\nvalue\r\n--my-boundary\r\nContent-Disposition: form-data; name=\"field2\"\r\n\r\nvalue2\r\n--my-boundary--\r\n",
+    "mime": {
+      "type": "multipart",
+      "subtype": "form-data",
+      "parameters": {
+        "boundary": "my-boundary"
+      }
+    }
+  },
+  "multipartGeneratedBoundary": {
+    "hasBody": true,
+    "mime": {
+      "type": "multipart",
+      "subtype": "form-data",
+      "hasBoundary": true
+    }
+  }
+}

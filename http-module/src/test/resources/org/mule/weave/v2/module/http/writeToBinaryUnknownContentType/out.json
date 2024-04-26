@@ -1,10 +1,6 @@
 {
-  "body": "<?xml version='1.0' encoding='UTF-8'?>\n<root>\n  <name>Mariano</name>\n  <lastname>Lischetti</lastname>\n</root>",
-  "mime": {
-    "type": "application",
-    "subtype": "xml",
-    "parameters": {
-      
-    }
+  "unknownContentType": {
+    "kind": "UserException",
+    "message": true
   }
 }
