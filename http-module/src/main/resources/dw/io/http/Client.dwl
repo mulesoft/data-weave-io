@@ -131,12 +131,17 @@ fun patch<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder, headers: Ht
 * | body | `HttpBody &#124; Null` |  The HTTP request body to send.
 * |===
 */
-fun createHttpRequest<T <: HttpBody>(method: HttpMethod, url: String | UrlBuilder, headers: HttpHeaders = {}, body:  HttpBody | Null = null): HttpRequest = {
-  method: method,
-  url: url,
-  headers: headers,
-  (body: body) if (body != null)
-}
+fun createHttpRequest<T <: HttpBody>(method: HttpMethod, url: String | UrlBuilder, headers: HttpHeaders = {}, body: T | Null = null): HttpRequest<T> =
+  if (body != null) {
+    method: method,
+    url: url,
+    headers: headers,
+    body: body
+  } else {
+    method: method,
+    url: url,
+    headers: headers
+  }
 
 @RuntimePrivilege(requires = "http::Client")
 fun httpRequest<H <: HttpHeaders>(
@@ -144,35 +149,45 @@ fun httpRequest<H <: HttpHeaders>(
   requestConfig: HttpRequestConfig = DEFAULT_HTTP_REQUEST_CONFIG,
   clientConfig: HttpClientConfig & {id: String} = DEFAULT_HTTP_CLIENT_CONFIG): HttpResponse<Binary, H> = native("http::HttpRequestFunction")
 
+/**
+* Helper function to create a `HttpRequest` instances with `Binary` request body.
+*
+* === Parameters
+*
+* [%header, cols="1,1,3"]
+* |===
+* | Name | Type | Description
+* | request | `HttpRequest` | The desired HTTP request to convert to a `HttpRequest` instances with `Binary` request body.
+* | serializationConfig | `SerializationConfig` | The HTTP serialization configuration to use.
+* |===
+*/
+fun createBinaryHttpRequest(request: HttpRequest, serializationConfig: SerializationConfig): HttpRequest<Binary> =
+  if (request.body != null) do {
+    var headers = request.headers default {}
+    var normalizedHeaders = normalizeHeaders(headers)
+    var requestContentType = normalizedHeaders[CONTENT_TYPE_HEADER] default serializationConfig.contentType
+    var writerProperties = serializationConfig.writerProperties default {}
+    var binaryBody = writeToBinary(request.body, requestContentType, writerProperties)
+    // Update 'Content-Type' header
+    var headersWithContentType = headers
+      mergeWith {
+        (CONTENT_TYPE_HEADER): dw::module::Mime::toString(binaryBody.mime)
+      }
+    ---
+    createHttpRequest(request.method, request.url, headersWithContentType, binaryBody.body)
+  } else {
+    method: request.method,
+    url: request.url,
+    (headers: request.headers!) if (request.headers?)
+  }
+
 fun request<B <: HttpBody, H <: HttpHeaders>(
   request: HttpRequest,
   requestConfig: HttpRequestConfig = DEFAULT_HTTP_REQUEST_CONFIG,
   serializationConfig: SerializationConfig = DEFAULT_SERIALIZATION_CONFIG,
   clientConfig: HttpClientConfig & {id: String} = DEFAULT_HTTP_CLIENT_CONFIG): HttpResponse<B, H> = do {
-  var requestBody = request.body
-  var requestWithBody = if (requestBody != null) do {
-    var requestHeaders = request.headers default {}
-    var normalizedRequestHeaders = normalizeHeaders(requestHeaders)
-    var requestContentType = normalizedRequestHeaders[CONTENT_TYPE_HEADER] default serializationConfig.contentType
-    var binaryBody = writeToBinary(requestBody, requestContentType, serializationConfig.writerProperties default {})
-    var headersWithContentType = requestHeaders
-      mergeWith {
-        (CONTENT_TYPE_HEADER): dw::module::Mime::toString(binaryBody.mime)
-      }
-    ---
-    {
-      method: request.method,
-      url: request.url,
-      headers: headersWithContentType,
-      body: binaryBody.body
-    }
-    } else {
-      method: request.method,
-      url: request.url,
-      (headers: request.headers!) if (request.headers?)
-    }
-
-  var httpResponse = httpRequest(requestWithBody, requestConfig, clientConfig)
+  var binaryRequest = createBinaryHttpRequest(request, serializationConfig)
+  var httpResponse = httpRequest(binaryRequest, requestConfig, clientConfig)
   var responseBody = httpResponse.body
   ---
   if (responseBody == null)
@@ -181,15 +196,15 @@ fun request<B <: HttpBody, H <: HttpHeaders>(
     var responseHeaders = normalizeHeaders(httpResponse.headers)
     var contentType = responseHeaders[CONTENT_TYPE_HEADER]
     var httpResponseWithBody = httpResponse mergeWith
-      if (contentType != null) do {
-        // TODO: Add test for lazyness (e.g a broken json response using just the raw). Alternative see HttpResponse2
-        var mime: Result<MimeType, MimeTypeError> = fromString(contentType)
-        @Lazy
-        var body =
-          if (mime.success)
-            (readFromBinary(mime.result!, responseBody, serializationConfig.readerProperties default {}) as B) <~ { "mimeType": "$(mime.result.'type')/$(mime.result.subtype)", "raw": responseBody }
-          else
-            responseBody <~ { "mimeType": contentType, "raw": responseBody }
+    if (contentType != null) do {
+      // TODO: Add test for lazyness (e.g a broken json response using just the raw). Alternative see HttpResponse2
+      var mime = fromString(contentType)
+      @Lazy
+      var body =
+        if (mime.success)
+          (readFromBinary(mime.result!, responseBody, serializationConfig.readerProperties default {}) as B) <~ { "mimeType": "$(mime.result.'type')/$(mime.result.subtype)", "raw": responseBody }
+        else
+          responseBody <~ { "mimeType": contentType, "raw": responseBody }
         ---
         { body: body }
       } else do {
