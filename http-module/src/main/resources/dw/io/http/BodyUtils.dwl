@@ -7,7 +7,6 @@
 */
 %dw 2.0
 
-import * from dw::core::Arrays
 import * from dw::core::Objects
 import * from dw::io::http::Types
 import * from dw::io::http::utils::HttpHeaders

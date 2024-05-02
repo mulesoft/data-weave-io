@@ -8,14 +8,12 @@
 %dw 2.0
 
 import * from dw::core::Binaries
-import * from dw::core::Objects
 import * from dw::core::URL
 import * from dw::io::http::BodyUtils
 import * from dw::io::http::Types
 import * from dw::io::http::utils::HttpHeaders
 import * from dw::module::Mime
 import * from dw::module::Multipart
-import fail from dw::Runtime
 
 /**
 * Helper function to create an identifiable HTTP client configuration with the desired `prefix`.
