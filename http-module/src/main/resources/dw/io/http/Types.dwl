@@ -1,3 +1,10 @@
+/**
+* Module with the a set of `types` used to make HTTP calls
+*
+* To use this module, you must import it to your DataWeave code, for example,
+* by adding the line `import * from dw::io::http::Types` to the header of your
+* DataWeave script.
+*/
 %dw 2.0
 
 /**
@@ -92,20 +99,6 @@ type HttpResponse<BodyType <: HttpBody, HeadersType <: HttpHeaders> = {
   body?: BodyType,
   cookies: HttpCookies
 }
-/*
-type HttpResponse1<HeadersType <: HttpHeaders> = {
-  contentType?: String,
-  status: Number,
-  statusText?: String,
-  headers: HeadersType,
-  body?: Binary,
-  cookies: HttpCookies
-}
-
-type HttpResponse2<BodyType <: HttpBody, HeadersType <: HttpHeaders> = HttpResponse1<HeadersType> & {
-  payload: () -> BodyType
-}
-*/
 
 /**
  * DataWeave type for representing an HTTP request.
