@@ -1,5 +1,9 @@
 /**
-* List of well known http headers
+* Module with the list of well known HTTP headers
+*
+* To use this module, you must import it to your DataWeave code, for example,
+* by adding the line `import * from dw::io::http::utils::HttpHeaders` to the header of your
+* DataWeave script.
 */
 %dw 2.0
 

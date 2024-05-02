@@ -170,8 +170,8 @@ fun createBinaryHttpRequest(request: HttpRequest, serializationConfig: Serializa
     var binaryBody = writeToBinary(request.body, requestContentType, writerProperties)
     // Update 'Content-Type' header
     var headersWithContentType = headers
-      mergeWith {
-        (CONTENT_TYPE_HEADER): dw::module::Mime::toString(binaryBody.mime)
+      update {
+        case ."$(CONTENT_TYPE_HEADER)"! -> dw::module::Mime::toString(binaryBody.mime)
       }
     ---
     createHttpRequest(request.method, request.url, headersWithContentType, binaryBody.body)
@@ -195,24 +195,26 @@ fun request<B <: HttpBody, H <: HttpHeaders>(
   else do {
     var responseHeaders = normalizeHeaders(httpResponse.headers)
     var contentType = responseHeaders[CONTENT_TYPE_HEADER]
-    var httpResponseWithBody = httpResponse mergeWith
-    if (contentType != null) do {
-      // TODO: Add test for lazyness (e.g a broken json response using just the raw). Alternative see HttpResponse2
-      var mime = fromString(contentType)
-      @Lazy
-      var body =
-        if (mime.success)
-          (readFromBinary(mime.result!, responseBody, serializationConfig.readerProperties default {}) as B) <~ { "mimeType": "$(mime.result.'type')/$(mime.result.subtype)", "raw": responseBody }
-        else
-          responseBody <~ { "mimeType": contentType, "raw": responseBody }
-        ---
-        { body: body }
-      } else do {
-        @Lazy
-        var body = responseBody <~ { "mimeType": null, "raw": responseBody }
-        ---
-        { body: body }
-      }
+    var httpResponseWithBody = httpResponse update {
+        case .body ->
+          if (contentType != null) do {
+            // TODO: W-15523320: Allow reading request body laziness
+            var mime = fromString(contentType)
+            @Lazy
+            var body =
+              if (mime.success)
+                readFromBinary(mime.result!, responseBody, serializationConfig.readerProperties default {}) <~ { "mimeType": "$(mime.result.'type')/$(mime.result.subtype)", "raw": responseBody }
+              else
+                responseBody <~ { "mimeType": contentType, "raw": responseBody }
+              ---
+              body
+          } else do {
+            @Lazy
+            var body = responseBody <~ { "mimeType": null, "raw": responseBody }
+            ---
+            body
+          }
+        }
     ---
     httpResponseWithBody as HttpResponse<B, H>
   }
