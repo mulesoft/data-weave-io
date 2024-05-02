@@ -1,0 +1,12 @@
+[
+  {
+    "response": {
+      "status": 200,
+      "Content-Type": "application/json",
+      "raw": "{\"name\": \"Mariano\", \"lastname\": \"lischetti\"}"
+    }
+  },
+  {
+    "stopped": true
+  }
+]

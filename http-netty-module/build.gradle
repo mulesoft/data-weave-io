@@ -8,6 +8,7 @@ dependencies {
     api group: 'org.asynchttpclient', name: 'async-http-client', version: '2.12.3'
     implementation group: 'org.mule.weave', name: 'runtime', version: weaveVersion
 
+    testImplementation group: 'io.vertx', name: 'vertx-web', version: '4.2.7'
     testImplementation group: 'org.mule.weave', name: 'runtime-test-helpers', version: weaveVersion
     testImplementation (group: 'org.scalatest', name: 'scalatest_2.12', version: scalaTestVersion) {
         exclude group: 'org.scala-lang', module: 'scala-library'
