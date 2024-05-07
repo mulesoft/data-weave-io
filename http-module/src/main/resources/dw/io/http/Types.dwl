@@ -49,8 +49,13 @@ type QueryParams = {
  * * `connectionTimeout`: The maximum time in millisecond an `HttpClient` can wait when connecting to a remote host.
  */
 type HttpClientConfig = {
-    connectionTimeout?: Number
+  connectionTimeout?: Number
 }
+
+/**
+ * DataWeave type for representing an Identifiable HTTP client configuration.
+ */
+type IdentifiableHttpClientConfig = HttpClientConfig & {id: String}
 
 /**
  * DataWeave type for representing an HTTP request configuration.

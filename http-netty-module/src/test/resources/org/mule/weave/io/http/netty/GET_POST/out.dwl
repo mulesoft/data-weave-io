@@ -1,5 +1,5 @@
 {
-  a: {
+a: {
     statusText: "OK",
     status: 200,
     contentType: "application/json"
@@ -65,6 +65,12 @@
       json: null,
       url: "http://httpbin.org/post?asd=123&space=Mariano de Achaval"
     },
+    contentType: "application/json"
+  },
+  h: {
+    mimeType: "application/json",
+    body: true,
+    raw: true,
     contentType: "application/json"
   }
 }

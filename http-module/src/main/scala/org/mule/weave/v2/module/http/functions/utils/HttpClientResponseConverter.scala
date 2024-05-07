@@ -2,9 +2,13 @@ package org.mule.weave.v2.module.http.functions.utils
 
 import org.mule.weave.v2.core.io.SeekableStream
 import org.mule.weave.v2.model.EvaluationContext
+import org.mule.weave.v2.model.capabilities.UnknownLocationCapable
 import org.mule.weave.v2.model.structure.KeyValuePair
+import org.mule.weave.v2.model.structure.schema.Schema
+import org.mule.weave.v2.model.structure.schema.SchemaProperty
 import org.mule.weave.v2.model.values.BinaryValue
 import org.mule.weave.v2.model.values.KeyValue
+import org.mule.weave.v2.model.values.NullValue
 import org.mule.weave.v2.model.values.NumberValue
 import org.mule.weave.v2.model.values.ObjectValue
 import org.mule.weave.v2.model.values.StringValue
@@ -19,10 +23,13 @@ import org.mule.weave.v2.module.http.functions.utils.HttpClientResponseConverter
 import org.mule.weave.v2.module.http.service.HttpClientHeaders
 import org.mule.weave.v2.module.http.service.HttpClientResponse
 import org.mule.weave.v2.module.reader.SourceProvider
+import org.mule.weave.v2.parser.module.MimeType
 
+import java.io.InputStream
 import java.net.HttpCookie
 import scala.collection.JavaConverters._
 import scala.collection.mutable.ArrayBuffer
+import scala.util.Try
 
 class HttpClientResponseConverter(response: HttpClientResponse) {
 
@@ -45,9 +52,13 @@ class HttpClientResponseConverter(response: HttpClientResponse) {
 
     // body?
     response.getBody.ifPresent(body => {
-      val sourceProvider = SourceProvider(SeekableStream(body))
+      val maybeContentType = if (response.getContentType.isPresent) {
+        Some(response.getContentType.get())
+      } else {
+        None
+      }
       pairs.+=(
-        KeyValuePair(KeyValue(BODY), BinaryValue(sourceProvider.asInputStream)))
+        KeyValuePair(KeyValue(BODY), asBodyValue(body, maybeContentType)))
     })
 
     // cookies
@@ -79,6 +90,18 @@ class HttpClientResponseConverter(response: HttpClientResponse) {
       KeyValuePair(KeyValue(cookie.getName), StringValue(cookie.getValue))
     })
     ObjectValue(entries.toArray)
+  }
+
+  private def asBodyValue(body: InputStream, maybeContentType: Option[String])(implicit ctx: EvaluationContext): BinaryValue = {
+    val sourceProvider = SourceProvider(SeekableStream(body))
+    val maybeMime = maybeContentType.flatMap(contentType => Try(MimeType.fromSimpleString(contentType)).toOption)
+    val mimeType = maybeMime.map(mime => StringValue(s"${mime.mainType}/${mime.subtype}")).getOrElse(NullValue)
+    val schema = Some(
+      Schema(
+        Seq(
+          SchemaProperty(StringValue("mimeType"), mimeType),
+          SchemaProperty(StringValue("raw"), BinaryValue(sourceProvider.asInputStream)))))
+    BinaryValue(sourceProvider.asInputStream, UnknownLocationCapable, schema)
   }
 }
 
