@@ -28,7 +28,7 @@ import * from dw::module::Multipart
 * | prefix | `String` | The `prefix` to be used for creating the HTTP client configuration's `id`.
 * |===
 */
-fun identifiableHttpClientConfig(config: HttpClientConfig, prefix: String = "CUSTOM"): HttpClientConfig & {id: String} = { id: "$(prefix)-$(uuid())" } ++ config
+fun identifiableHttpClientConfig(config: HttpClientConfig, prefix: String = "CUSTOM"): IdentifiableHttpClientConfig = { id: "$(prefix)-$(uuid())" } ++ config
 
 /**
 * Variable used to identify the default HTTP client configuration.
@@ -145,7 +145,11 @@ fun createHttpRequest<T <: HttpBody>(method: HttpMethod, url: String | UrlBuilde
 fun httpRequest<H <: HttpHeaders>(
   request: HttpRequest<Binary>,
   requestConfig: HttpRequestConfig = DEFAULT_HTTP_REQUEST_CONFIG,
-  clientConfig: HttpClientConfig & {id: String} = DEFAULT_HTTP_CLIENT_CONFIG): HttpResponse<Binary, H> = native("http::HttpRequestFunction")
+  clientConfig: IdentifiableHttpClientConfig = DEFAULT_HTTP_CLIENT_CONFIG): HttpResponse<Binary, H> = do {
+    fun httpRequestNative(request: HttpRequest<Binary>, requestConfig: HttpRequestConfig, clientConfig: IdentifiableHttpClientConfig): HttpResponse<Binary, H> = native("http::HttpRequestFunction")
+    ---
+    httpRequestNative(request, requestConfig, clientConfig)
+  }
 
 /**
 * Helper function to create a `HttpRequest` instances with `Binary` request body.
@@ -183,7 +187,7 @@ fun request<B <: HttpBody, H <: HttpHeaders>(
   request: HttpRequest,
   requestConfig: HttpRequestConfig = DEFAULT_HTTP_REQUEST_CONFIG,
   serializationConfig: SerializationConfig = DEFAULT_SERIALIZATION_CONFIG,
-  clientConfig: HttpClientConfig & {id: String} = DEFAULT_HTTP_CLIENT_CONFIG): HttpResponse<B, H> = do {
+  clientConfig: IdentifiableHttpClientConfig = DEFAULT_HTTP_CLIENT_CONFIG): HttpResponse<B, H> = do {
   var binaryRequest = createBinaryHttpRequest(request, serializationConfig)
   var httpResponse = httpRequest(binaryRequest, requestConfig, clientConfig)
   var responseBody = httpResponse.body
@@ -191,24 +195,23 @@ fun request<B <: HttpBody, H <: HttpHeaders>(
   if (responseBody == null)
     httpResponse as HttpResponse<B, H>
   else do {
-    var responseHeaders = normalizeHeaders(httpResponse.headers)
-    var contentType = responseHeaders[CONTENT_TYPE_HEADER]
+    var mimeType = responseBody.^mimeType
     var httpResponseWithBody = httpResponse update {
         case .body ->
-          if (contentType != null) do {
+          if (mimeType != null) do {
             // TODO: W-15523320: Allow reading request body laziness
-            var mime = fromString(contentType)
+            var mime = fromString(mimeType as String)
             @Lazy
             var body =
               if (mime.success)
-                readFromBinary(mime.result!, responseBody, serializationConfig.readerProperties default {}) <~ { "mimeType": "$(mime.result.'type')/$(mime.result.subtype)", "raw": responseBody }
+                readFromBinary(mime.result!, responseBody, serializationConfig.readerProperties default {})
               else
-                responseBody <~ { "mimeType": contentType, "raw": responseBody }
+                responseBody
               ---
-              body
+              body <~ { "mimeType": mimeType, "raw": responseBody.^raw }
           } else do {
             @Lazy
-            var body = responseBody <~ { "mimeType": null, "raw": responseBody }
+            var body = responseBody <~ { "mimeType": mimeType, "raw": responseBody.^raw }
             ---
             body
           }
