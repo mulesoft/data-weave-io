@@ -190,25 +190,43 @@ fun request<B <: HttpBody, H <: HttpHeaders>(
   clientConfig: IdentifiableHttpClientConfig = DEFAULT_HTTP_CLIENT_CONFIG): HttpResponse<B, H> = do {
   var binaryRequest = createBinaryHttpRequest(request, serializationConfig)
   var httpResponse = httpRequest(binaryRequest, requestConfig, clientConfig)
+  ---
+  parseHttpResponse(httpResponse, serializationConfig)
+}
+
+
+/**
+* Helper function to parse a `HttpResponse` instances with `Binary` response body.
+*
+* === Parameters
+*
+* [%header, cols="1,1,3"]
+* |===
+* | Name | Type | Description
+* | httpResponse | `HttpResponse<Binary, H&#62;` | The desired HTTP response to parse.
+* | serializationConfig | `SerializationConfig` | The HTTP serialization configuration to use.
+* |===
+*/
+fun parseHttpResponse<B <: HttpBody, H <: HttpHeaders>(httpResponse: HttpResponse<Binary, H>, serializationConfig: SerializationConfig): HttpResponse<B, H> = do {
   var responseBody = httpResponse.body
   ---
   if (responseBody == null)
     httpResponse as HttpResponse<B, H>
-  else do {
-    var mimeType = responseBody.^mimeType
-    var httpResponseWithBody = httpResponse update {
+    else do {
+      var mimeType = log("mimeType", responseBody.^mimeType)
+      var httpResponseWithBody = httpResponse update {
         case .body ->
           if (mimeType != null) do {
             // TODO: W-15523320: Allow reading request body laziness
-            var mime = fromString(mimeType as String)
+            var mime = log("FROM STRING", fromString(mimeType as String))
             @Lazy
             var body =
               if (mime.success)
-                readFromBinary(mime.result!, responseBody, serializationConfig.readerProperties default {})
+                readFromBinary(mime.result!, responseBody, serializationConfig.readerProperties default {}) <~ { "mimeType": mimeType, "raw": responseBody.^raw }
               else
-                responseBody
-              ---
-              body <~ { "mimeType": mimeType, "raw": responseBody.^raw }
+                responseBody <~ { "mimeType": mimeType, "raw": responseBody.^raw }
+            ---
+            body
           } else do {
             @Lazy
             var body = responseBody <~ { "mimeType": mimeType, "raw": responseBody.^raw }
@@ -216,8 +234,8 @@ fun request<B <: HttpBody, H <: HttpHeaders>(
             body
           }
         }
-    ---
-    httpResponseWithBody as HttpResponse<B, H>
+      ---
+      httpResponseWithBody as HttpResponse<B, H>
   }
 }
 
