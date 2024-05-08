@@ -1,0 +1,10 @@
+{
+  "user": {
+    "name": "Mariano"
+  },
+  "pets": [
+    "Rollo",
+    "Tana",
+    "Donna"
+  ]
+}
