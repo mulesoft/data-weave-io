@@ -1,0 +1,34 @@
+{
+  "pets": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "cookies": {
+      
+    },
+    "body": {
+      "user": {
+        "name": "Mariano"
+      },
+      "pets": [
+        "Rollo",
+        "Tana",
+        "Donna"
+      ]
+    }
+  },
+  "user": {
+    "name": "Mariano",
+    "lastname": "Lischetti"
+  },
+  "nobody": {
+    "status": 500,
+    "headers": {
+      
+    },
+    "cookies": {
+      
+    }
+  }
+}
