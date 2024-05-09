@@ -1,0 +1,21 @@
+{
+  "pets": {
+    "user": {
+      "name": "Mariano"
+    },
+    "pets": [
+      "Rollo",
+      "Tana",
+      "Donna"
+    ]
+  },
+  "user": {
+    "name": "Mariano",
+    "lastname": "Lischetti"
+  },
+  "binary": {
+    "body": true,
+    "mimeType": "application/octet-stream",
+    "raw": true
+  }
+}

@@ -37,9 +37,27 @@ fun then<A, V>(result: A, assertions: (result: A) -> V): V = assertions(result)
     field('field', 'value'),
     field({name: 'field2', value:'value2'}),
     file({name: 'fileX', path: 'MyApi.dwl' }),
-    file('fileY','MyApi.dwl')
-  ])
-  ) then {
+    file('fileY','MyApi.dwl')])) then {
+     mimeType : $.body.^mimeType,
+     body : $.body as Object - "headers" - "origin",
+     contentType : $.contentType,
+  },
+  ee: postMultipart( 'http://httpbin.org/post', form([
+    field('field', 'value'),
+    field({name: 'field2', value:'value2'}),
+    file({name: 'fileX', path: 'MyApi.dwl' }),
+    file('fileY','MyApi.dwl')]), { "Content-TYPE": "multipart/form-data"})
+    then {
+     mimeType : $.body.^mimeType,
+     body : $.body as Object - "headers" - "origin",
+     contentType : $.contentType,
+  },
+  eee: postMultipart( 'http://httpbin.org/post', form([
+    field('field', 'value'),
+    field({name: 'field2', value:'value2'}),
+    file({name: 'fileX', path: 'MyApi.dwl' }),
+    file('fileY','MyApi.dwl')]), {"Content-TYPE": "multipart/form-data"})
+    then {
      mimeType : $.body.^mimeType,
      body : $.body as Object - "headers" - "origin",
      contentType : $.contentType,

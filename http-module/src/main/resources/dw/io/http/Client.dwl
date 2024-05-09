@@ -49,6 +49,9 @@ var DEFAULT_SERIALIZATION_CONFIG = {
   writerProperties: {}
 }
 
+var OCTET_STREAM_MIME_TYPE = { 'type': "application", subtype: "octet-stream", parameters: {} }
+var X_BINARY_MIME_TYPE = { 'type': "application", subtype: "x-binary", parameters: {} }
+
 fun get<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder, headers: HttpHeaders = {}): HttpResponse<B, H> = do {
   var httpRequest =  createHttpRequest("GET", url, headers)
   ---
@@ -62,10 +65,12 @@ fun post<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder, headers: Htt
 }
 
 fun postMultipart<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder, body: Multipart, headers: HttpHeaders = {}): HttpResponse<B, H> = do {
-  var newHeaders = if (headers[CONTENT_TYPE_HEADER]?)
+  var normalizedHeaders = normalizeHeaders(headers)
+  var newHeaders = if (normalizedHeaders[CONTENT_TYPE_HEADER]?)
     headers
   else
-    headers update {
+    // Update 'Content-Type' header (using normalized headers to avoid Content-Type header duplication)
+    normalizedHeaders update {
       case ."$(CONTENT_TYPE_HEADER)"! -> "multipart/form-data"
     }
   var httpRequest =  createHttpRequest("POST", url, newHeaders, body)
@@ -170,8 +175,8 @@ fun createBinaryHttpRequest(request: HttpRequest, serializationConfig: Serializa
     var requestContentType = normalizedHeaders[CONTENT_TYPE_HEADER] default serializationConfig.contentType
     var writerProperties = serializationConfig.writerProperties default {}
     var binaryBody = writeToBinary(request.body, requestContentType, writerProperties)
-    // Update 'Content-Type' header
-    var headersWithContentType = headers
+    // Update 'Content-Type' header (using normalized headers to avoid Content-Type header duplication)
+    var headersWithContentType = normalizedHeaders
       update {
         case ."$(CONTENT_TYPE_HEADER)"! -> dw::module::Mime::toString(binaryBody.mime)
       }
@@ -196,14 +201,14 @@ fun request<B <: HttpBody, H <: HttpHeaders>(
 
 
 /**
-* Helper function to parse a `HttpResponse` instances with `Binary` response body.
+* Helper function to parse a `HttpResponse` with a `Binary` body instance.
 *
 * === Parameters
 *
 * [%header, cols="1,1,3"]
 * |===
 * | Name | Type | Description
-* | httpResponse | `HttpResponse<Binary, H&#62;` | The desired HTTP response to parse.
+* | httpResponse | `HttpResponse<Binary,H&#62;` | The desired `HttpResponse` to parse.
 * | serializationConfig | `SerializationConfig` | The HTTP serialization configuration to use.
 * |===
 */
@@ -212,31 +217,56 @@ fun parseHttpResponse<B <: HttpBody, H <: HttpHeaders>(httpResponse: HttpRespons
   ---
   if (responseBody == null)
     httpResponse as HttpResponse<B, H>
-    else do {
-      var mimeType = log("mimeType", responseBody.^mimeType)
-      var httpResponseWithBody = httpResponse update {
-        case .body ->
-          if (mimeType != null) do {
-            // TODO: W-15523320: Allow reading request body laziness
-            var mime = log("FROM STRING", fromString(mimeType as String))
-            @Lazy
-            var body =
-              if (mime.success)
-                readFromBinary(mime.result!, responseBody, serializationConfig.readerProperties default {}) <~ { "mimeType": mimeType, "raw": responseBody.^raw }
-              else
-                responseBody <~ { "mimeType": mimeType, "raw": responseBody.^raw }
-            ---
-            body
-          } else do {
-            @Lazy
-            var body = responseBody <~ { "mimeType": mimeType, "raw": responseBody.^raw }
-            ---
-            body
-          }
+  else do {
+    var httpResponseWithBody = httpResponse update {
+      case .body -> do {
+          parseHttpResponseBody(responseBody, serializationConfig)
         }
-      ---
-      httpResponseWithBody as HttpResponse<B, H>
+      }
+    ---
+    httpResponseWithBody //as HttpResponse<B, H>
   }
+}
+
+/**
+* Helper function to parse a `HttpResponse` body `Binary` instance.
+*
+* === Parameters
+*
+* [%header, cols="1,1,3"]
+* |===
+* | Name | Type | Description
+* | binaryBody | `Binary` | The desired body parse.
+* | serializationConfig | `SerializationConfig` | The HTTP serialization configuration to use.
+* |===
+*/
+fun parseHttpResponseBody<B <: HttpBody>(binaryBody: Binary, serializationConfig: SerializationConfig): B = do {
+  var mimeType = binaryBody.^mimeType
+  var body = if (mimeType != null) do {
+    // TODO: W-15523320: Allow reading request body laziness
+    var mimeResult = fromString(mimeType as String)
+    @Lazy
+    var parsedBody =
+      if (mimeResult.success) do {
+        var mime = mimeResult.result!
+        var isBinaryMimeType = isHandledBy(OCTET_STREAM_MIME_TYPE, mime) or isHandledBy(X_BINARY_MIME_TYPE, mime)
+        ---
+        if (isBinaryMimeType)
+          binaryBody
+        else
+          // Preserve mimeType and raw schemas
+          readFromBinary(mime, binaryBody, serializationConfig.readerProperties default {})
+      }
+      else
+        binaryBody
+    ---
+    parsedBody
+  } else do {
+    binaryBody
+  }
+  ---
+  // Attach schemas
+  (body as B) <~ { "mimeType": binaryBody.^mimeType, "raw": binaryBody.^raw }
 }
 
 /**

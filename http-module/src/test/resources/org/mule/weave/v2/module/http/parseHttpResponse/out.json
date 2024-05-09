@@ -22,6 +22,15 @@
     "name": "Mariano",
     "lastname": "Lischetti"
   },
+  "binary": {
+    "status": 200,
+    "headers": {
+      "Content-TYPE": "application/octet-stream"
+    },
+    "body": true,
+    "mimeType": "application/octet-stream",
+    "raw": true
+  },
   "nobody": {
     "status": 500,
     "headers": {
