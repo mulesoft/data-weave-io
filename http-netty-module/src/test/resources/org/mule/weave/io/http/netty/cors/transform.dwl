@@ -13,7 +13,7 @@ var server = api(
       "/test1" : {
         "POST": (req) ->  {
           body: {
-            req: log("Request",req)
+            req: req
           },
           responseStatus: 200
         },

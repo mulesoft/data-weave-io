@@ -20,7 +20,7 @@ var server = api(
 )
 ---
 [
-  request({
+  sendRequestAndReadResponse({
     method: 'POST',
     url: 'http://$LOCALHOST/test',
     body: "{}TATO"

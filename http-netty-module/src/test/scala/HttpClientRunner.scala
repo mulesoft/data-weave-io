@@ -5,7 +5,7 @@ import org.mule.weave.v2.module.http.service.HttpClientRequest
 
 object HttpClientRunner extends App {
     val service = new NettyHttpClientService()
-    val config = new HttpClientConfiguration.Builder().setId("runner").build()
+    val config = new HttpClientConfiguration.Builder().build()
     val client = service.getClient(config)
     println("Google >>>>")
     client.request(new HttpClientRequest.Builder()

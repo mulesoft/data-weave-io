@@ -1,0 +1,34 @@
+[
+  {
+    "a": {
+      "status": 200,
+      "contentType": "application/json",
+      "headers": {
+        "COntent-TYPE": "application/json",
+        "content-length": "0"
+      }
+    }
+  },
+  {
+    "b": {
+      "status": 200,
+      "contentType": "application/xml",
+      "headers": {
+        "Content-Type": "application/xml",
+        "content-length": "0"
+      }
+    }
+  },
+  {
+    "c": {
+      "status": 200,
+      "contentType": null,
+      "headers": {
+        "content-length": "0"
+      }
+    }
+  },
+  {
+    "d": true
+  }
+]

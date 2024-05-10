@@ -1,0 +1,53 @@
+{
+  "a": {
+    "response": {
+      "status": 200,
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "cookies": {
+
+      },
+      "contentType": "application/json",
+      "body": {
+        "user": {
+          "name": "Mariano"
+        },
+        "pets": [
+          "Rollo",
+          "Tana",
+          "Donna"
+        ]
+      }
+    },
+    "mimeType": "application/json",
+    "raw": true
+  },
+  "b": {
+    "user": {
+      "name": "Mariano",
+      "lastname": "Lischetti"
+    },
+    "mimeType": "application/xml",
+    "raw": true
+  },
+  "binary": {
+    "status": 200,
+    "headers": {
+      "Content-TYPE": "application/octet-stream"
+    },
+    "body": true,
+    "mimeType": "application/octet-stream",
+    "raw": true
+  },
+  "nobody": {
+    "status": 500,
+    "headers": {
+      
+    },
+    "cookies": {
+      
+    },
+    "contentType": ""
+  }
+}
