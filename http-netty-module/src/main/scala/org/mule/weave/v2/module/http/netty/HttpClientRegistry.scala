@@ -2,17 +2,18 @@ package org.mule.weave.v2.module.http.netty
 
 import org.asynchttpclient.Dsl.asyncHttpClient
 import org.asynchttpclient.Dsl.config
+import org.mule.weave.v2.cache.service.Cache
 import org.mule.weave.v2.module.http.service.HttpClientConfiguration
 
 import java.io.IOException
-import java.util.concurrent.ConcurrentHashMap
 
 class HttpClientRegistry {
 
-  private val cache = new ConcurrentHashMap[String, NettyHttpClient]()
+  private var cache = Cache.builder()
+    .build[HttpClientConfiguration, NettyHttpClient]()
 
   def get(configuration: HttpClientConfiguration): NettyHttpClient = {
-    cache.computeIfAbsent(configuration.getId, _ => createClient(configuration))
+    cache.get(configuration, _ => createClient(configuration))
   }
 
   private def createClient(configuration: HttpClientConfiguration): NettyHttpClient = {
@@ -24,8 +25,13 @@ class HttpClientRegistry {
     new NettyHttpClient(client)
   }
 
-  def stop(): Unit = {
-    this.cache.values().forEach(client => closeSilently(client))
+  def cleanup(): Unit = {
+    // Close all client
+    val clients = cache.asMap().values()
+    clients.forEach(client => closeSilently(client))
+    // Clear cache
+    cache = Cache.builder()
+      .build[HttpClientConfiguration, NettyHttpClient]()
   }
 
   private def closeSilently(client: NettyHttpClient): Unit = {

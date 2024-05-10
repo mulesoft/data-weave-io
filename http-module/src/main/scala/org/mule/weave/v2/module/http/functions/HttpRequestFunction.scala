@@ -38,7 +38,7 @@ class HttpRequestFunction extends SecureTernaryFunctionValue {
 
     val requestConfig = HttpClientRequestConfig.parse(requestConfigurationObjectSeq)
     val request = HttpClientRequestConverter(requestObjectSeq, requestConfig, this).convert()
-    val clientConfiguration = HttpClientConfigurationConverter(clientConfigurationObjectSeq, clientConfigurationValue).convert()
+    val clientConfiguration = HttpClientConfigurationConverter(clientConfigurationObjectSeq).convert()
 
     val httpClientService: HttpClientService = ctx.serviceManager
       .lookupCustomService(classOf[HttpClientService])

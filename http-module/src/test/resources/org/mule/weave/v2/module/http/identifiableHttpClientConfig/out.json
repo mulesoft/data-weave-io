@@ -1,9 +1,0 @@
-{
-  "a": {
-    "connectionTimeout": 2000,
-    "id": true
-  },
-  "b": {
-    "id": true
-  }
-}

@@ -53,11 +53,6 @@ type HttpClientConfig = {
 }
 
 /**
- * DataWeave type for representing an Identifiable HTTP client configuration.
- */
-type IdentifiableHttpClientConfig = HttpClientConfig & {id: String}
-
-/**
  * DataWeave type for representing an HTTP request configuration.
  * Supports the following fields:
  *

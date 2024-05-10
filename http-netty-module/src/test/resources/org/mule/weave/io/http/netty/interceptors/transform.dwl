@@ -39,7 +39,7 @@ var server = api(
 )
 ---
 {
-  a: request( { method: "GET", url: 'http://$LOCALHOST/test1'})
+  a: sendRequestAndReadResponse( { method: "GET", url: 'http://$LOCALHOST/test1'})
     then {
      status: ($).status,
      body: $.body,

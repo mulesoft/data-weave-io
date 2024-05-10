@@ -16,9 +16,9 @@ var result = [
 
   post('https://anypoint.mulesoft.com/accounts/login', {}, { user: 'data-weave', password: 'data-weave' }),
 
-  request({ method: 'GET', url: 'https://github.com/'}),
+  sendRequestAndReadResponse({ method: 'GET', url: 'https://github.com/'}),
 
-  request({ method: 'GET', url: 'https://google.com/'})
+  sendRequestAndReadResponse({ method: 'GET', url: 'https://google.com/'})
 ]
 
 ---
