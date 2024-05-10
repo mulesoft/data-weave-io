@@ -104,9 +104,9 @@ a: {
     contentType: "application/json"
   },
   h: {
-    mimeType: "application/json",
+    contentType: "application/json",
     body: true,
-    raw: true,
-    contentType: "application/json"
+    mimeType: null,
+    raw: null
   }
 }

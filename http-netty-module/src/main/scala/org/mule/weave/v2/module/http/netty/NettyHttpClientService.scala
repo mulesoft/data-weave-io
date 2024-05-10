@@ -25,7 +25,7 @@ class NettyHttpClientService extends HttpClientService {
   }
 
   def stop(): Unit = {
-    httpClientRegistry.stop()
+    httpClientRegistry.cleanup()
   }
 }
 

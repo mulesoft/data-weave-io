@@ -1,5 +1,5 @@
 {
-  "pets": {
+  "a": {
     "user": {
       "name": "Mariano"
     },
@@ -9,11 +9,11 @@
       "Donna"
     ]
   },
-  "user": {
+  "b": {
     "name": "Mariano",
     "lastname": "Lischetti"
   },
-  "binary": {
+  "c": {
     "body": true,
     "mimeType": "application/octet-stream",
     "raw": true

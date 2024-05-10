@@ -16,24 +16,9 @@ import * from dw::module::Mime
 import * from dw::module::Multipart
 
 /**
-* Helper function to create an identifiable HTTP client configuration with the desired `prefix`.
-* This function returns the given `HttpClientConfig` with and an `id`.
-*
-* === Parameters
-*
-* [%header, cols="1,1,3"]
-* |===
-* | Name | Type | Description
-* | config | `HttpClientConfig` | The desired HTTP client configuration.
-* | prefix | `String` | The `prefix` to be used for creating the HTTP client configuration's `id`.
-* |===
-*/
-fun identifiableHttpClientConfig(config: HttpClientConfig, prefix: String = "CUSTOM"): IdentifiableHttpClientConfig = { id: "$(prefix)-$(uuid())" } ++ config
-
-/**
 * Variable used to identify the default HTTP client configuration.
 */
-var DEFAULT_HTTP_CLIENT_CONFIG = identifiableHttpClientConfig({}, "DEFAULT")
+var DEFAULT_HTTP_CLIENT_CONFIG = {}
 
 /**
 * Variable used to identify the default HTTP request configuration.
@@ -55,13 +40,13 @@ var X_BINARY_MIME_TYPE = { 'type': "application", subtype: "x-binary", parameter
 fun get<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder, headers: HttpHeaders = {}): HttpResponse<B, H> = do {
   var httpRequest =  createHttpRequest("GET", url, headers)
   ---
-  request(httpRequest)
+  sendRequestAndReadResponse(httpRequest)
 }
 
 fun post<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder, headers: HttpHeaders = {}, body: HttpBody | Null = null): HttpResponse<B, H> = do {
   var httpRequest =  createHttpRequest("POST", url, headers, body)
   ---
-  request(httpRequest)
+  sendRequestAndReadResponse(httpRequest)
 }
 
 fun postMultipart<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder, body: Multipart, headers: HttpHeaders = {}): HttpResponse<B, H> = do {
@@ -75,49 +60,49 @@ fun postMultipart<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder, bod
     }
   var httpRequest =  createHttpRequest("POST", url, newHeaders, body)
   ---
-  request(httpRequest)
+  sendRequestAndReadResponse(httpRequest)
 }
 
 fun head<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder, headers: HttpHeaders = {}): HttpResponse<B, H> = do {
  var httpRequest =  createHttpRequest("HEAD", url, headers)
  ---
- request(httpRequest)
+ sendRequestAndReadResponse(httpRequest)
 }
 
 fun put<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder, headers: HttpHeaders = {}, body: HttpBody | Null = null): HttpResponse<B, H> = do {
   var httpRequest =  createHttpRequest("PUT", url, headers, body)
   ---
-  request(httpRequest)
+  sendRequestAndReadResponse(httpRequest)
 }
 
 fun delete<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder, headers: HttpHeaders = {}, body: HttpBody | Null = null): HttpResponse<B, H> = do {
   var httpRequest =  createHttpRequest("DELETE", url, headers, body)
   ---
-  request(httpRequest)
+  sendRequestAndReadResponse(httpRequest)
 }
 
 fun connect<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder, headers: HttpHeaders = {}): HttpResponse<B, H> = do {
   var httpRequest =  createHttpRequest("CONNECT", url, headers)
   ---
-  request(httpRequest)
+  sendRequestAndReadResponse(httpRequest)
 }
 
 fun options<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder, headers: HttpHeaders = {}): HttpResponse<B, H> = do {
   var httpRequest =  createHttpRequest("OPTIONS", url, headers)
   ---
-  request(httpRequest)
+  sendRequestAndReadResponse(httpRequest)
 }
 
 fun trace<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder, headers: HttpHeaders = {}): HttpResponse<B, H> = do {
   var httpRequest =  createHttpRequest("TRACE", url, headers)
   ---
-  request(httpRequest)
+  sendRequestAndReadResponse(httpRequest)
 }
 
 fun patch<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder, headers: HttpHeaders = {}, body: HttpBody | Null = null): HttpResponse<B, H> = do {
   var httpRequest = createHttpRequest("PATCH", url, headers, body)
   ---
-  request(httpRequest)
+  sendRequestAndReadResponse(httpRequest)
 }
 
 /**
@@ -147,13 +132,13 @@ fun createHttpRequest<T <: HttpBody>(method: HttpMethod, url: String | UrlBuilde
   }
 
 @RuntimePrivilege(requires = "http::Client")
-fun httpRequest<H <: HttpHeaders>(
+fun sendRequest<H <: HttpHeaders>(
   request: HttpRequest<Binary>,
   requestConfig: HttpRequestConfig = DEFAULT_HTTP_REQUEST_CONFIG,
-  clientConfig: IdentifiableHttpClientConfig = DEFAULT_HTTP_CLIENT_CONFIG): HttpResponse<Binary, H> = do {
-    fun httpRequestNative(request: HttpRequest<Binary>, requestConfig: HttpRequestConfig, clientConfig: IdentifiableHttpClientConfig): HttpResponse<Binary, H> = native("http::HttpRequestFunction")
+  clientConfig: HttpClientConfig = DEFAULT_HTTP_CLIENT_CONFIG): HttpResponse<Binary, H> = do {
+    fun nativeSendRequest(request: HttpRequest<Binary>, requestConfig: HttpRequestConfig, clientConfig: HttpClientConfig): HttpResponse<Binary, H> = native("http::HttpRequestFunction")
     ---
-    httpRequestNative(request, requestConfig, clientConfig)
+    nativeSendRequest(request, requestConfig, clientConfig)
   }
 
 /**
@@ -188,20 +173,20 @@ fun createBinaryHttpRequest(request: HttpRequest, serializationConfig: Serializa
     (headers: request.headers!) if (request.headers?)
   }
 
-fun request<B <: HttpBody, H <: HttpHeaders>(
+fun sendRequestAndReadResponse<B <: HttpBody, H <: HttpHeaders>(
   request: HttpRequest,
   requestConfig: HttpRequestConfig = DEFAULT_HTTP_REQUEST_CONFIG,
   serializationConfig: SerializationConfig = DEFAULT_SERIALIZATION_CONFIG,
-  clientConfig: IdentifiableHttpClientConfig = DEFAULT_HTTP_CLIENT_CONFIG): HttpResponse<B, H> = do {
+  clientConfig: HttpClientConfig = DEFAULT_HTTP_CLIENT_CONFIG): HttpResponse<B, H> = do {
   var binaryRequest = createBinaryHttpRequest(request, serializationConfig)
-  var httpResponse = httpRequest(binaryRequest, requestConfig, clientConfig)
+  var httpResponse = sendRequest(binaryRequest, requestConfig, clientConfig)
   ---
-  parseHttpResponse(httpResponse, serializationConfig)
+  readHttpResponseBody(httpResponse, serializationConfig)
 }
 
 
 /**
-* Helper function to parse a `HttpResponse` with a `Binary` body instance.
+* Helper function to read a `HttpResponse` with a `Binary` body instance.
 *
 * === Parameters
 *
@@ -212,61 +197,57 @@ fun request<B <: HttpBody, H <: HttpHeaders>(
 * | serializationConfig | `SerializationConfig` | The HTTP serialization configuration to use.
 * |===
 */
-fun parseHttpResponse<B <: HttpBody, H <: HttpHeaders>(httpResponse: HttpResponse<Binary, H>, serializationConfig: SerializationConfig): HttpResponse<B, H> = do {
+fun readHttpResponseBody<B <: HttpBody, H <: HttpHeaders>(httpResponse: HttpResponse<Binary, H>, serializationConfig: SerializationConfig): HttpResponse<B, H> = do {
   var responseBody = httpResponse.body
   ---
   if (responseBody == null)
     httpResponse as HttpResponse<B, H>
   else do {
+    var contentType = httpResponse.contentType
     var httpResponseWithBody = httpResponse update {
       case .body -> do {
-          parseHttpResponseBody(responseBody, serializationConfig)
-        }
+        if (contentType != null)
+         readBody(contentType, responseBody, serializationConfig)
+        else
+          responseBody <~ { "mimeType": null, "raw": responseBody }
       }
+    }
     ---
-    httpResponseWithBody //as HttpResponse<B, H>
+    httpResponseWithBody as HttpResponse<B, H>
   }
 }
 
 /**
-* Helper function to parse a `HttpResponse` body `Binary` instance.
+* Helper function to read a `Binary` body instance.
 *
 * === Parameters
 *
 * [%header, cols="1,1,3"]
 * |===
 * | Name | Type | Description
-* | binaryBody | `Binary` | The desired body parse.
+* | mimeType | `String` | The MIME type to use.
+* | body | `Binary` | The desired body parse.
 * | serializationConfig | `SerializationConfig` | The HTTP serialization configuration to use.
 * |===
 */
-fun parseHttpResponseBody<B <: HttpBody>(binaryBody: Binary, serializationConfig: SerializationConfig): B = do {
-  var mimeType = binaryBody.^mimeType
-  var body = if (mimeType != null) do {
-    // TODO: W-15523320: Allow reading request body laziness
-    var mimeResult = fromString(mimeType as String)
-    @Lazy
-    var parsedBody =
-      if (mimeResult.success) do {
-        var mime = mimeResult.result!
-        var isBinaryMimeType = isHandledBy(OCTET_STREAM_MIME_TYPE, mime) or isHandledBy(X_BINARY_MIME_TYPE, mime)
-        ---
-        if (isBinaryMimeType)
-          binaryBody
-        else
-          // Preserve mimeType and raw schemas
-          readFromBinary(mime, binaryBody, serializationConfig.readerProperties default {})
-      }
+fun readBody<B <: HttpBody>(mimeType: String, body: Binary, serializationConfig: SerializationConfig): B = do {
+  var mimeResult = fromString(mimeType)
+  @Lazy
+  var parsedBody =
+    if (mimeResult.success) do {
+      var mime = mimeResult.result!
+      var isBinaryMimeType = isHandledBy(OCTET_STREAM_MIME_TYPE, mime) or isHandledBy(X_BINARY_MIME_TYPE, mime)
+      ---
+      if (isBinaryMimeType)
+        body
       else
-        binaryBody
-    ---
-    parsedBody
-  } else do {
-    binaryBody
-  }
+        readFromBinary(mime, body, serializationConfig.readerProperties default {})
+      }
+    else
+      body
   ---
-  // Attach schemas
-  (body as B) <~ { "mimeType": binaryBody.^mimeType, "raw": binaryBody.^raw }
+  // Preserve mimeType and raw schemas
+  (parsedBody as B) <~ { "mimeType": mimeType, "raw": body }
 }
 
 /**

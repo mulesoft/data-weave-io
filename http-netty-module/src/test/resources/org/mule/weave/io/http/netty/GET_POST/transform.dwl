@@ -72,18 +72,11 @@ fun then<A, V>(result: A, assertions: (result: A) -> V): V = assertions(result)
     body : $.body as Object - "headers" - "origin",
     contentType : $.contentType,
   },
-  h: httpRequest({
-       method: "POST",
-       url: "http://httpbin.org/post",
-       queryParams: { asd: "123", space: "Mariano de Achaval" }
-     }
-     // ,DEFAULT_HTTP_REQUEST_CONFIG
-     //, DEFAULT_HTTP_CLIENT_CONFIG
-     ) then {
-    mimeType : $.body.^mimeType,
-    body: $.body is Binary,
-    raw: $.body.^raw is Binary,
+  h: sendRequest({ method: "POST", url: "http://httpbin.org/post", queryParams: { asd: "123", space: "Mariano de Achaval" } }) then {
     contentType: $.contentType,
+    body: $.body is Binary,
+    mimeType: $.body.^mimeType,
+    raw: $.body.^raw
   }
 }
 
