@@ -1,15 +1,12 @@
 package org.mule.weave.v2.module.http.service;
 
 import static java.util.Objects.requireNonNull;
-import static java.util.Optional.empty;
-import static java.util.Optional.of;
 
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * Representation of an HTTP request. Instances can only be obtained through an {@link HttpClientRequest.Builder}.
@@ -19,21 +16,21 @@ public class HttpClientRequest {
     private final String method;
     private final Map<String, List<String>> headers;
     private final Map<String, List<String>> queryParams;
-    private final Optional<InputStream> body;
+    private final InputStream body;
 
     /** Do we accept header redirections? */
     private final boolean followRedirects;
-    private final Optional<Integer> readTimeout; // default 20000ms
-    private final Optional<Integer> requestTimeout; // default 10000ms
+    private final int readTimeout;
+    private final int requestTimeout;
 
     private HttpClientRequest(String url,
                               String method,
                               Map<String, List<String>> headers,
                               Map<String, List<String>> queryParams,
-                              Optional<InputStream> body,
+                              InputStream body,
                               boolean followRedirects,
-                              Optional<Integer> readTimeout,
-                              Optional<Integer> requestTimeout) {
+                              int readTimeout,
+                              int requestTimeout) {
         this.url = url;
         this.method = method;
         this.headers = headers;
@@ -75,7 +72,7 @@ public class HttpClientRequest {
     /**
      * @return the request's body InputStream.
      */
-    public Optional<InputStream> getBody() {
+    public InputStream getBody() {
         return body;
     }
 
@@ -89,14 +86,14 @@ public class HttpClientRequest {
     /**
      * @return the read timeout.
      */
-    public Optional<Integer> getReadTimeout() {
+    public int getReadTimeout() {
         return readTimeout;
     }
 
     /**
      * @return the request timeout.
      */
-    public Optional<Integer> getRequestTimeout() {
+    public int getRequestTimeout() {
         return requestTimeout;
     }
 
@@ -106,12 +103,12 @@ public class HttpClientRequest {
     public static final class Builder {
         private String url;
         private String method;
-        private Map<String, List<String>> headers = new HashMap<>();
-        private Map<String, List<String>> queryParams = new HashMap<>();
-        private Optional<InputStream> body = empty();
-        private boolean followRedirects;
-        private Optional<Integer> readTimeout = empty();
-        private Optional<Integer> requestTimeout = empty();
+        private final Map<String, List<String>> headers = new HashMap<>();
+        private final Map<String, List<String>> queryParams = new HashMap<>();
+        private InputStream body = null;
+        private boolean followRedirects = false;
+        private int readTimeout = 60000;
+        private int requestTimeout = 60000;
 
 
         /**
@@ -182,7 +179,7 @@ public class HttpClientRequest {
          */
         public Builder setBody(InputStream body) {
             requireNonNull(body, "body cannot be null");
-            this.body = of(body);
+            this.body = body;
             return this;
         }
 
@@ -204,7 +201,7 @@ public class HttpClientRequest {
          * @return this builder.
          */
         public Builder setReadTimeout(int readTimeout) {
-            this.readTimeout = of(readTimeout);
+            this.readTimeout = readTimeout;
             return this;
         }
 
@@ -215,7 +212,7 @@ public class HttpClientRequest {
          * @return this builder.
          */
         public Builder setRequestTimeout(int requestTimeout) {
-            this.requestTimeout = of(requestTimeout);
+            this.requestTimeout = requestTimeout;
             return this;
         }
 
