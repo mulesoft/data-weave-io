@@ -1,7 +1,5 @@
 package org.mule.weave.v2.module.http.netty
 
-import org.asynchttpclient.Dsl.asyncHttpClient
-import org.asynchttpclient.Dsl.config
 import org.mule.weave.v2.cache.service.Cache
 import org.mule.weave.v2.module.http.service.HttpClientConfiguration
 
@@ -13,16 +11,7 @@ class HttpClientRegistry {
     .build[HttpClientConfiguration, NettyHttpClient]()
 
   def get(configuration: HttpClientConfiguration): NettyHttpClient = {
-    cache.get(configuration, _ => createClient(configuration))
-  }
-
-  private def createClient(configuration: HttpClientConfiguration): NettyHttpClient = {
-    val asyncConfig = config()
-    if (configuration.getConnectionTimeout.isPresent) {
-      asyncConfig.setConnectTimeout(configuration.getConnectionTimeout.get())
-    }
-    val client = asyncHttpClient(asyncConfig)
-    new NettyHttpClient(client)
+    cache.get(configuration, _ => NettyHttpClientFactory.create(configuration))
   }
 
   def cleanup(): Unit = {
@@ -45,7 +34,5 @@ class HttpClientRegistry {
 }
 
 object HttpClientRegistry {
-
   def apply(): HttpClientRegistry = new HttpClientRegistry()
-
 }

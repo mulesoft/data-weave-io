@@ -46,24 +46,29 @@ type QueryParams = {
  * DataWeave type for representing an HTTP client configuration.
  * Supports the following fields:
  *
- * * `connectionTimeout`: The maximum time in millisecond an `HttpClient` can wait when connecting to a remote host.
+ * * `connectionTimeout`: The maximum time in millisecond an `HttpClient` can wait when connecting to a remote host. (default: 5000)
+ * * `tls`: The TLS context configuration.
+ * * * `insecure`: Defines whether the trust store should be insecure, meaning no certificate validations should be performed. (default: false)
  */
 type HttpClientConfig = {
-  connectionTimeout?: Number
+  connectionTimeout?: Number,
+  tls?: {
+    insecure?: Boolean
+  }
 }
 
 /**
  * DataWeave type for representing an HTTP request configuration.
  * Supports the following fields:
  *
- * * `followRedirects`: Indicates if the HTTP request is to follow redirects.
- * * `readTimeout`: The desired HTTP request read timeout in millisecond.
- * * `requestTimeout`: The desired HTTP request timeout in millisecond.
+ * * `followRedirects`: Indicates if the HTTP request is to follow redirects. (default: false)
+ * * `readTimeout`: The desired HTTP request read timeout in millisecond. (default: 60000)
+ * * `requestTimeout`: The desired HTTP request timeout in millisecond. (default: 60000)
  */
 type HttpRequestConfig = {
   followRedirects?: Boolean,
   readTimeout?: Number,
-  requestTimeout?: Number
+  requestTimeout?: Number,
 }
 
 /**

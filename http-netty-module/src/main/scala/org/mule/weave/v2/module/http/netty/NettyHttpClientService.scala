@@ -35,20 +35,23 @@ class NettyHttpClient(client: AsyncHttpClient) extends HttpClient {
     val builder = new RequestBuilder()
     builder.setUrl(request.getUrl)
     builder.setMethod(request.getMethod)
-
-    builder.setFollowRedirect(request.isFollowRedirects)
-    request.getBody.ifPresent(is => builder.setBody(is))
-    request.getHeaders.forEach((name, values) => {
-      builder.addHeader(name, values)
-    })
-    request.getReadTimeout.ifPresent(timeout => builder.setReadTimeout(timeout))
-    request.getRequestTimeout.ifPresent(timeout => builder.setRequestTimeout(timeout))
-
     request.getQueryParams.forEach((name, values) => {
       values.forEach(value => {
         builder.addQueryParam(name, value)
       })
     })
+
+    request.getHeaders.forEach((name, values) => {
+      builder.addHeader(name, values)
+    })
+
+    if (Option(request.getBody).isDefined) {
+      builder.setBody(request.getBody)
+    }
+
+    builder.setFollowRedirect(request.isFollowRedirects)
+    builder.setReadTimeout(request.getReadTimeout)
+    builder.setRequestTimeout(request.getRequestTimeout)
 
     client.executeRequest(builder)
       .toCompletableFuture
