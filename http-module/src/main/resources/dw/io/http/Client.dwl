@@ -18,12 +18,21 @@ import * from dw::module::Multipart
 /**
 * Variable used to identify the default HTTP client configuration.
 */
-var DEFAULT_HTTP_CLIENT_CONFIG = {}
+var DEFAULT_HTTP_CLIENT_CONFIG = {
+  connectionTimeout: 5000,
+  tls: {
+    insecure: false
+  }
+}
 
 /**
 * Variable used to identify the default HTTP request configuration.
 */
-var DEFAULT_HTTP_REQUEST_CONFIG = {}
+var DEFAULT_HTTP_REQUEST_CONFIG = {
+  followRedirect: false,
+  readTimeout: 60000,
+  requestTimeout: 60000
+}
 
 /**
 * Variable used to identify the default HTTP serialization configuration.

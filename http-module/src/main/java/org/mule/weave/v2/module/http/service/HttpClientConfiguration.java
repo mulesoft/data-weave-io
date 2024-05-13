@@ -1,34 +1,53 @@
 package org.mule.weave.v2.module.http.service;
 
-import static java.util.Optional.empty;
-import static java.util.Optional.of;
-
 import java.util.Objects;
-import java.util.Optional;
 
 /**
  * Configuration component that specifies how an {@link HttpClient} should be created.
  * Instances can only be obtained through an {@link HttpClientConfiguration.Builder}.
  */
 public class HttpClientConfiguration {
-    private final Optional<Integer> connectionTimeout;
+    private final int connectionTimeout;
+    private final TlsConfiguration tlsConfiguration;
 
-    private HttpClientConfiguration(Optional<Integer> connectionTimeout) {
+    private HttpClientConfiguration(int connectionTimeout, TlsConfiguration tlsConfiguration) {
         this.connectionTimeout = connectionTimeout;
+        this.tlsConfiguration = tlsConfiguration;
     }
 
     /**
      * @return the maximum time in millisecond an {@link HttpClient} can wait when connecting to a remote host.
      */
-    public Optional<Integer> getConnectionTimeout() {
+    public int getConnectionTimeout() {
         return connectionTimeout;
+    }
+
+    public TlsConfiguration getTlsConfiguration() {
+        return tlsConfiguration;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        HttpClientConfiguration that = (HttpClientConfiguration) o;
+        return Objects.equals(connectionTimeout, that.connectionTimeout) && Objects.equals(tlsConfiguration, that.tlsConfiguration);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hashCode(connectionTimeout);
+        result = 31 * result + Objects.hashCode(tlsConfiguration);
+        return result;
     }
 
     /**
      * Builder of {@link HttpClientConfiguration}s. At the very least, an id must be provided.
      */
     public static final class Builder {
-        private Optional<Integer> connectionTimeout = empty();
+        private int connectionTimeout = 5000;
+        private TlsConfiguration tlsConfiguration;
 
         /**
          * Defines the number of milliseconds that a connection can wait until established a connection.
@@ -37,7 +56,13 @@ public class HttpClientConfiguration {
          * @return this builder.
          */
         public Builder setConnectionTimeout(int connectionTimeout) {
-            this.connectionTimeout = of(connectionTimeout);
+            this.connectionTimeout = connectionTimeout;
+            return this;
+        }
+
+
+        public Builder setTlsConfiguration(TlsConfiguration tlsConfiguration) {
+            this.tlsConfiguration = tlsConfiguration;
             return this;
         }
 
@@ -47,21 +72,7 @@ public class HttpClientConfiguration {
          * @return an {@link HttpClientConfiguration} as described.
          */
         public HttpClientConfiguration build() {
-            return new HttpClientConfiguration(connectionTimeout);
+            return new HttpClientConfiguration(connectionTimeout, tlsConfiguration);
         }
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        HttpClientConfiguration that = (HttpClientConfiguration) o;
-        return Objects.equals(connectionTimeout, that.connectionTimeout);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(connectionTimeout);
     }
 }
