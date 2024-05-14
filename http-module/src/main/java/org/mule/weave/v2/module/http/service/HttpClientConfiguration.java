@@ -8,13 +8,15 @@ import java.util.Objects;
  */
 public class HttpClientConfiguration {
     private final int connectionTimeout;
-    private final boolean compressionEnforced;
+    private final boolean acceptEncodingCompressionHeader;
+    private final boolean decompress;
     private final TlsConfiguration tlsConfiguration;
 
-    private HttpClientConfiguration(int connectionTimeout, boolean compressionEnforced,
-                                   TlsConfiguration tlsConfiguration) {
+    private HttpClientConfiguration(int connectionTimeout, boolean acceptEncodingCompressionHeader,
+                                    boolean decompress, TlsConfiguration tlsConfiguration) {
         this.connectionTimeout = connectionTimeout;
-        this.compressionEnforced = compressionEnforced;
+        this.acceptEncodingCompressionHeader = acceptEncodingCompressionHeader;
+        this.decompress = decompress;
         this.tlsConfiguration = tlsConfiguration;
     }
 
@@ -30,8 +32,17 @@ public class HttpClientConfiguration {
      *
      * @return {@code true} if the `Accept-Encoding: gzip, deflate` HTTP header will be sent to each request.
      */
-    public boolean isCompressionEnforced() {
-        return compressionEnforced;
+    public boolean isAcceptEncodingCompressionHeader() {
+        return acceptEncodingCompressionHeader;
+    }
+
+    /**
+     * Defines whether responses should be decompressed automatically.
+     *
+     * @return {@code true} if responses should be decompressed automatically
+     */
+    public boolean isDecompress() {
+        return decompress;
     }
 
     /**
@@ -49,14 +60,16 @@ public class HttpClientConfiguration {
 
         HttpClientConfiguration that = (HttpClientConfiguration) o;
         return connectionTimeout == that.connectionTimeout
-                && compressionEnforced == that.compressionEnforced
+                && acceptEncodingCompressionHeader == that.acceptEncodingCompressionHeader
+                && decompress == that.decompress
                 && Objects.equals(tlsConfiguration, that.tlsConfiguration);
     }
 
     @Override
     public int hashCode() {
         int result = connectionTimeout;
-        result = 31 * result + Boolean.hashCode(compressionEnforced);
+        result = 31 * result + Boolean.hashCode(acceptEncodingCompressionHeader);
+        result = 31 * result + Boolean.hashCode(decompress);
         result = 31 * result + Objects.hashCode(tlsConfiguration);
         return result;
     }
@@ -66,7 +79,8 @@ public class HttpClientConfiguration {
      */
     public static final class Builder {
         private int connectionTimeout = 5000;
-        private boolean compressionEnforced = false;
+        private boolean acceptEncodingCompressionHeader = false;
+        private boolean decompress = true;
         private TlsConfiguration tlsConfiguration;
 
         /**
@@ -83,11 +97,22 @@ public class HttpClientConfiguration {
         /**
          * Defines the `Accept-Encoding: gzip, deflate` HTTP header will be sent to each request {@code false} by default.
          *
-         * @param compressionEnforced whether `Accept-Encoding` should be sent.
+         * @param acceptEncodingCompressionHeader whether `Accept-Encoding` should be sent.
          * @return this builder.
          */
-        public Builder setCompressionEnforced(boolean compressionEnforced) {
-            this.compressionEnforced = compressionEnforced;
+        public Builder setAcceptEncodingCompressionHeader(boolean acceptEncodingCompressionHeader) {
+            this.acceptEncodingCompressionHeader = acceptEncodingCompressionHeader;
+            return this;
+        }
+
+        /**
+         * Defines whether responses should be decompressed automatically by the HttpClient, {@code true} by default.
+         *
+         * @param decompress whether responses should be decompressed automatically.
+         * @return this builder.
+         */
+        public Builder setDecompress(boolean decompress) {
+            this.decompress = decompress;
             return this;
         }
 
@@ -109,7 +134,7 @@ public class HttpClientConfiguration {
          * @return an {@link HttpClientConfiguration} as described.
          */
         public HttpClientConfiguration build() {
-            return new HttpClientConfiguration(connectionTimeout, compressionEnforced, tlsConfiguration);
+            return new HttpClientConfiguration(connectionTimeout, acceptEncodingCompressionHeader, decompress, tlsConfiguration);
         }
     }
 }
