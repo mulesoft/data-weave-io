@@ -20,6 +20,7 @@ import * from dw::module::Multipart
 */
 var DEFAULT_HTTP_CLIENT_CONFIG = {
   connectionTimeout: 5000,
+  compressionEnforced: false,
   tls: {
     insecure: false
   }

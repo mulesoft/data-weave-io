@@ -43,7 +43,7 @@ public class TlsConfiguration {
          * Defines whether the trust store should be insecure, meaning no certificate validations should be performed. Default value is
          * {@code false}.
          *
-         * @param insecure
+         * @param insecure if this client allow insecure trust store.
          * @return this builder.
          */
         public TlsConfiguration.Builder setInsecure(boolean insecure) {

@@ -14,6 +14,7 @@ object NettyHttpClientFactory {
         asyncConfig.setUseInsecureTrustManager(true)
       }
     }
+    asyncConfig.setCompressionEnforced(configuration.isCompressionEnforced)
     val client = asyncHttpClient(asyncConfig)
     new NettyHttpClient(client)
   }

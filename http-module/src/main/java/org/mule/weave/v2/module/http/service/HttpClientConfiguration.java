@@ -8,10 +8,13 @@ import java.util.Objects;
  */
 public class HttpClientConfiguration {
     private final int connectionTimeout;
+    private final boolean compressionEnforced;
     private final TlsConfiguration tlsConfiguration;
 
-    private HttpClientConfiguration(int connectionTimeout, TlsConfiguration tlsConfiguration) {
+    private HttpClientConfiguration(int connectionTimeout, boolean compressionEnforced,
+                                   TlsConfiguration tlsConfiguration) {
         this.connectionTimeout = connectionTimeout;
+        this.compressionEnforced = compressionEnforced;
         this.tlsConfiguration = tlsConfiguration;
     }
 
@@ -22,9 +25,22 @@ public class HttpClientConfiguration {
         return connectionTimeout;
     }
 
+    /**
+     * Is HTTP `Accept-Encoding` HTTP header enforced.
+     *
+     * @return {@code true} if the `Accept-Encoding: gzip, deflate` HTTP header will be sent to each request.
+     */
+    public boolean isCompressionEnforced() {
+        return compressionEnforced;
+    }
+
+    /**
+     * @return The TLS related data.
+     */
     public TlsConfiguration getTlsConfiguration() {
         return tlsConfiguration;
     }
+
 
     @Override
     public boolean equals(Object o) {
@@ -32,12 +48,15 @@ public class HttpClientConfiguration {
         if (o == null || getClass() != o.getClass()) return false;
 
         HttpClientConfiguration that = (HttpClientConfiguration) o;
-        return Objects.equals(connectionTimeout, that.connectionTimeout) && Objects.equals(tlsConfiguration, that.tlsConfiguration);
+        return connectionTimeout == that.connectionTimeout
+                && compressionEnforced == that.compressionEnforced
+                && Objects.equals(tlsConfiguration, that.tlsConfiguration);
     }
 
     @Override
     public int hashCode() {
-        int result = Objects.hashCode(connectionTimeout);
+        int result = connectionTimeout;
+        result = 31 * result + Boolean.hashCode(compressionEnforced);
         result = 31 * result + Objects.hashCode(tlsConfiguration);
         return result;
     }
@@ -47,6 +66,7 @@ public class HttpClientConfiguration {
      */
     public static final class Builder {
         private int connectionTimeout = 5000;
+        private boolean compressionEnforced = false;
         private TlsConfiguration tlsConfiguration;
 
         /**
@@ -60,7 +80,24 @@ public class HttpClientConfiguration {
             return this;
         }
 
+        /**
+         * Defines the `Accept-Encoding: gzip, deflate` HTTP header will be sent to each request {@code false} by default.
+         *
+         * @param compressionEnforced whether `Accept-Encoding` should be sent.
+         * @return this builder.
+         */
+        public Builder setCompressionEnforced(boolean compressionEnforced) {
+            this.compressionEnforced = compressionEnforced;
+            return this;
+        }
 
+        /**
+         * Required exclusively for HTTPS, this defines through a {@link TlsConfiguration} all the TLS related data to establish such
+         * connections.
+         *
+         * @param tlsConfiguration a {@link TlsConfiguration} with the required data.
+         * @return this builder.
+         */
         public Builder setTlsConfiguration(TlsConfiguration tlsConfiguration) {
             this.tlsConfiguration = tlsConfiguration;
             return this;
@@ -72,7 +109,7 @@ public class HttpClientConfiguration {
          * @return an {@link HttpClientConfiguration} as described.
          */
         public HttpClientConfiguration build() {
-            return new HttpClientConfiguration(connectionTimeout, tlsConfiguration);
+            return new HttpClientConfiguration(connectionTimeout, compressionEnforced, tlsConfiguration);
         }
     }
 }

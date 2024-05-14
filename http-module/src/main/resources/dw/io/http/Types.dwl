@@ -46,12 +46,14 @@ type QueryParams = {
  * DataWeave type for representing an HTTP client configuration.
  * Supports the following fields:
  *
- * * `connectionTimeout`: The maximum time in millisecond an `HttpClient` can wait when connecting to a remote host. (default: 5000)
+ * * `connectionTimeout`: The maximum time in millisecond an `HttpClient` can wait when connecting to a remote host (default: 5000).
+ * * `compressionEnforced`: If `true` the `Accept-Encoding: gzip, deflate` HTTP header will be sent to each request (default: false).
  * * `tls`: The TLS context configuration.
- * * * `insecure`: Defines whether the trust store should be insecure, meaning no certificate validations should be performed. (default: false)
+ * * * `insecure`: Defines whether the trust store should be insecure, meaning no certificate validations should be performed (default: false)
  */
 type HttpClientConfig = {
   connectionTimeout?: Number,
+  compressionEnforced?: Boolean,
   tls?: {
     insecure?: Boolean
   }
