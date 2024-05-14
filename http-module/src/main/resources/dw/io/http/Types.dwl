@@ -47,14 +47,14 @@ type QueryParams = {
  * Supports the following fields:
  *
  * * `connectionTimeout`: The maximum time in millisecond an `HttpClient` can wait when connecting to a remote host (default: 5000).
- * * `acceptEncodingCompressionHeader`: If `true` the `Accept-Encoding: gzip, deflate` HTTP header will be sent to each request (default: false).
+ * * `compressionHeader`: If `true` the `Accept-Encoding: gzip, deflate` HTTP header will be sent to each request (default: false).
  * * `decompress`: Defines whether responses should be decompressed automatically (default: true).
  * * `tls`: The TLS context configuration.
  * * * `insecure`: Defines whether the trust store should be insecure, meaning no certificate validations should be performed (default: false)
  */
 type HttpClientConfig = {
   connectionTimeout?: Number,
-  acceptEncodingCompressionHeader?: Boolean,
+  compressionHeader?: Boolean,
   decompress?: Boolean,
   tls?: {
     insecure?: Boolean

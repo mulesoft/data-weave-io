@@ -16,7 +16,7 @@ object NettyHttpClientFactory {
         asyncConfig.setUseInsecureTrustManager(true)
       }
     }
-    asyncConfig.setCompressionEnforced(configuration.isAcceptEncodingCompressionHeader)
+    asyncConfig.setCompressionEnforced(configuration.isCompressionHeader)
 
     if (!configuration.isDecompress) {
       throw new WeaveIllegalArgumentException("Unsupported `decompress` value. Supported `decompress: true`", UnknownLocation)

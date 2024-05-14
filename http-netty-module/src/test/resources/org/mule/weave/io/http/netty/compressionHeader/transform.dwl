@@ -6,10 +6,10 @@ import * from dw::io::http::Types
 
 output application/json
 
-fun createClientConfig(acceptEncodingCompressionHeader: Boolean): HttpClientConfig = do {
+fun createClientConfig(compressionHeader: Boolean): HttpClientConfig = do {
   DEFAULT_HTTP_CLIENT_CONFIG mergeWith
     {
-      acceptEncodingCompressionHeader: acceptEncodingCompressionHeader
+      compressionHeader: compressionHeader
     }
 }
 
