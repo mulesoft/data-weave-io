@@ -48,19 +48,33 @@ var DEFAULT_SERIALIZATION_CONFIG = {
 var OCTET_STREAM_MIME_TYPE = { 'type': "application", subtype: "octet-stream", parameters: {} }
 var X_BINARY_MIME_TYPE = { 'type': "application", subtype: "x-binary", parameters: {} }
 
-fun get<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder, headers: HttpHeaders = {}): HttpResponse<B, H> = do {
+fun get<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder,
+  headers: HttpHeaders = {},
+  requestConfig: HttpRequestConfig = DEFAULT_HTTP_REQUEST_CONFIG,
+  serializationConfig: SerializationConfig = DEFAULT_SERIALIZATION_CONFIG,
+  clientConfig: HttpClientConfig = DEFAULT_HTTP_CLIENT_CONFIG): HttpResponse<B, H> = do {
   var httpRequest =  createHttpRequest("GET", url, headers)
   ---
   sendRequestAndReadResponse(httpRequest)
 }
 
-fun post<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder, headers: HttpHeaders = {}, body: HttpBody | Null = null): HttpResponse<B, H> = do {
+fun post<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder,
+  headers: HttpHeaders = {},
+  body: HttpBody | Null = null,
+  requestConfig: HttpRequestConfig = DEFAULT_HTTP_REQUEST_CONFIG,
+  serializationConfig: SerializationConfig = DEFAULT_SERIALIZATION_CONFIG,
+  clientConfig: HttpClientConfig = DEFAULT_HTTP_CLIENT_CONFIG): HttpResponse<B, H> = do {
   var httpRequest =  createHttpRequest("POST", url, headers, body)
   ---
   sendRequestAndReadResponse(httpRequest)
 }
 
-fun postMultipart<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder, body: Multipart, headers: HttpHeaders = {}): HttpResponse<B, H> = do {
+fun postMultipart<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder,
+  body: Multipart,
+  headers: HttpHeaders = {},
+  requestConfig: HttpRequestConfig = DEFAULT_HTTP_REQUEST_CONFIG,
+  serializationConfig: SerializationConfig = DEFAULT_SERIALIZATION_CONFIG,
+  clientConfig: HttpClientConfig = DEFAULT_HTTP_CLIENT_CONFIG): HttpResponse<B, H> = do {
   var normalizedHeaders = normalizeHeaders(headers)
   var newHeaders = if (normalizedHeaders[CONTENT_TYPE_HEADER]?)
     headers
@@ -74,43 +88,74 @@ fun postMultipart<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder, bod
   sendRequestAndReadResponse(httpRequest)
 }
 
-fun head<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder, headers: HttpHeaders = {}): HttpResponse<B, H> = do {
+fun head<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder,
+  headers: HttpHeaders = {},
+  requestConfig: HttpRequestConfig = DEFAULT_HTTP_REQUEST_CONFIG,
+  serializationConfig: SerializationConfig = DEFAULT_SERIALIZATION_CONFIG,
+  clientConfig: HttpClientConfig = DEFAULT_HTTP_CLIENT_CONFIG): HttpResponse<B, H> = do {
  var httpRequest =  createHttpRequest("HEAD", url, headers)
  ---
  sendRequestAndReadResponse(httpRequest)
 }
 
-fun put<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder, headers: HttpHeaders = {}, body: HttpBody | Null = null): HttpResponse<B, H> = do {
+fun put<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder,
+  headers: HttpHeaders = {},
+  body: HttpBody | Null = null,
+  requestConfig: HttpRequestConfig = DEFAULT_HTTP_REQUEST_CONFIG,
+  serializationConfig: SerializationConfig = DEFAULT_SERIALIZATION_CONFIG,
+  clientConfig: HttpClientConfig = DEFAULT_HTTP_CLIENT_CONFIG): HttpResponse<B, H> = do {
   var httpRequest =  createHttpRequest("PUT", url, headers, body)
   ---
   sendRequestAndReadResponse(httpRequest)
 }
 
-fun delete<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder, headers: HttpHeaders = {}, body: HttpBody | Null = null): HttpResponse<B, H> = do {
+fun delete<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder,
+  headers: HttpHeaders = {},
+  body: HttpBody | Null = null,
+  requestConfig: HttpRequestConfig = DEFAULT_HTTP_REQUEST_CONFIG,
+  serializationConfig: SerializationConfig = DEFAULT_SERIALIZATION_CONFIG,
+  clientConfig: HttpClientConfig = DEFAULT_HTTP_CLIENT_CONFIG): HttpResponse<B, H> = do {
   var httpRequest =  createHttpRequest("DELETE", url, headers, body)
   ---
   sendRequestAndReadResponse(httpRequest)
 }
 
-fun connect<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder, headers: HttpHeaders = {}): HttpResponse<B, H> = do {
+fun connect<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder,
+  headers: HttpHeaders = {},
+  requestConfig: HttpRequestConfig = DEFAULT_HTTP_REQUEST_CONFIG,
+  serializationConfig: SerializationConfig = DEFAULT_SERIALIZATION_CONFIG,
+  clientConfig: HttpClientConfig = DEFAULT_HTTP_CLIENT_CONFIG): HttpResponse<B, H> = do {
   var httpRequest =  createHttpRequest("CONNECT", url, headers)
   ---
   sendRequestAndReadResponse(httpRequest)
 }
 
-fun options<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder, headers: HttpHeaders = {}): HttpResponse<B, H> = do {
+fun options<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder,
+  headers: HttpHeaders = {},
+  requestConfig: HttpRequestConfig = DEFAULT_HTTP_REQUEST_CONFIG,
+  serializationConfig: SerializationConfig = DEFAULT_SERIALIZATION_CONFIG,
+  clientConfig: HttpClientConfig = DEFAULT_HTTP_CLIENT_CONFIG): HttpResponse<B, H> = do {
   var httpRequest =  createHttpRequest("OPTIONS", url, headers)
   ---
   sendRequestAndReadResponse(httpRequest)
 }
 
-fun trace<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder, headers: HttpHeaders = {}): HttpResponse<B, H> = do {
+fun trace<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder,
+  headers: HttpHeaders = {},
+  requestConfig: HttpRequestConfig = DEFAULT_HTTP_REQUEST_CONFIG,
+  serializationConfig: SerializationConfig = DEFAULT_SERIALIZATION_CONFIG,
+  clientConfig: HttpClientConfig = DEFAULT_HTTP_CLIENT_CONFIG): HttpResponse<B, H> = do {
   var httpRequest =  createHttpRequest("TRACE", url, headers)
   ---
   sendRequestAndReadResponse(httpRequest)
 }
 
-fun patch<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder, headers: HttpHeaders = {}, body: HttpBody | Null = null): HttpResponse<B, H> = do {
+fun patch<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder,
+  headers: HttpHeaders = {},
+  body: HttpBody | Null = null,
+  requestConfig: HttpRequestConfig = DEFAULT_HTTP_REQUEST_CONFIG,
+  serializationConfig: SerializationConfig = DEFAULT_SERIALIZATION_CONFIG,
+  clientConfig: HttpClientConfig = DEFAULT_HTTP_CLIENT_CONFIG): HttpResponse<B, H> = do {
   var httpRequest = createHttpRequest("PATCH", url, headers, body)
   ---
   sendRequestAndReadResponse(httpRequest)

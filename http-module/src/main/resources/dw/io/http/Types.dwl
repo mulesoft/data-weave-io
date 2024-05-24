@@ -90,7 +90,7 @@ type SerializationConfig = {
 }
 
 /**
- * DataWeave type for representing an HTTP respose.
+ * DataWeave type for representing an HTTP response.
  * Supports the following fields:
  *
  * * `contentType`: The HTTP response `Content-Type`.
