@@ -80,7 +80,7 @@ public interface HttpClientResponse {
     }
 
     /**
-     * Get the associated metadata to request sent. (Useful to send request metrics)
+     * Get the metadata related to the HTTP request sent. (Useful to populate HTTP request metrics)
      *
      * @return the metadata.
      */
