@@ -17,13 +17,9 @@ class StopWatch(on: Boolean) {
   def start(): Unit = {
     if (!_started) {
       _started = true
-      startWatch()
+      this._start = System.currentTimeMillis()
+      this._checkpoint = this._start
     }
-  }
-
-  private def startWatch(): Unit = {
-    this._start = System.currentTimeMillis()
-    this._checkpoint = this._start
   }
 
   def stop(): Unit = {

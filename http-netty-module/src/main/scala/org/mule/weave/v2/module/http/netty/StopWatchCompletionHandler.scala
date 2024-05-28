@@ -64,5 +64,6 @@ object StopWatchCompletionHandler {
   val SEND = "send"
   val WAIT = "wait"
   val RECEIVE = "receive"
+
   def apply(stopWatch: StopWatch): StopWatchCompletionHandler = new StopWatchCompletionHandler(stopWatch)
 }

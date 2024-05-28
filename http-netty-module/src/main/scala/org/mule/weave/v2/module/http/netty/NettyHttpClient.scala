@@ -43,7 +43,7 @@ class NettyHttpClient(client: AsyncHttpClient) extends HttpClient {
     builder.setReadTimeout(request.getReadTimeout)
     builder.setRequestTimeout(request.getRequestTimeout)
 
-    client.executeRequest(builder, new StopWatchCompletionHandler(stopWatch))
+    client.executeRequest(builder, StopWatchCompletionHandler(stopWatch))
       .toCompletableFuture
       .thenApply[HttpClientResponse](response => {
         new NettyHttpClientResponse(response, stopWatch)
