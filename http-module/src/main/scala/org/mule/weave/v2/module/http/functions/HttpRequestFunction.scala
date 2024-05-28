@@ -33,8 +33,7 @@ class HttpRequestFunction extends SecureTernaryFunctionValue {
   override val Third: ObjectType = ObjectType
 
   override protected def onSecureExecution(requestValue: Value[ObjectSeq], requestConfigurationValue: Value[ObjectSeq], clientConfigurationValue: Value[ObjectSeq])(implicit ctx: EvaluationContext): Value[_] = {
-    val stopWatch = StopWatch()
-    stopWatch.start()
+    val stopWatch = StopWatch(on = true)
 
     val requestObjectSeq = requestValue.evaluate.materialize()
     val requestConfigurationObjectSeq = requestConfigurationValue.evaluate.materialize()
