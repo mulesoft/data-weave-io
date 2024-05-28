@@ -79,7 +79,7 @@ class NettyHttpClientResponse(response: Response, stopWatch: StopWatch) extends 
     Optional.ofNullable(response.getResponseBodyAsStream)
   }
 
-  override def getMetadata: ObjectMetadataValue = {
+  override def getMetadata: Optional[ObjectMetadataValue] = {
     // Forcing stop
     stopWatch.stop()
 
@@ -89,7 +89,8 @@ class NettyHttpClientResponse(response: Response, stopWatch: StopWatch) extends 
     })
     val builder = new ObjectMetadataValue.Builder()
     builder.addKeyValuePair(TIMERS_KEY, timersBuilder.build())
-    builder.build()
+    val metadata = builder.build()
+    Optional.ofNullable(metadata)
   }
 }
 

@@ -19,18 +19,21 @@ import org.mule.weave.v2.module.http.service.metadata.NumberMetadataValue
 import org.mule.weave.v2.module.http.service.metadata.ObjectMetadataValue
 import org.mule.weave.v2.module.http.service.metadata.StringMetadataValue
 
+import java.util.Optional
 import scala.collection.JavaConverters._
 
-class MetadataConverter(metadata: Option[ObjectMetadataValue], total: Long) {
+class MetadataConverter(metadata: Optional[ObjectMetadataValue], total: Long) {
 
   def convert(): Schema = {
-    val props = metadata match {
-      case Some(m) => m.getProperties.asScala.map(prop => {
+    val props = if (metadata.isPresent) {
+      metadata.get().getProperties.asScala.map(prop => {
         val value = toValue(prop.getValue)
         SchemaProperty(StringValue(prop.getKey), value)
       })
-      case _ => Seq.empty
+    } else {
+      Seq.empty
     }
+
     val totalProperty = SchemaProperty(StringValue(TOTAL), NumberValue(total))
     Schema(props :+ totalProperty)
   }
@@ -61,5 +64,5 @@ object MetadataConverter {
 
   val TOTAL = "total"
 
-  def apply(metadata: Option[ObjectMetadataValue], total: Long): MetadataConverter = new MetadataConverter(metadata, total)
+  def apply(metadata: Optional[ObjectMetadataValue], total: Long): MetadataConverter = new MetadataConverter(metadata, total)
 }

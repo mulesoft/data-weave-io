@@ -84,7 +84,7 @@ public interface HttpClientResponse {
      *
      * @return the metadata.
      */
-    default ObjectMetadataValue getMetadata() {
-        return null;
+    default Optional<ObjectMetadataValue> getMetadata() {
+        return Optional.empty();
     }
 }
