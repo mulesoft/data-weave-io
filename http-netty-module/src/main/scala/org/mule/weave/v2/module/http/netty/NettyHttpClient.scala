@@ -86,7 +86,7 @@ class NettyHttpClientResponse(response: Response, stopWatch: StopWatch) extends 
 
     val timersBuilder = new ObjectMetadataValue.Builder()
     stopWatch.getTimes.foreach(time => {
-      timersBuilder.addKeyValuePair(time._1, new NumberMetadataValue(time._2))
+      timersBuilder.addKeyValuePair(time._1, new NumberMetadataValue(time._2.toString))
     })
     val builder = new ObjectMetadataValue.Builder()
     builder.addKeyValuePair(TIMERS_KEY, timersBuilder.build())

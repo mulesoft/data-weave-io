@@ -5,13 +5,13 @@ package org.mule.weave.v2.module.http.service.metadata;
  */
 public class NumberMetadataValue implements MetadataValue {
 
-    private final Number value;
+    private final String value;
 
-    public NumberMetadataValue(Number value) {
+    public NumberMetadataValue(String value) {
         this.value = value;
     }
 
-    public Number getValue() {
+    public String getValue() {
         return value;
     }
 }

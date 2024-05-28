@@ -57,8 +57,7 @@ class HttpClientResponseConverter(response: HttpClientResponse, stopWatch: StopW
 
     // Schema
     stopWatch.stop()
-    val total = stopWatch.getTimes.find(t => t._1 == StopWatch.TOTAL).map(_._2)
-    val schema = MetadataConverter(Option(response.getMetadata), total).convert()
+    val schema = MetadataConverter(Option(response.getMetadata), stopWatch.getTotal).convert()
     builder.withSchema(schema)
   }
 

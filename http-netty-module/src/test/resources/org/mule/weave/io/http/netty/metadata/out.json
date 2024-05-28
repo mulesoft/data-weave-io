@@ -2,12 +2,13 @@
   {
     "a": {
       "status": 200,
-      "requestFunctionTotal": true,
+      "total": true,
       "timers": {
-        "hostnameResolutionSuccess": true,
-        "tcpConnectSuccess": true,
-        "statusReceived": true,
-        "completed": true,
+        "dns": true,
+        "connect": true,
+        "send": true,
+        "wait": true,
+        "receive": true,
         "total": true
       }
     }
@@ -15,11 +16,12 @@
   {
     "b": {
       "status": 200,
-      "requestFunctionTotal": true,
+      "total": true,
       "timers": {
-        "connectionPooled": true,
-        "statusReceived": true,
-        "completed": true,
+        "connect": true,
+        "send": true,
+        "wait": true,
+        "receive": true,
         "total": true
       }
     }

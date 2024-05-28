@@ -22,7 +22,22 @@ var result = [
 ]
 
 ---
-result map ((item, index) -> {
-  status: item.status,
-  statusText: item.statusText
+result map ((item, index) -> do {
+  var schema = item.^
+  var timers = schema.timers
+  ---
+  {
+    status: item.status,
+    statusText: item.statusText,
+    total: schema.total is Number,
+    timers: {
+      dns: timers.dns is Number,
+      connect: timers.connect is Number,
+      tls: timers.tls is Number,
+      send: timers.send is Number,
+      wait: timers.wait is Number,
+      receive: timers.receive is Number,
+      total: timers.total is Number
+    }
+  }
 })

@@ -23,12 +23,13 @@ var server = api(serverConfig,
     response
       then {
         status: $.status,
-        requestFunctionTotal: schema.requestFunctionTotal is Number,
+        total: schema.total is Number,
         timers: {
-          hostnameResolutionSuccess: timers.hostnameResolutionSuccess is Number,
-          tcpConnectSuccess: timers.tcpConnectSuccess is Number,
-          statusReceived: timers.statusReceived is Number,
-          completed: timers.completed is Number,
+          dns: timers.dns is Number,
+          connect: timers.connect is Number,
+          send: timers.send is Number,
+          wait: timers.wait is Number,
+          receive: timers.receive is Number,
           total: timers.total is Number
         }
       }
@@ -41,11 +42,12 @@ var server = api(serverConfig,
     response
       then {
         status: $.status,
-        requestFunctionTotal: schema.requestFunctionTotal is Number,
+        total: schema.total is Number,
         timers: {
-          connectionPooled: timers.connectionPooled is Number,
-          statusReceived: timers.statusReceived is Number,
-          completed: timers.completed is Number,
+          connect: timers.connect is Number,
+          send: timers.send is Number,
+          wait: timers.wait is Number,
+          receive: timers.receive is Number,
           total: timers.total is Number
         }
       }
