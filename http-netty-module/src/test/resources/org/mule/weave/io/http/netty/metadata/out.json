@@ -1,0 +1,30 @@
+[
+  {
+    "a": {
+      "status": 200,
+      "requestFunctionTotal": true,
+      "timers": {
+        "hostnameResolutionSuccess": true,
+        "tcpConnectSuccess": true,
+        "statusReceived": true,
+        "completed": true,
+        "total": true
+      }
+    }
+  },
+  {
+    "b": {
+      "status": 200,
+      "requestFunctionTotal": true,
+      "timers": {
+        "connectionPooled": true,
+        "statusReceived": true,
+        "completed": true,
+        "total": true
+      }
+    }
+  },
+  {
+    "c": true
+  }
+]

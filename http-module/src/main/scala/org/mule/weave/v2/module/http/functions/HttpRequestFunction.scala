@@ -13,6 +13,7 @@ import org.mule.weave.v2.module.http.functions.exceptions.UrlConnectionException
 import org.mule.weave.v2.module.http.functions.utils.HttpClientConfigurationConverter
 import org.mule.weave.v2.module.http.functions.utils.HttpClientRequestConverter
 import org.mule.weave.v2.module.http.functions.utils.HttpClientResponseConverter
+import org.mule.weave.v2.module.http.functions.utils.StopWatch
 import org.mule.weave.v2.module.http.service.HttpClientService
 import org.mule.weave.v2.parser.exception.WeaveRuntimeException
 import org.mule.weave.v2.parser.location.UnknownLocation
@@ -32,6 +33,9 @@ class HttpRequestFunction extends SecureTernaryFunctionValue {
   override val Third: ObjectType = ObjectType
 
   override protected def onSecureExecution(requestValue: Value[ObjectSeq], requestConfigurationValue: Value[ObjectSeq], clientConfigurationValue: Value[ObjectSeq])(implicit ctx: EvaluationContext): Value[_] = {
+    val stopWatch = StopWatch()
+    stopWatch.start()
+
     val requestObjectSeq = requestValue.evaluate.materialize()
     val requestConfigurationObjectSeq = requestConfigurationValue.evaluate.materialize()
     val clientConfigurationObjectSeq = clientConfigurationValue.evaluate.materialize()
@@ -50,7 +54,7 @@ class HttpRequestFunction extends SecureTernaryFunctionValue {
         .request(request)
       new LazyValue({
         try {
-          HttpClientResponseConverter(httpResponse).convert()
+          HttpClientResponseConverter(httpResponse, stopWatch).convert()
         } catch {
           case ee: ExecutionException =>
             ee.getCause match {

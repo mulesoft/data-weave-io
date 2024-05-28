@@ -255,9 +255,10 @@ fun sendRequestAndReadResponse<B <: HttpBody, H <: HttpHeaders>(
 */
 fun readHttpResponseBody<B <: HttpBody, H <: HttpHeaders>(httpResponse: HttpResponse<Binary, H>, serializationConfig: SerializationConfig): HttpResponse<B, H> = do {
   var responseBody = httpResponse.body
+  var schema = httpResponse.^
   ---
   if (responseBody == null)
-    httpResponse as HttpResponse<B, H>
+    (httpResponse as HttpResponse<B, H>) <~ schema
   else do {
     var contentType = httpResponse.contentType
     var httpResponseWithBody = httpResponse update {
@@ -269,7 +270,7 @@ fun readHttpResponseBody<B <: HttpBody, H <: HttpHeaders>(httpResponse: HttpResp
       }
     }
     ---
-    httpResponseWithBody as HttpResponse<B, H>
+    (httpResponseWithBody as HttpResponse<B, H>) <~ schema
   }
 }
 

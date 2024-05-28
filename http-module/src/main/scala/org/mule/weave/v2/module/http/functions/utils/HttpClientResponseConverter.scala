@@ -7,6 +7,7 @@ import org.mule.weave.v2.model.values.BinaryValue
 import org.mule.weave.v2.model.values.KeyValue
 import org.mule.weave.v2.model.values.NumberValue
 import org.mule.weave.v2.model.values.ObjectValue
+import org.mule.weave.v2.model.values.ObjectValueBuilder
 import org.mule.weave.v2.model.values.StringValue
 import org.mule.weave.v2.model.values.Value
 import org.mule.weave.v2.model.values.math.Number
@@ -22,45 +23,43 @@ import org.mule.weave.v2.module.reader.SourceProvider
 
 import java.net.HttpCookie
 import scala.collection.JavaConverters._
-import scala.collection.mutable.ArrayBuffer
 
-class HttpClientResponseConverter(response: HttpClientResponse) {
+class HttpClientResponseConverter(response: HttpClientResponse, stopWatch: StopWatch) {
 
   def convert()(implicit ctx: EvaluationContext): ObjectValue = {
-    val pairs = new ArrayBuffer[KeyValuePair]()
+
+    val builder = new ObjectValueBuilder()
 
     // status
-    pairs.+=(
-      KeyValuePair(KeyValue(STATUS), NumberValue(Number(response.getStatus))))
+    builder.addPair(STATUS, NumberValue(Number(response.getStatus)))
 
     // statusText?
     response.getStatusText.ifPresent(st => {
-      pairs.+=(
-        KeyValuePair(KeyValue(STATUS_TEXT), StringValue(st)))
+      builder.addPair(STATUS_TEXT, StringValue(st))
     })
 
     // headers
-    pairs.+=(
-      KeyValuePair(KeyValue(HEADERS), asHeadersValue(response.getHeaders)))
+    builder.addPair(HEADERS, asHeadersValue(response.getHeaders))
 
     // body?
     response.getBody.ifPresent(body => {
       val sourceProvider = SourceProvider(SeekableStream(body))
-      pairs.+=(
-        KeyValuePair(KeyValue(BODY), BinaryValue(sourceProvider.asInputStream)))
+      builder.addPair(BODY, BinaryValue(sourceProvider.asInputStream))
     })
 
     // cookies
-    pairs.+=(
-      KeyValuePair(
-        KeyValue(COOKIES), asCookieValue(response.getCookies.asScala)))
+    builder.addPair(COOKIES, asCookieValue(response.getCookies.asScala))
 
     // contentType?
     response.getContentType.ifPresent(contentType => {
-      pairs.+=(
-        KeyValuePair(KeyValue(CONTENT_TYPE), StringValue(contentType)))
+      builder.addPair(CONTENT_TYPE, StringValue(contentType))
     })
-    ObjectValue(pairs.toArray)
+
+    // Schema
+    stopWatch.stop()
+    val total = stopWatch.getTimes.find(t => t._1 == StopWatch.TOTAL).map(_._2)
+    val schema = MetadataConverter(Option(response.getMetadata), total).convert()
+    builder.withSchema(schema)
   }
 
   private def asHeadersValue(headers: HttpClientHeaders): Value[_] = {
@@ -90,6 +89,6 @@ object HttpClientResponseConverter {
   private val COOKIES = "cookies"
   private val CONTENT_TYPE = "contentType"
 
-  def apply(response: HttpClientResponse): HttpClientResponseConverter =
-    new HttpClientResponseConverter(response)
+  def apply(response: HttpClientResponse, stopWatch: StopWatch): HttpClientResponseConverter =
+    new HttpClientResponseConverter(response, stopWatch)
 }

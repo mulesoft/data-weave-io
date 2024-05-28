@@ -1,5 +1,7 @@
 package org.mule.weave.v2.module.http.service;
 
+import org.mule.weave.v2.module.http.service.metadata.ObjectMetadataValue;
+
 import static java.util.stream.Collectors.toList;
 
 import java.io.InputStream;
@@ -75,5 +77,14 @@ public interface HttpClientResponse {
                 .map(HttpCookie::parse)
                 .flatMap(Collection::stream)
                 .collect(toList());
+    }
+
+    /**
+     * Get the associated metadata to request sent. (Useful to send request metrics)
+     *
+     * @return the metadata.
+     */
+    default ObjectMetadataValue getMetadata() {
+        return null;
     }
 }
