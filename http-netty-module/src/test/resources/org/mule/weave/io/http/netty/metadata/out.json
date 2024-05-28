@@ -1,0 +1,32 @@
+[
+  {
+    "a": {
+      "status": 200,
+      "total": true,
+      "timers": {
+        "dns": true,
+        "connect": true,
+        "send": true,
+        "wait": true,
+        "receive": true,
+        "total": true
+      }
+    }
+  },
+  {
+    "b": {
+      "status": 200,
+      "total": true,
+      "timers": {
+        "connect": true,
+        "send": true,
+        "wait": true,
+        "receive": true,
+        "total": true
+      }
+    }
+  },
+  {
+    "c": true
+  }
+]
