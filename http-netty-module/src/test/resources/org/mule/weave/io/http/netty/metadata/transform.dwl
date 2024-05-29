@@ -23,14 +23,14 @@ var server = api(serverConfig,
     response
       then {
         status: $.status,
-        total: schema.total is Number,
+        total: schema.total >= 0,
         timers: {
-          dns: timers.dns is Number,
-          connect: timers.connect is Number,
-          send: timers.send is Number,
-          wait: timers.wait is Number,
-          receive: timers.receive is Number,
-          total: timers.total is Number
+          dns: timers.dns >= 0,
+          connect: timers.connect >= 0,
+          send: timers.send >= 0,
+          wait: timers.wait >= 0,
+          receive: timers.receive >= 0,
+          total: timers.total >= 0
         }
       }
     },
@@ -42,13 +42,13 @@ var server = api(serverConfig,
     response
       then {
         status: $.status,
-        total: schema.total is Number,
+        total: schema.total >= 0,
         timers: {
-          connect: timers.connect is Number,
-          send: timers.send is Number,
-          wait: timers.wait is Number,
-          receive: timers.receive is Number,
-          total: timers.total is Number
+          connect: timers.connect >= 0,
+          send: timers.send >= 0,
+          wait: timers.wait >= 0,
+          receive: timers.receive >= 0,
+          total: timers.total >= 0
         }
       }
     },

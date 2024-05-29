@@ -24,20 +24,20 @@ var result = [
 ---
 result map ((item, index) -> do {
   var schema = item.^
-  var timers = schema.timers
+  var timers = log("Timers", schema.timers)
   ---
   {
     status: item.status,
     statusText: item.statusText,
-    total: schema.total is Number,
+    total: schema.total >= 0,
     timers: {
-      dns: timers.dns is Number,
-      connect: timers.connect is Number,
-      tls: timers.tls is Number,
-      send: timers.send is Number,
-      wait: timers.wait is Number,
-      receive: timers.receive is Number,
-      total: timers.total is Number
+      (dns: timers.dns >= 0) if (timers.dns?),
+      connect: timers.connect >= 0,
+      (tls: timers.tls >= 0) if (timers.tls?),
+      send: timers.send >= 0,
+      wait: timers.wait >= 0,
+      receive: timers.receive >= 0,
+      total: timers.total >= 0
     }
   }
 })

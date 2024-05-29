@@ -32,9 +32,7 @@
     statusText: "Unauthorized",
     total: true,
     timers: {
-      dns: false,
       connect: true,
-      tls: false,
       send: true,
       wait: true,
       receive: true,
