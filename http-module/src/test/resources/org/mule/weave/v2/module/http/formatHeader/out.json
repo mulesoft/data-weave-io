@@ -1,0 +1,8 @@
+{
+  "a": "Authorization",
+  "b": "Content-Type",
+  "c": "Cache-Control",
+  "d": "Accept-Encoding",
+  "e": "Set-Cookie",
+  "f": "X-Uow"
+}

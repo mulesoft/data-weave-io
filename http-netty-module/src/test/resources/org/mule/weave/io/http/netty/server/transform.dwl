@@ -1,6 +1,6 @@
 import * from dw::io::http::Server
 import * from dw::io::http::Client
-
+import * from dw::io::http::Types
 
 var serverConfig = { host: "localhost", port: dw::io::http::utils::Port::freePort() }
 var LOCALHOST = '$(serverConfig.host):$(serverConfig.port)'
@@ -55,40 +55,34 @@ var server = api(
 )
 ---
 [
-  request('POST', 'http://$LOCALHOST/test',
-    {
-      body: {name: 'Agustin'}
-    }
-  ) then {
-    name: ($).body.name ,
-    headers: $.headers."Content-Type",
-    status: ($).status ,
-    raw: ($).body.^raw
+  post('http://$LOCALHOST/test', {},{name: 'Agustin'})
+    then {
+      name: ($).body.name ,
+      headers: $.headers."Content-Type",
+      status: ($).status ,
+      raw: ($).body.^raw
   },
-  request('GET', 'http://$LOCALHOST/test', {})
+
+  get(url: 'http://$LOCALHOST/test')
     then {
       name: ($).body.name,
-    },
+  },
 
-  request('POST', 'http://$LOCALHOST/testXml',
-      {
-        body: {name: 'Agustin'}
-      }
-    ) then {
+  post('http://$LOCALHOST/testXml', {}, {name: 'Agustin'})
+    then {
      name: ($).body.name,
      contentType: $.headers."Content-Type",
      status: ($).status
-    },
+  },
 
-    request('GET', 'http://$LOCALHOST/testXml', {}) then {
+  get('http://$LOCALHOST/testXml')
+    then {
      name: ($).body.name,
      contentType : $.headers."Content-Type"
     },
-    request('GET', 'http://$LOCALHOST/properties?some=query&other=value', {
-        headers : {
-            ("X-Custom"): "headerValue"
-        }
-    }) then {
+
+  get('http://$LOCALHOST/properties?some=query&other=value',{("X-Custom"): "headerValue"})
+    then {
       method: ($).body.method ,
       path: ($).body.path ,
       params: ($).body.params,

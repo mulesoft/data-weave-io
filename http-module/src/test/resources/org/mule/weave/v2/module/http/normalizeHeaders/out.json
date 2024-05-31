@@ -1,0 +1,8 @@
+{
+  "Authorization": "authorization value",
+  "Content-Type": "application/xml",
+  "Cache-Control": "no-cache",
+  "Accept-Encoding": "gzip",
+  "Set-Cookie": "value",
+  "X-Uow": "uow"
+}
