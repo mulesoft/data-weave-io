@@ -6,7 +6,14 @@ dependencies {
     api project(":file-module")
     implementation group: 'org.mule.weave', name: 'runtime', version: weaveVersion
     implementation group: 'org.mule.weave', name: 'core-modules', version: weaveVersion
+
+    testImplementation group: 'org.mule.weave', name: 'runtime-test-helpers', version: weaveVersion
+    testImplementation (group: 'org.scalatest', name: 'scalatest_2.12', version: scalaTestVersion) {
+        exclude group: 'org.scala-lang', module: 'scala-library'
+    }
+    testRuntimeOnly 'com.vladsch.flexmark:flexmark-all:0.62.2'
 }
 
-
-
+tasks.withType(Copy).all {
+    duplicatesStrategy 'exclude'
+}

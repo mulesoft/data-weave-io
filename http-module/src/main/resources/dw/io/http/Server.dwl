@@ -37,7 +37,8 @@ type HttpHandler<
 type HttpServerOptions = {
   port: Number,
   host: String,
-  contentType?: String
+  contentType?: String,
+  normalizeResponseHeaders?: Boolean
 }
 
 type HttpServer = {|
@@ -201,7 +202,12 @@ fun api(config: ApiConfig = {port: 8081, host:"localhost"}, apiDefinition: APIDe
           }
         else do {
           var response = methodHandler(interceptedRequest.request!)
-          var headers = normalizeHeaders(response.headers)
+          var shouldNormalizeHeaders = if (config.normalizeResponseHeaders != null) config.normalizeResponseHeaders! else true
+          var headers =
+            if (shouldNormalizeHeaders)
+              normalizeHeaders(response.headers)
+            else
+              response.headers default {}
           ---
           handleResponseInterceptors(
             interceptedRequest.request!,

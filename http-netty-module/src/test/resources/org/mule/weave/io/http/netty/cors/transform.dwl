@@ -13,7 +13,7 @@ var server = api(
       "/test1" : {
         "POST": (req) ->  {
           body: {
-            req: log("Request",req)
+            req: req
           },
           responseStatus: 200
         },
@@ -29,21 +29,13 @@ var server = api(
 )
 ---
 [
-  GET( 'http://$LOCALHOST/test1', {
-      headers: {
-        Origin: "localhost"
-      }
-    }
-  ) then {
+  get( 'http://$LOCALHOST/test1', { Origin: "localhost" })
+    then {
       status: $.status,
       "Access-Control-Allow-Origin": $.headers."Access-Control-Allow-Origin"
   },
-  OPTIONS('http://$LOCALHOST/test1', {
-        headers: {
-          Origin: "localhost"
-        }
-      }
-    ) then {
+  options('http://$LOCALHOST/test1', { Origin: "localhost" })
+    then {
        status: $.status,
        "Access-Control-Allow-Origin": $.headers."Access-Control-Allow-Origin"
   },

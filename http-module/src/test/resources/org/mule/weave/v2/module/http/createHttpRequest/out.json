@@ -1,0 +1,32 @@
+{
+  "get": {
+    "method": "GET",
+    "url": {
+      "url": "url",
+      "queryParams": {
+        "p1": "value",
+        "p2": "true"
+      }
+    },
+    "headers": {
+      
+    }
+  },
+  "post": {
+    "method": "POST",
+    "url": "url",
+    "headers": {
+      
+    }
+  },
+  "put": {
+    "method": "PUT",
+    "url": "url",
+    "headers": {
+      
+    },
+    "body": {
+      "a": "B"
+    }
+  }
+}
