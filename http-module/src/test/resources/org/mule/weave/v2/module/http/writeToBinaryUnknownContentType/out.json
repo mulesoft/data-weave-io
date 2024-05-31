@@ -1,0 +1,6 @@
+{
+  "unknownContentType": {
+    "kind": "UserException",
+    "message": true
+  }
+}
