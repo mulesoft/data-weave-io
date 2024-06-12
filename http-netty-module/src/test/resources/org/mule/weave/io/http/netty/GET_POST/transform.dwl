@@ -77,6 +77,28 @@ fun then<A, V>(result: A, assertions: (result: A) -> V): V = assertions(result)
     body: $.body is Binary,
     mimeType: $.body.^mimeType,
     raw: $.body.^raw
+  },
+  i: get('http://httpbin.org/cookies/set?k2=v2&k1=v1') then {
+    k1: {
+     name: $.cookies.k1.name,
+     value: $.cookies.k1.value,
+     maxAge: $.cookies.k1.maxAge,
+     httpOnly: $.cookies.k1.httpOnly,
+     secure: $.cookies.k1.secure,
+     domain: $.cookies.k1.domain,
+     comment: $.cookies.k1.comment,
+     path: $.cookies.k1.path
+    },
+    k2: {
+     name: $.cookies.k2.name,
+     value: $.cookies.k2.value,
+     maxAge: $.cookies.k2.maxAge,
+     httpOnly: $.cookies.k2.httpOnly,
+     secure: $.cookies.k2.secure,
+     domain: $.cookies.k2.domain,
+     comment: $.cookies.k2.comment,
+     path: $.cookies.k2.path
+    }
   }
 }
 

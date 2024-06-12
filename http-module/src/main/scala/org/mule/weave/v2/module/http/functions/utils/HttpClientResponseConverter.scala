@@ -74,7 +74,8 @@ class HttpClientResponseConverter(response: HttpClientResponse, stopWatch: StopW
 
   private def asCookieValue(cookie: Seq[HttpCookie]): Value[_] = {
     val entries = cookie.map(cookie => {
-      KeyValuePair(KeyValue(cookie.getName), StringValue(cookie.getValue))
+      val converter = new HttpClientResponseCookieConverter(cookie)
+      KeyValuePair(KeyValue(cookie.getName), converter.convert())
     })
     ObjectValue(entries.toArray)
   }
