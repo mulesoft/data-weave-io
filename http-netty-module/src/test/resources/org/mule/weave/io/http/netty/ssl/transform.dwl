@@ -24,7 +24,7 @@ var result = [
 ---
 result map ((item, index) -> do {
   var schema = item.^
-  var timers = log("Timers", schema.timers)
+  var timers = schema.timers
   ---
   {
     status: item.status,

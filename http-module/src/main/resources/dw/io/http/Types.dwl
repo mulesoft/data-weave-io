@@ -29,13 +29,6 @@ type HttpHeaders = {
 }
 
 /**
- * DataWeave type for representing a HTTP cookies.
- */
-type HttpCookies = {
-  _ ?: SimpleType
-}
-
-/**
  * DataWeave type for representing a HTTP request query parameters.
  */
 type QueryParams = {
@@ -106,7 +99,39 @@ type HttpResponse<BodyType <: HttpBody, HeadersType <: HttpHeaders> = {
   statusText?: String,
   headers: HeadersType,
   body?: BodyType,
-  cookies: HttpCookies
+  cookies?: HttpResponseCookies
+}
+
+/**
+ * DataWeave type for representing HTTP response cookies.
+ */
+type HttpResponseCookies = {
+  _ ?: HttpResponseCookie
+}
+
+/**
+ * DataWeave type for representing an HTTP response cookies.
+ * Supports the following fields:
+ *
+ * * `name`: The name of the cookie.
+ * * `value`: The value of the cookie.
+ * * `maxAge`: The maximum age of the cookie, specified in seconds.
+ * * `httpOnly`: `true` if this cookie contains the HttpOnly attribute.
+ * * `secure`: `true` if sending this cookie should be restricted to a secure protocol, or `false` if the it can be sent using any protocol.
+ * * `domain`: The domain name set for this cookie.
+ * * `comment`: The comment describing the purpose of this cookie.
+ * * `path`: The path on the server to which the browser returns this cookie.
+ *
+ */
+type HttpResponseCookie = {
+  name: String,
+  value: String,
+  maxAge: Number,
+  httpOnly: Boolean,
+  secure: Boolean,
+  domain?: String,
+  comment?: String,
+  path?: String
 }
 
 /**
