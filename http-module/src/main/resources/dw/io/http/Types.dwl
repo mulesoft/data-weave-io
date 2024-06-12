@@ -99,7 +99,7 @@ type HttpResponse<BodyType <: HttpBody, HeadersType <: HttpHeaders> = {
   statusText?: String,
   headers: HeadersType,
   body?: BodyType,
-  cookies?: HttpResponseCookies
+  cookies: HttpResponseCookies
 }
 
 /**

@@ -48,10 +48,7 @@ class HttpClientResponseConverter(response: HttpClientResponse, stopWatch: StopW
     })
 
     // cookies
-    val cookies = response.getCookies.asScala
-    if (cookies.nonEmpty) {
-      builder.addPair(COOKIES, asCookieValue(cookies))
-    }
+    builder.addPair(COOKIES, asCookieValue(response.getCookies.asScala))
 
     // contentType?
     response.getContentType.ifPresent(contentType => {
