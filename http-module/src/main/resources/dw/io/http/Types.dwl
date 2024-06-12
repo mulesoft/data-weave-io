@@ -86,20 +86,20 @@ type SerializationConfig = {
  * DataWeave type for representing an HTTP response.
  * Supports the following fields:
  *
- * * `contentType`: The HTTP response `Content-Type`.
  * * `status`: The HTTP response status.
- * * `statusText`: The HTTP response status message.
  * * `headers`: The HTTP response headers.
- * * `body`: The HTTP response body.
  * * `cookies`: The HTTP response cookies.
+ * * `contentType`: The HTTP response `Content-Type`.
+ * * `statusText`: The HTTP response status message.
+ * * `body`: The HTTP response body.
  */
 type HttpResponse<BodyType <: HttpBody, HeadersType <: HttpHeaders> = {
-  contentType?: String,
   status: Number,
-  statusText?: String,
   headers: HeadersType,
-  body?: BodyType,
-  cookies: HttpResponseCookies
+  cookies: HttpResponseCookies,
+  contentType?: String,
+  statusText?: String,
+  body?: BodyType
 }
 
 /**
