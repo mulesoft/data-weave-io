@@ -108,5 +108,27 @@ a: {
     body: true,
     mimeType: null,
     raw: null
+  },
+  i: {
+    k1: {
+      name: "k1",
+      value: "v1",
+      maxAge: -1,
+      httpOnly: false,
+      secure: false,
+      domain: null,
+      comment: null,
+      path: "/"
+    },
+    k2: {
+      name: "k2",
+      value: "v2",
+      maxAge: -1,
+      httpOnly: false,
+      secure: false,
+      domain: null,
+      comment: null,
+      path: "/"
+    }
   }
 }
