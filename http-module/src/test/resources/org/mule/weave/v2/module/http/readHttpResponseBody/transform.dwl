@@ -31,6 +31,12 @@ fun createHttpResponse<H <: HttpHeaders>(status: Number, headers: H, body: Binar
    ---
    { response: parsedResponse, mimeType: parsedResponse.body.^.mimeType, raw: parsedResponse.body.^.raw is Binary}
  },
+ aa: do {
+   var httpResponse = createHttpResponse(200,{ (CONTENT_TYPE_HEADER): "application/json;charset=UTF-8" }, in0)
+   var parsedResponse = readHttpResponseBody(httpResponse,DEFAULT_SERIALIZATION_CONFIG)
+   ---
+   { response: parsedResponse, mimeType: parsedResponse.body.^.mimeType, raw: parsedResponse.body.^.raw is Binary}
+ },
  b: do {
    var httpResponse = createHttpResponse(200, { "Content-TYPE": "application/xml" }, in1)
    var parsedResponse = readHttpResponseBody(httpResponse, DEFAULT_SERIALIZATION_CONFIG)

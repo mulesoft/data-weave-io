@@ -7,6 +7,7 @@
 */
 %dw 2.0
 
+import * from dw::core::Arrays
 import * from dw::core::Objects
 import * from dw::io::http::Types
 import * from dw::io::http::utils::HttpHeaders
@@ -250,11 +251,15 @@ fun writeToBinary(body: HttpBody, contentType: String, properties: Object = {}):
            else -> {}
          }
          // Extract encoding
-         var encodingConfig = mime.parameters["charset"] match {
-           case charset is String -> { encoding: charset }
-           else -> {}
-         }
-
+         var acceptsEncoding = df.writerProperties some ($.name == "encoding")
+         var encodingConfig = if (acceptsEncoding) do {
+           var charset = mime.parameters["charset"]
+           ---
+           charset match {
+             case charset is String -> { encoding: charset }
+             else -> {}
+           }
+         } else {}
          var writerProperties = properties
              mergeWith boundaryConfig
              mergeWith encodingConfig
@@ -309,10 +314,16 @@ fun readFromBinary(mime: MimeType, payload: Binary, properties: Object = {}): An
        else -> {}
      }
      // Extract encoding
-     var encodingConfig = mime.parameters["charset"] match {
-       case charset is String -> { encoding: charset }
-       else -> {}
-     }
+     var acceptsEncoding = df.readerProperties some ($.name == "encoding")
+     var encodingConfig = if (acceptsEncoding) do {
+       var charset = mime.parameters["charset"]
+       ---
+       charset match {
+        case charset is String -> { encoding: charset }
+        else -> {}
+       }
+     } else {}
+
      var readerProperties = properties default {}
        mergeWith boundaryConfig
        mergeWith encodingConfig
