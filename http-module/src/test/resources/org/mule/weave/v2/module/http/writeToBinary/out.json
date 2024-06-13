@@ -9,6 +9,16 @@
       }
     }
   },
+  "jsonCharset": {
+    "body": "{\n  \"name\": \"Mariano\",\n  \"lastname\": \"Lischetti\"\n}",
+    "mime": {
+      "type": "application",
+      "subtype": "json",
+      "parameters": {
+        "charset": "UTF-8"
+      }
+    }
+  },
   "xml": {
     "body": "<?xml version='1.0' encoding='UTF-8'?>\n<root>\n  <name>Mariano</name>\n  <lastname>Lischetti</lastname>\n</root>",
     "mime": {
