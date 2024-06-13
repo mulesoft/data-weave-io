@@ -10,6 +10,7 @@ var multipartForm = form([field('field', 'value'),
 ---
 {
   json: writeToBinary({name: "Mariano", lastname: "Lischetti"}, DEFAULT_SERIALIZATION_CONFIG.contentType, DEFAULT_SERIALIZATION_CONFIG.writerProperties),
+  jsonCharset: writeToBinary({name: "Mariano", lastname: "Lischetti"}, "application/json;charset=UTF-8", DEFAULT_SERIALIZATION_CONFIG.writerProperties),
   xml: writeToBinary(root: {name: "Mariano", lastname: "Lischetti"}, "application/xml", {}),
   multipart: writeToBinary(multipartForm, "multipart/form-data", { boundary: "boundary"}),
   multipartBoundaryContentType: writeToBinary(multipartForm, "multipart/form-data;boundary=my-boundary"),

@@ -23,6 +23,30 @@
     "mimeType": "application/json",
     "raw": true
   },
+  "aa": {
+    "response": {
+      "status": 200,
+      "headers": {
+        "Content-Type": "application/json;charset=UTF-8"
+      },
+      "cookies": {
+
+      },
+      "contentType": "application/json;charset=UTF-8",
+      "body": {
+        "user": {
+          "name": "Mariano"
+        },
+        "pets": [
+          "Rollo",
+          "Tana",
+          "Donna"
+        ]
+      }
+    },
+    "mimeType": "application/json;charset=UTF-8",
+    "raw": true
+  },
   "b": {
     "user": {
       "name": "Mariano",
