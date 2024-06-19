@@ -27,7 +27,7 @@ class HttpClientRequestConverter(
   location: LocationCapable) {
 
   def convert()(implicit ctx: EvaluationContext): HttpClientRequest = {
-    val method = selectString(request, METHOD).getOrElse(throw new WeaveRuntimeException(s"Expecting $METHOD", location.location()))
+    val method = selectString(request, METHOD).getOrElse(throw new WeaveRuntimeException(s"Missing '$METHOD' value", location.location()))
 
     val builder = new HttpClientRequest.Builder()
       .setMethod(method)
@@ -67,7 +67,7 @@ class HttpClientRequestConverter(
   }
 
   private def extractUrl(request: ObjectSeq, location: LocationCapable)(implicit ctx: EvaluationContext): Url = {
-    val urlValue = select(request, URL).getOrElse(throw new WeaveRuntimeException(s"Expecting $URL", location.location()))
+    val urlValue = select(request, URL).getOrElse(throw new WeaveRuntimeException(s"Missing '$URL' value", location.location()))
     urlValue.evaluate match {
       case url: StringType.T =>
         Url(url.toString, Map.empty[String, Seq[String]])
@@ -76,7 +76,7 @@ class HttpClientRequestConverter(
         var queryParams = Map.empty[String, Seq[String]]
         val urlObjectSeq = urlBuilder.materialize()
         val queryParamsValue = selectObject(urlObjectSeq, QUERY_PARAMS).getOrElse(ObjectSeq.empty)
-        val url = selectString(urlObjectSeq, URL).getOrElse(throw new WeaveRuntimeException(s"Expecting $URL", location.location()))
+        val url = selectString(urlObjectSeq, URL).getOrElse(throw new WeaveRuntimeException(s"Missing '$URL' value", location.location()))
         queryParamsValue.toSeq().foreach(kvp => {
           val name = kvp._1.evaluate.name
           val value: String = StringType.coerce(kvp._2).evaluate.toString
