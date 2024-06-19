@@ -45,13 +45,21 @@ var server = api(
      body: $.body,
      (contentType: $.contentType) if ($.contentType?),
      cookies: $.cookies,
-     headers: $.headers
+     headers: do {
+       var headers = $.headers
+       ---
+       { "Content-Length": headers."content-length" }
+     }
   },
   b: post('http://$LOCALHOST/test1', { Authorization: 'Bearer 123'}, { name: 'Agustin' }) then {
      status: ($).status,
      body: $.body,
      contentType: $.contentType,
      cookies: $.cookies,
-     headers: $.headers
+     headers: do {
+       var headers = $.headers
+       ---
+       { "Content-Type": headers."Content-Type", "Content-Length": headers."content-length" }
+     }
   }
 }

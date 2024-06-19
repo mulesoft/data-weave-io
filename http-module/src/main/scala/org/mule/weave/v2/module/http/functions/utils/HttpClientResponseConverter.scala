@@ -48,7 +48,7 @@ class HttpClientResponseConverter(response: HttpClientResponse, stopWatch: StopW
     })
 
     // cookies
-    builder.addPair(COOKIES, asCookieValue(response.getCookies.asScala))
+    builder.addPair(COOKIES, asCookieValue(response.getCookies))
 
     // contentType?
     response.getContentType.ifPresent(contentType => {
@@ -62,21 +62,32 @@ class HttpClientResponseConverter(response: HttpClientResponse, stopWatch: StopW
   }
 
   private def asHeadersValue(headers: HttpClientHeaders): Value[_] = {
-    val names = headers.getHeaderNames.asScala.toArray
-
-    val entries = names.flatMap(name => {
-      headers.getHeaderValues(name).asScala.map(value => {
-        KeyValuePair(KeyValue(name), StringValue(value))
-      })
-    })
-    ObjectValue(entries)
+    val entries = if (headers != null) {
+      val names = headers.getHeaderNames
+      if (names != null) {
+        names.asScala.flatMap(name => {
+          headers.getHeaderValues(name).asScala.map(value => {
+            KeyValuePair(KeyValue(name), StringValue(value))
+          })
+        })
+      } else {
+        Seq.empty[KeyValuePair]
+      }
+    } else {
+      Seq.empty[KeyValuePair]
+    }
+    ObjectValue(entries.toArray)
   }
 
-  private def asCookieValue(cookie: Seq[HttpCookie]): Value[_] = {
-    val entries = cookie.map(cookie => {
-      val converter = new HttpClientResponseCookieConverter(cookie)
-      KeyValuePair(KeyValue(cookie.getName), converter.convert())
-    })
+  private def asCookieValue(cookies: java.util.List[HttpCookie]): Value[_] = {
+    val entries = if (cookies != null) {
+      cookies.asScala.map(cookie => {
+        val converter = new HttpClientResponseCookieConverter(cookie)
+        KeyValuePair(KeyValue(cookie.getName), converter.convert())
+      })
+    } else {
+      Seq.empty[KeyValuePair]
+    }
     ObjectValue(entries.toArray)
   }
 }

@@ -1,8 +1,11 @@
 package org.mule.weave.v2.module.http.service;
 
-import org.mule.weave.v2.module.http.service.metadata.ObjectMetadataValue;
-
+import static java.util.Collections.emptyList;
+import static java.util.Optional.empty;
+import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
+
+import org.mule.weave.v2.module.http.service.metadata.ObjectMetadataValue;
 
 import java.io.InputStream;
 import java.net.HttpCookie;
@@ -59,10 +62,16 @@ public interface HttpClientResponse {
      * @return the location header value
      */
     default Optional<String> getLocation() {
-        return getHeaders()
-                .getHeaderValues(LOCATION)
-                .stream()
-                .findFirst();
+        Optional<HttpClientHeaders> headers = ofNullable(getHeaders());
+        if (headers.isPresent()) {
+            Optional<List<String>> locationHeaderValues = ofNullable(headers.get().getHeaderValues(LOCATION));
+            if (locationHeaderValues.isPresent()) {
+                return locationHeaderValues.get()
+                        .stream()
+                        .findFirst();
+            }
+        }
+        return empty();
     }
 
     /**
@@ -71,12 +80,18 @@ public interface HttpClientResponse {
      * @return the {@link List} of the {@link HttpCookie}
      */
     default List<HttpCookie> getCookies() {
-        return getHeaders()
-                .getHeaderValues(SET_COOKIE)
-                .stream()
-                .map(HttpCookie::parse)
-                .flatMap(Collection::stream)
-                .collect(toList());
+        final Optional<HttpClientHeaders> headers = ofNullable(getHeaders());
+        if (headers.isPresent()) {
+            Optional<List<String>> setCookiesHeaderValues = ofNullable(headers.get().getHeaderValues(SET_COOKIE));
+            if (setCookiesHeaderValues.isPresent()) {
+               return setCookiesHeaderValues.get()
+                        .stream()
+                        .map(HttpCookie::parse)
+                        .flatMap(Collection::stream)
+                        .collect(toList());
+            }
+        }
+        return emptyList();
     }
 
     /**
@@ -85,6 +100,6 @@ public interface HttpClientResponse {
      * @return the metadata.
      */
     default Optional<ObjectMetadataValue> getMetadata() {
-        return Optional.empty();
+        return empty();
     }
 }
