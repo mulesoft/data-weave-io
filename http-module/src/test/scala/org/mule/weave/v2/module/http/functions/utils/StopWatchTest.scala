@@ -1,6 +1,5 @@
-package org.mule.weave.v2.module.http.functiions.utils
+package org.mule.weave.v2.module.http.functions.utils
 
-import org.mule.weave.v2.module.http.functions.utils.StopWatch
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.should.Matchers
 
