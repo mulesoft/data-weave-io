@@ -4,7 +4,7 @@
     body: "" as Binary {base: "64"} as Binary {mimeType: null, raw: "" as Binary {base: "64"}},
     cookies: {},
     headers: {
-      "content-length": "0"
+      "Content-Length": "0"
     }
   },
   b: {
@@ -18,7 +18,7 @@
     cookies: {},
     headers: {
         "Content-Type": "application/json",
-        "content-length": "40"
+        "Content-Length": "40"
     }
   }
 }
