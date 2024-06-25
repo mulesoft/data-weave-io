@@ -8,9 +8,9 @@ This module contains all the functions required for declaring and using an HTTP 
 ### Functions
 | Name | Description|
 |------|------------|
-| [api](#api-index ) | The entry point for defining an HTTP Api. This method will receive the configuration and the api definition.|
-| [resourceResponse](#resourceresponse-index ) | Helper method to serve a static resource from the given classpath path.|
-| [server](#server-index ) | Starts an http server at with the specified config.<br>The handler with attend all the requests.<br>Returns true if the server was initialized correctly|
+| [api](#api ) | The entry point for defining an HTTP Api. This method will receive the configuration and the api definition.|
+| [resourceResponse](#resourceresponse ) | Helper method to serve a static resource from the given classpath path.|
+| [server](#server ) | Starts an http server at with the specified config.<br>The handler with attend all the requests.<br>Returns true if the server was initialized correctly|
 
 
 
@@ -18,17 +18,16 @@ This module contains all the functions required for declaring and using an HTTP 
 ### Types
 | Name | Description|
 |------|------------|
-|[APIDefinition](#apidefinition-index ) | Type for an API Definition|
-|[ApiConfig](#apiconfig-index ) | The type for a Api Config|
-|[HttpHandler](#httphandler-index ) | |
-|[HttpInterceptor](#httpinterceptor-index ) | Interceptors of the incoming http response|
-|[HttpServer](#httpserver-index ) | |
-|[HttpServerOptions](#httpserveroptions-index ) | |
-|[HttpServerRequest](#httpserverrequest-index ) | |
-|[HttpServerResponse](#httpserverresponse-index ) | |
-|[InterceptedHttpRequest](#interceptedhttprequest-index ) | |
-|[InterceptorCapable](#interceptorcapable-index ) | The type for an Interceptor|
-
+|[APIDefinition](#apidefinition ) | Type for an API Definition|
+|[ApiConfig](#apiconfig ) | The type for a Api Config|
+|[HttpHandler](#httphandler ) | |
+|[HttpInterceptor](#httpinterceptor ) | Interceptors of the incoming http response|
+|[HttpServer](#httpserver ) | |
+|[HttpServerOptions](#httpserveroptions ) | |
+|[HttpServerRequest](#httpserverrequest ) | |
+|[HttpServerResponse](#httpserverresponse ) | |
+|[InterceptedHttpRequest](#interceptedhttprequest ) | |
+|[InterceptorCapable](#interceptorcapable ) | The type for an Interceptor|
 
 
 
@@ -40,12 +39,12 @@ __________________________________________
 
 # Functions
 
-## **api** [↑↑](#index )
+## **api**
 
-### _api(config: ApiConfig = {
+### _api&#40;config: ApiConfig = {
   port: 8081,
   host: "localhost"
-}, apiDefinition: APIDefinition): HttpServer_
+}, apiDefinition: APIDefinition&#41;: HttpServer_
 
 The entry point for defining an HTTP Api. This method will receive the configuration and the api definition.
 
@@ -82,9 +81,9 @@ api(
 __________________________________________
 
 
-## **resourceResponse** [↑↑](#index )
+## **resourceResponse**
 
-### _resourceResponse(path: String): HttpServerResponse_
+### _resourceResponse&#40;path: String&#41;: HttpServerResponse_
 
 Helper method to serve a static resource from the given classpath path.
 
@@ -116,9 +115,9 @@ api(
 __________________________________________
 
 
-## **server** [↑↑](#index )
+## **server**
 
-### _server<HttpHandlerType <: HttpHandler>(configuration: HttpServerOptions, handler: HttpHandlerType): HttpServer_
+### _server<HttpHandlerType <: HttpHandler&#62;&#40;configuration: HttpServerOptions, handler: HttpHandlerType&#41;: HttpServer_
 
 Starts an http server at with the specified config.
 The handler with attend all the requests.
@@ -155,7 +154,7 @@ __________________________________________
 
 # Types
 
-### **APIDefinition** [↑↑](#index )
+### **APIDefinition**
 
 
 Type for an API Definition
@@ -167,7 +166,7 @@ Type for an API Definition
 ```
 
 
-### **ApiConfig** [↑↑](#index )
+### **ApiConfig**
 
 
 The type for a Api Config
@@ -179,7 +178,7 @@ HttpServerOptions & InterceptorCapable
 ```
 
 
-### **HttpHandler** [↑↑](#index )
+### **HttpHandler**
 
 
 
@@ -191,7 +190,7 @@ HttpServerOptions & InterceptorCapable
 ```
 
 
-### **HttpInterceptor** [↑↑](#index )
+### **HttpInterceptor**
 
 
 Interceptors of the incoming http response
@@ -203,7 +202,7 @@ Interceptors of the incoming http response
 ```
 
 
-### **HttpServer** [↑↑](#index )
+### **HttpServer**
 
 
 
@@ -215,7 +214,7 @@ Interceptors of the incoming http response
 ```
 
 
-### **HttpServerOptions** [↑↑](#index )
+### **HttpServerOptions**
 
 
 
@@ -223,11 +222,11 @@ Interceptors of the incoming http response
 #### Definition
 
 ```dataweave
-{ port: Number, host: String, contentType?: String }
+{ port: Number, host: String, contentType?: String, normalizeResponseHeaders?: Boolean }
 ```
 
 
-### **HttpServerRequest** [↑↑](#index )
+### **HttpServerRequest**
 
 
 
@@ -239,7 +238,7 @@ Interceptors of the incoming http response
 ```
 
 
-### **HttpServerResponse** [↑↑](#index )
+### **HttpServerResponse**
 
 
 
@@ -251,7 +250,7 @@ Interceptors of the incoming http response
 ```
 
 
-### **InterceptedHttpRequest** [↑↑](#index )
+### **InterceptedHttpRequest**
 
 
 
@@ -266,7 +265,7 @@ response?: HttpServerResponse, request?: HttpServerRequest }
 ```
 
 
-### **InterceptorCapable** [↑↑](#index )
+### **InterceptorCapable**
 
 
 The type for an Interceptor

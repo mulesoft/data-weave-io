@@ -4,7 +4,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -103,8 +103,8 @@ public class HttpClientRequest {
     public static final class Builder {
         private String url;
         private String method;
-        private final Map<String, List<String>> headers = new HashMap<>();
-        private final Map<String, List<String>> queryParams = new HashMap<>();
+        private final Map<String, List<String>> headers = new LinkedHashMap<>();
+        private final Map<String, List<String>> queryParams = new LinkedHashMap<>();
         private InputStream body = null;
         private boolean followRedirects = false;
         private int readTimeout = 60000;
