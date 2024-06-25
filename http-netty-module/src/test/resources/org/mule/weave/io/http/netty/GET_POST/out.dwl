@@ -130,5 +130,20 @@ a: {
       comment: null,
       path: "/"
     }
+  },
+  ii: {
+    cookies: {},
+    body: {
+      cookies: {}
+    }
+  },
+  iii: {
+    cookies: {},
+    body: {
+      cookies: {
+        Token: "_asdf",
+        age: "39"
+      }
+    }
   }
 }
