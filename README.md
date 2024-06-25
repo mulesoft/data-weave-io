@@ -1,18 +1,20 @@
 # Data Weave IO
 This repo will contain everything that is related to IO support for data weave: file, HTTP, Process.
 
-## Docs
+## Documentation
 
-For documentation please read [Documentation](./docs/home.md) That contains all the technical documentation.
+For documentation please read [documentation](./docs/home.md) with all the technical documentation.
 
-## Release Process
+## Releases
+The following table describes the `IO` and the `DataWeave` versions compatibility
 
-Today we have two supported versions based on different dataweave versions.
-Releases should be based of one of these branches:
-- master -> DataWeave 2.7.x
-- support/0.10.x -> DataWeave 2.6.x
-- support/0.9.x -> DataWeave 2.5.x
-- support/0.6.x -> DataWeave 2.4.0
+| IO     | DataWeave |
+|--------|-----------|
+| 2.8.x  | 2.8.x     |
+| 2.7.x  | 2.7.x     |
+| 0.10.x | 2.6.x     |
+| 0.9.x  | 2.5.x     |
+| 0.6.x  | 2.4.0     |
 
 ### Steps to release:
 1. Create a new branch with the following format: `release/{io-version}/{data-weave-version}`.
@@ -23,14 +25,17 @@ Releases should be based of one of these branches:
     - Update versions for projects based on DataWeave 2.4.0 with support branches to the next snapshot.
 
 ## Usages
-
-The libraries from this repo are being used on our cli our playground and the file module by our testing framework.
+The libraries from this repository are being used on:
+- [DataWeave CLI](https://github.com/mulesoft-labs/data-weave-cli/)
+- [DataWeave Playground](https://developer.mulesoft.com/learn/dataweave) 
+- [DataWeave Testing Framework](https://github.com/mulesoft/data-weave-testing-framework)
 
 ## Netty support
-[a relative link](http-netty-module/README.md)
+[Netty](./http-netty-module/README.md)
 
 ## Disclaimer
 
-The modules are NOT available in the mule runtime, and most probably they will never be as the same functionality is being provided by mule runtime components such as File Module, Http Module etc.
+The modules are NOT available in the mule runtime, and most probably they will never be as the same functionality 
+is being provided by `MuleRuntime` components such as `File Module`, `HTTP Module`, etc.
 
 
