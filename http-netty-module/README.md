@@ -1,7 +1,7 @@
 # HTTP Netty module
-A `HTTP module` implementation based on [Netty](https://github.com/netty/netty).
+An `HTTP module` library that allows easy execution of HTTP requests and asynchronously processes HTTP responses.
 
-The implementation used [AsyncHttpClient](https://github.com/AsyncHttpClient/async-http-client).
+This library is built on top of [AsyncHttpClient (AHC)](https://github.com/AsyncHttpClient/async-http-client) which is based on [Netty](https://github.com/netty/netty).
 
 ## Installation
 To enables the `DataWeave HTTP Netty` module in your project, you need to add the following dependency to the project:
@@ -42,5 +42,5 @@ To set up the wire logging on your `DataWeave HTTP Netty` module follow these st
 
 ### Example
 Take a look at the following example for details:
-- [logback dependency](./src/build.gradle)
+- [SL4J implementation](./build.gradle)
 - [logback-test.xml](./src/test/resources/logback-test.xml)
