@@ -3,7 +3,7 @@ This repo will contain everything that is related to IO support for data weave: 
 
 ## Documentation
 
-For documentation please read [documentation](./docs/home.md) with all the technical documentation.
+For documentation please read [documentation](./docs/home.md) with all the technical details.
 
 ## Releases
 The following table describes the `IO` and the `DataWeave` versions compatibility
