@@ -1,13 +1,7 @@
 {
   "a": {
     "kind": "WeaveIllegalArgumentException",
-    "message": "Unsupported `decompress` value. Supported `decompress: true`",
-    "location": "Unknown location",
-    "stack": [
-      "nativeSendRequest (anonymous:0:0)",
-      "sendRequest (dw::io::http::Client:197:5)",
-      "main (org::mule::weave::io::http::netty::transform:44:16)"
-    ]
+    "message": "Unsupported `decompress` value. Supported `decompress: true`"
   },
   "b": "This is a regular message.",
   "c": "This is a regular message.",

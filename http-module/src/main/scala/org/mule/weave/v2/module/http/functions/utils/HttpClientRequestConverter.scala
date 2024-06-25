@@ -11,6 +11,7 @@ import org.mule.weave.v2.model.types.ObjectType
 import org.mule.weave.v2.model.types.StringType
 import org.mule.weave.v2.module.http.functions.HttpClientRequestConfig
 import org.mule.weave.v2.module.http.functions.utils.HttpClientRequestConverter.BODY
+import org.mule.weave.v2.module.http.functions.utils.HttpClientRequestConverter.COOKIES
 import org.mule.weave.v2.module.http.functions.utils.HttpClientRequestConverter.HEADERS
 import org.mule.weave.v2.module.http.functions.utils.HttpClientRequestConverter.METHOD
 import org.mule.weave.v2.module.http.functions.utils.HttpClientRequestConverter.QUERY_PARAMS
@@ -45,6 +46,13 @@ class HttpClientRequestConverter(
       entry._2.foreach(value => {
         builder.addHeader(entry._1, value)
       })
+    })
+
+    val cookiesValue = selectObject(request, COOKIES).getOrElse(ObjectSeq.empty)
+    cookiesValue.toSeq().foreach(kvp => {
+      val name = kvp._1.evaluate.name
+      val value = StringType.coerce(kvp._2).evaluate.toString
+      builder.addCookie(name, value)
     })
 
     val maybeBody = extractBody(request)
@@ -133,6 +141,7 @@ object HttpClientRequestConverter {
   private val QUERY_PARAMS = "queryParams"
   private val HEADERS = "headers"
   private val BODY = "body"
+  private val COOKIES = "cookies"
 
   def apply(
     request: ObjectSeq,

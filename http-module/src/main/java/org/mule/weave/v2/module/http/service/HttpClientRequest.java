@@ -16,6 +16,7 @@ public class HttpClientRequest {
     private final String method;
     private final Map<String, List<String>> headers;
     private final Map<String, List<String>> queryParams;
+    private final Map<String, String> cookies;
     private final InputStream body;
 
     /** Do we accept header redirections? */
@@ -27,6 +28,7 @@ public class HttpClientRequest {
                               String method,
                               Map<String, List<String>> headers,
                               Map<String, List<String>> queryParams,
+                              Map<String, String> cookies,
                               InputStream body,
                               boolean followRedirects,
                               int readTimeout,
@@ -35,6 +37,7 @@ public class HttpClientRequest {
         this.method = method;
         this.headers = headers;
         this.queryParams = queryParams;
+        this.cookies = cookies;
         this.body = body;
         this.followRedirects = followRedirects;
         this.readTimeout = readTimeout;
@@ -67,6 +70,13 @@ public class HttpClientRequest {
      */
     public Map<String, List<String>> getQueryParams() {
         return queryParams;
+    }
+
+    /**
+     * @return the cookies to send.
+     */
+    public Map<String, String> getCookies() {
+        return cookies;
     }
 
     /**
@@ -105,11 +115,11 @@ public class HttpClientRequest {
         private String method;
         private final Map<String, List<String>> headers = new LinkedHashMap<>();
         private final Map<String, List<String>> queryParams = new LinkedHashMap<>();
+        private final Map<String, String> cookies = new LinkedHashMap<>();
         private InputStream body = null;
         private boolean followRedirects = false;
         private int readTimeout = 60000;
         private int requestTimeout = 60000;
-
 
         /**
          * Declares the url where this {@link HttpClientRequest} will be sent. Required configuration.
@@ -172,6 +182,18 @@ public class HttpClientRequest {
         }
 
         /**
+         * Includes a new cookie to be sent in the desired {@link HttpClientRequest}.
+         *
+         * @param name the name of the HTTP cookie.
+         * @param value the value of the HTTP cookie.
+         * @return this builder.
+         */
+        public Builder addCookie(String name, String value) {
+            cookies.put(name, value);
+            return this;
+        }
+
+        /**
          * Includes the HTTP entity that should be used sent in the desired {@link HttpClientRequest}.
          *
          * @param body the {@link InputStream} that should be used as body for the {@link HttpClientRequest}. Not null.
@@ -224,7 +246,7 @@ public class HttpClientRequest {
         public HttpClientRequest build() {
             requireNonNull(url, "http client request 'url' must not be null");
             requireNonNull(method, "http client request 'method' must not be null");
-            return new HttpClientRequest(url, method, headers, queryParams, body, followRedirects,
+            return new HttpClientRequest(url, method, headers, queryParams, cookies, body, followRedirects,
                     readTimeout, requestTimeout);
         }
     }

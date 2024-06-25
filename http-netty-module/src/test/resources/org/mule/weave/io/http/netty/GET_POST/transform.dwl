@@ -111,6 +111,12 @@ fun then<A, V>(result: A, assertions: (result: A) -> V): V = assertions(result)
     body: {
       cookies: $.body.cookies
     }
+  },
+  j: sendRequestAndReadResponse( { method: "GET", url: 'http://httpbin.org/cookies', cookies: {Token: "_asdf", age: "39"}}) then {
+    cookies: $.cookies,
+    body: {
+      cookies: $.body.cookies
+    }
   }
 }
 

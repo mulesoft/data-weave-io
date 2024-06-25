@@ -1,6 +1,7 @@
 package org.mule.weave.v2.module.http.netty
 
 import io.netty.handler.codec.http.HttpHeaders
+import io.netty.handler.codec.http.cookie.DefaultCookie
 import org.asynchttpclient.AsyncHttpClient
 import org.asynchttpclient.RequestBuilder
 import org.asynchttpclient.Response
@@ -32,6 +33,10 @@ class NettyHttpClient(client: AsyncHttpClient) extends HttpClient {
 
     request.getHeaders.forEach((name, values) => {
       builder.addHeader(name, values)
+    })
+
+    request.getCookies.forEach((name, value) => {
+      builder.addCookie(new DefaultCookie(name, value))
     })
 
     if (Option(request.getBody).isDefined) {
