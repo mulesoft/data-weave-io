@@ -10,6 +10,8 @@ dependencies {
     api group: 'org.mule.weave', name: 'caffeine-cache-service', version: weaveVersion
     implementation group: 'org.mule.weave', name: 'runtime', version: weaveVersion
 
+    // Logback implementation for testing purpose
+    testImplementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.5.6'
     testImplementation group: 'org.mule.weave', name: 'runtime-test-helpers', version: weaveVersion
     testImplementation (group: 'org.scalatest', name: 'scalatest_2.12', version: scalaTestVersion) {
         exclude group: 'org.scala-lang', module: 'scala-library'
