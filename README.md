@@ -30,7 +30,7 @@ The libraries from this repository are being used at:
 - [DataWeave Testing Framework](https://github.com/mulesoft/data-weave-testing-framework)
 
 ## HTTP module implementation
-The `DataWeave IO` module provides an `HTTP module` implementation based on [Netty](./http-netty-module/README.md).
+The `DataWeave IO` module provides an `DataWeave HTTP module` implementation based on [Netty](./http-netty-module/README.md).
 
 ## Disclaimer
 The modules are NOT available in the mule runtime, and most probably they will never be as the same functionality is being provided by mule runtime components such as `File Module`, `Http Module`, etc.

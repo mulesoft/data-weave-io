@@ -1,5 +1,7 @@
 # HTTP Netty module
-An `HTTP module` library that allows easy execution of HTTP requests and asynchronously processes HTTP responses.
+A `DataWeave HTTP module` that allows:
+- easy execution of HTTP requests and asynchronously processes HTTP responses.
+- easy declaration and usage of an HTTP Server.
 
 This library is built on top of [AsyncHttpClient (AHC)](https://github.com/AsyncHttpClient/async-http-client) which is based on [Netty](https://github.com/netty/netty).
 
