@@ -8,8 +8,7 @@ __________________________________________
 ### Functions
 | Name | Description|
 |------|------------|
-| [freePort](#freeport-index ) | Returns a free port that can be used for binding|
-
+| [freePort](#freeport ) | Returns a free port that can be used for binding|
 
 
 
@@ -23,9 +22,9 @@ __________________________________________
 
 # Functions
 
-## **freePort** [↑↑](#index )
+## **freePort**
 
-### _freePort(): Number_
+### _freePort&#40;&#41;: Number_
 
 Returns a free port that can be used for binding
 __________________________________________

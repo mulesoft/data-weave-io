@@ -1,0 +1,19 @@
+<configuration>
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <!-- encoders are assigned the type
+             ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Enable DEBUG for async-http-client -->
+    <!-- <logger name="org.asynchttpclient" level="DEBUG" /> -->
+    <!-- Enable wire logs -->
+    <!-- <logger name="org.asynchttpclient.netty.channel.ChannelManager" level="TRACE" /> -->
+    <!-- <logger name="io.netty.handler.logging.LoggingHandler" level="TRACE" /> -->
+
+    <root level="INFO">
+        <appender-ref ref="CONSOLE" />
+    </root>
+</configuration>

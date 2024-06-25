@@ -1,5 +1,5 @@
 /**
-* Module with the a set of `types` used to make HTTP calls
+* Module with a set of `types` used to make HTTP calls
 *
 * To use this module, you must import it to your DataWeave code, for example,
 * by adding the line `import * from dw::io::http::Types` to the header of your

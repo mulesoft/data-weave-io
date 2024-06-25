@@ -13,19 +13,19 @@ This library allows the user to interact with everything that is related to File
 ________________________________
 
 
-# Http Library
+# HTTP Library
 
 This library allows the user to call or serve http.
 
 | Name                                                | Description                                                                            |
 |-----------------------------------------------------|----------------------------------------------------------------------------------------|
-| [BodyUtils](./http_library_doc/BodyUtils.md )       |                                                                                        |
-| [Client](./http_library_doc/Client.md )             | Http client module allows to make http calls                                           |
+| [BodyUtils](./http_library_doc/BodyUtils.md )       | A utility module that provides a set of functions to interact HTTP body.               |
+| [Client](./http_library_doc/Client.md )             | HTTP client module allows to make HTTP calls                                           |
 | [Interceptors](./http_library_doc/Interceptors.md ) |                                                                                        |
 | [Server](./http_library_doc/Server.md )             | This module contains all the functions required for declaring and using an HTTP Server |
-| [Types](./http_library_doc/Types.md )               |                                                                                        |
-| [HttpHeaders](./http_library_doc/HttpHeaders.md )   | List of well known http headers                                                        |
-| [Port](./http_library_doc/Port.md )                 | Utility to find free ports                                                             |
+| [Types](./http_library_doc/Types.md )               | Module with the a set of `types` used to make HTTP calls                               |
+| [HttpHeaders](./http_library_doc/HttpHeaders.md )   | Module with the list of well known HTTP headers                                        |
+| [Port](./http_library_doc/Port.md )                 |                                                                                        |
 
 ________________________________
 
