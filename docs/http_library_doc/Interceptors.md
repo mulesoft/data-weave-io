@@ -8,9 +8,8 @@ __________________________________________
 ### Functions
 | Name | Description|
 |------|------------|
-| [CORS](#cors-index ) | |
-| [isOptions](#isoptions-index ) | |
-
+| [CORS](#cors ) | |
+| [isOptions](#isoptions ) | |
 
 
 
@@ -24,22 +23,22 @@ __________________________________________
 
 # Functions
 
-## **CORS** [↑↑](#index )
+## **CORS**
 
-### _CORS(allowOrigin: Array<String> | "SameOrigin" = ["*"], allowMethods: Array<String> = ["POST", "GET", "OPTIONS"], allowHTTPHeaders: Array<String> = ["*"], exposeHeaders: Array<String> = [""], maxAge: Number = -1, allowCredentials: Boolean = false)_
-
-
-__________________________________________
-
-### _CORS(allowOrigin: (HttpServerRequest) -> Array<String>, allowMethods: (HttpServerRequest) -> Array<String>, allowHTTPHeaders: (HttpServerRequest) -> Array<String>, exposeHeaders: (HttpServerRequest) -> Array<String>, maxAge: Number = -1, allowCredentials: Boolean = false)_
+### _CORS&#40;allowOrigin: Array<String&#62; &#124; "SameOrigin" = ["*"], allowMethods: Array<String&#62; = ["POST", "GET", "OPTIONS"], allowHTTPHeaders: Array<String&#62; = ["*"], exposeHeaders: Array<String&#62; = [""], maxAge: Number = &#45;1, allowCredentials: Boolean = false&#41;_
 
 
 __________________________________________
 
+### _CORS&#40;allowOrigin: &#40;HttpServerRequest&#41; &#45;&#62; Array<String&#62;, allowMethods: &#40;HttpServerRequest&#41; &#45;&#62; Array<String&#62;, allowHTTPHeaders: &#40;HttpServerRequest&#41; &#45;&#62; Array<String&#62;, exposeHeaders: &#40;HttpServerRequest&#41; &#45;&#62; Array<String&#62;, maxAge: Number = &#45;1, allowCredentials: Boolean = false&#41;_
 
-## **isOptions** [↑↑](#index )
 
-### _isOptions(request: HttpServerRequest)_
+__________________________________________
+
+
+## **isOptions**
+
+### _isOptions&#40;request: HttpServerRequest&#41;_
 
 
 __________________________________________

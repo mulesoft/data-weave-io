@@ -11,6 +11,7 @@ import org.mule.weave.v2.model.values.wrappers.LazyValue
 import org.mule.weave.v2.module.http.functions.exceptions.InvalidUrlException
 import org.mule.weave.v2.module.http.functions.exceptions.UrlConnectionException
 import org.mule.weave.v2.module.http.functions.utils.HttpClientConfigurationConverter
+import org.mule.weave.v2.module.http.functions.utils.HttpClientLoggingUtil
 import org.mule.weave.v2.module.http.functions.utils.HttpClientRequestConverter
 import org.mule.weave.v2.module.http.functions.utils.HttpClientResponseConverter
 import org.mule.weave.v2.module.http.functions.utils.StopWatch
@@ -43,16 +44,35 @@ class HttpRequestFunction extends SecureTernaryFunctionValue {
     val request = HttpClientRequestConverter(requestObjectSeq, requestConfig, this).convert()
     val clientConfiguration = HttpClientConfigurationConverter(clientConfigurationObjectSeq).convert()
 
-    val httpClientService: HttpClientService = ctx.serviceManager
+    val httpClientService = ctx.serviceManager
       .lookupCustomService(classOf[HttpClientService])
       .getOrElse(throw new WeaveRuntimeException("HttpClientService was not registered", UnknownLocation))
 
     try {
-      val httpResponse = httpClientService
-        .getClient(clientConfiguration)
-        .request(request)
+      if (ctx.serviceManager.loggingService.isInfoEnabled()) {
+        val buffer = HttpClientLoggingUtil.appendClientConfiguration(new StringBuilder(), clientConfiguration)
+        ctx.serviceManager.loggingService.logInfo(s"Searching HTTP Client for configuration: [${buffer.toString()}]")
+      }
+
+      val client = httpClientService.getClient(clientConfiguration)
+
+      if (ctx.serviceManager.loggingService.isInfoEnabled()) {
+        ctx.serviceManager.loggingService.logInfo("Found HTTP Client instance")
+      }
+
+      if (ctx.serviceManager.loggingService.isInfoEnabled()) {
+        val buffer = HttpClientLoggingUtil.appendRequest(new StringBuilder(), request)
+        ctx.serviceManager.loggingService.logInfo(s"Sending request: [${buffer.toString()}]")
+      }
+
+      val httpResponse = client.request(request)
+
       new LazyValue({
         try {
+          if (ctx.serviceManager.loggingService.isInfoEnabled()) {
+            val buffer = HttpClientLoggingUtil.appendResponse(new StringBuilder(), httpResponse)
+            ctx.serviceManager.loggingService.logInfo(s"Received response: [${buffer.toString()}]")
+          }
           HttpClientResponseConverter(httpResponse, stopWatch).convert()
         } catch {
           case ee: ExecutionException =>

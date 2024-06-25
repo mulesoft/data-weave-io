@@ -1,39 +1,46 @@
 #### _dw::io::http::Client_
 __________________________________________
 
-Http client module allows to make http calls
+HTTP client module allows to make HTTP calls
+
+To use this module, you must import it to your DataWeave code, for example,
+by adding the line `import * from dw::io::http::Client` to the header of your
+DataWeave script.
 
 # Index
 
 ### Functions
 | Name | Description|
 |------|------------|
-| [CONNECT](#connect-index ) | |
-| [DELETE](#delete-index ) | |
-| [GET](#get-index ) | |
-| [HEAD](#head-index ) | |
-| [OPTIONS](#options-index ) | |
-| [PATCH](#patch-index ) | |
-| [POST](#post-index ) | |
-| [POSTMultipart](#postmultipart-index ) | |
-| [PUT](#put-index ) | |
-| [TRACE](#trace-index ) | |
-| [createAuthorizationHeader](#createauthorizationheader-index ) | Utility function that adds the proper Authorization header based on the supported Auth type.|
-| [request](#request-index ) | |
-| [resolveTemplateWith](#resolvetemplatewith-index ) | Replace the templates of a url according to RFC6570|
-| [url](#url-index ) | String interpolator function to build a URL|
+| [connect](#connect ) | |
+| [createAuthorizationHeader](#createauthorizationheader ) | Utility function that adds the proper Authorization header based on the supported Auth type.|
+| [createBinaryHttpRequest](#createbinaryhttprequest ) | Helper function to create a `HttpRequest` instances with `Binary` request body.|
+| [createHttpRequest](#createhttprequest ) | Helper function to create an `HttpRequest` instance.|
+| [delete](#delete ) | |
+| [get](#get ) | |
+| [head](#head ) | |
+| [options](#options ) | |
+| [patch](#patch ) | |
+| [post](#post ) | |
+| [postMultipart](#postmultipart ) | |
+| [put](#put ) | |
+| [readBody](#readbody ) | Helper function to read a `Binary` body instance.|
+| [readHttpResponseBody](#readhttpresponsebody ) | Helper function to read a `HttpResponse` with a `Binary` body instance.|
+| [resolveTemplateWith](#resolvetemplatewith ) | Replace the templates of a url according to RFC6570|
+| [sendRequest](#sendrequest ) | |
+| [sendRequestAndReadResponse](#sendrequestandreadresponse ) | |
+| [trace](#trace ) | |
+| [url](#url ) | String interpolator function to build a URL|
 
 
-
-
-### Types
+### Variables
 | Name | Description|
 |------|------------|
-|[BasicAuth](#basicauth-index ) | |
-|[HttpClientResponse](#httpclientresponse-index ) | |
-|[HttpRequest](#httprequest-index ) | |
-|[OAuth](#oauth-index ) | |
-|[UrlBuilder](#urlbuilder-index ) | |
+| [DEFAULT_HTTP_CLIENT_CONFIG](#default_http_client_config ) | Variable used to identify the default HTTP client configuration.|
+| [DEFAULT_HTTP_REQUEST_CONFIG](#default_http_request_config ) | Variable used to identify the default HTTP request configuration.|
+| [DEFAULT_SERIALIZATION_CONFIG](#default_serialization_config ) | Variable used to identify the default HTTP serialization configuration.|
+| [OCTET_STREAM_MIME_TYPE](#octet_stream_mime_type ) | |
+| [X_BINARY_MIME_TYPE](#x_binary_mime_type ) | |
 
 
 
@@ -46,113 +53,188 @@ __________________________________________
 
 # Functions
 
-## **CONNECT** [↑↑](#index )
+## **connect**
 
-### _CONNECT(url: String | UrlBuilder, httpRequest: HttpRequest = {}): HttpClientResponse_
-
-
-__________________________________________
-
-
-## **DELETE** [↑↑](#index )
-
-### _DELETE(url: String | UrlBuilder, httpRequest: HttpRequest = {}): HttpClientResponse_
+### _connect<B <: HttpBody, H <: HttpHeaders&#62;&#40;url: String &#124; UrlBuilder, headers: HttpHeaders = {}, requestConfig: HttpRequestConfig = DEFAULT_HTTP_REQUEST_CONFIG, serializationConfig: SerializationConfig = DEFAULT_SERIALIZATION_CONFIG, clientConfig: HttpClientConfig = DEFAULT_HTTP_CLIENT_CONFIG&#41;: HttpResponse<B, H&#62;_
 
 
 __________________________________________
 
 
-## **GET** [↑↑](#index )
+## **createAuthorizationHeader**
 
-### _GET(url: String | UrlBuilder, httpRequest: HttpRequest = {}): HttpClientResponse_
-
-
-__________________________________________
-
-
-## **HEAD** [↑↑](#index )
-
-### _HEAD(url: String | UrlBuilder, httpRequest: HttpRequest = {}): HttpClientResponse_
-
-
-__________________________________________
-
-
-## **OPTIONS** [↑↑](#index )
-
-### _OPTIONS(url: String | UrlBuilder, httpRequest: HttpRequest = {}): HttpClientResponse_
-
-
-__________________________________________
-
-
-## **PATCH** [↑↑](#index )
-
-### _PATCH(url: String | UrlBuilder, httpRequest: HttpRequest = {}): HttpClientResponse_
-
-
-__________________________________________
-
-
-## **POST** [↑↑](#index )
-
-### _POST(url: String | UrlBuilder, httpRequest: HttpRequest = {}): HttpClientResponse_
-
-
-__________________________________________
-
-
-## **POSTMultipart** [↑↑](#index )
-
-### _POSTMultipart(url: String | UrlBuilder, httpRequest: HttpRequest<Multipart> = {}): HttpClientResponse_
-
-
-__________________________________________
-
-
-## **PUT** [↑↑](#index )
-
-### _PUT(url: String | UrlBuilder, httpRequest: HttpRequest = {}): HttpClientResponse_
-
-
-__________________________________________
-
-
-## **TRACE** [↑↑](#index )
-
-### _TRACE(url: String | UrlBuilder, httpRequest: HttpRequest = {}): HttpClientResponse_
-
-
-__________________________________________
-
-
-## **createAuthorizationHeader** [↑↑](#index )
-
-### _createAuthorizationHeader(kind: OAuth | BasicAuth): {| Authorization: String |}_
+### _createAuthorizationHeader&#40;kind: OAuth &#124; BasicAuth&#41;: {&#124; Authorization: String &#124;}_
 
 Utility function that adds the proper Authorization header based on the supported Auth type.
 __________________________________________
 
 
-## **request** [↑↑](#index )
+## **createBinaryHttpRequest**
 
-### _request(method: HttpMethod, url: String | UrlBuilder, httpRequest: HttpRequest = {}): HttpClientResponse_
+### _createBinaryHttpRequest&#40;request: HttpRequest, serializationConfig: SerializationConfig&#41;: HttpRequest<Binary&#62;_
+
+Helper function to create a `HttpRequest` instances with `Binary` request body.
+
+##### Parameters
+
+| Name | Type | Description|
+|------|------|------------|
+| request | `HttpRequest` | The desired HTTP request to convert to a `HttpRequest` instances with `Binary` request body.|
+| serializationConfig | `SerializationConfig` | The HTTP serialization configuration to use.|
+
+__________________________________________
+
+
+## **createHttpRequest**
+
+### _createHttpRequest<T <: HttpBody&#62;&#40;method: HttpMethod, url: String &#124; UrlBuilder, headers: HttpHeaders = {}, body: T &#124; Null = null&#41;: HttpRequest<T&#62;_
+
+Helper function to create an `HttpRequest` instance.
+
+##### Parameters
+
+| Name | Type | Description|
+|------|------|------------|
+| method | `HttpMethod` | The desired HTTP request method.|
+| url | `String &#124; UrlBuilder` | The desired HTTP request url.|
+| headers | `HttpHeaders` | The HTTP request header to send.|
+| body | `HttpBody &#124; Null` |  The HTTP request body to send.|
+
+__________________________________________
+
+
+## **delete**
+
+### _delete<B <: HttpBody, H <: HttpHeaders&#62;&#40;url: String &#124; UrlBuilder, headers: HttpHeaders = {}, body: HttpBody &#124; Null = null, requestConfig: HttpRequestConfig = DEFAULT_HTTP_REQUEST_CONFIG, serializationConfig: SerializationConfig = DEFAULT_SERIALIZATION_CONFIG, clientConfig: HttpClientConfig = DEFAULT_HTTP_CLIENT_CONFIG&#41;: HttpResponse<B, H&#62;_
 
 
 __________________________________________
 
 
-## **resolveTemplateWith** [↑↑](#index )
+## **get**
 
-### _resolveTemplateWith(uri: String, context: Object): String_
+### _get<B <: HttpBody, H <: HttpHeaders&#62;&#40;url: String &#124; UrlBuilder, headers: HttpHeaders = {}, requestConfig: HttpRequestConfig = DEFAULT_HTTP_REQUEST_CONFIG, serializationConfig: SerializationConfig = DEFAULT_SERIALIZATION_CONFIG, clientConfig: HttpClientConfig = DEFAULT_HTTP_CLIENT_CONFIG&#41;: HttpResponse<B, H&#62;_
+
+
+__________________________________________
+
+
+## **head**
+
+### _head<B <: HttpBody, H <: HttpHeaders&#62;&#40;url: String &#124; UrlBuilder, headers: HttpHeaders = {}, requestConfig: HttpRequestConfig = DEFAULT_HTTP_REQUEST_CONFIG, serializationConfig: SerializationConfig = DEFAULT_SERIALIZATION_CONFIG, clientConfig: HttpClientConfig = DEFAULT_HTTP_CLIENT_CONFIG&#41;: HttpResponse<B, H&#62;_
+
+
+__________________________________________
+
+
+## **options**
+
+### _options<B <: HttpBody, H <: HttpHeaders&#62;&#40;url: String &#124; UrlBuilder, headers: HttpHeaders = {}, requestConfig: HttpRequestConfig = DEFAULT_HTTP_REQUEST_CONFIG, serializationConfig: SerializationConfig = DEFAULT_SERIALIZATION_CONFIG, clientConfig: HttpClientConfig = DEFAULT_HTTP_CLIENT_CONFIG&#41;: HttpResponse<B, H&#62;_
+
+
+__________________________________________
+
+
+## **patch**
+
+### _patch<B <: HttpBody, H <: HttpHeaders&#62;&#40;url: String &#124; UrlBuilder, headers: HttpHeaders = {}, body: HttpBody &#124; Null = null, requestConfig: HttpRequestConfig = DEFAULT_HTTP_REQUEST_CONFIG, serializationConfig: SerializationConfig = DEFAULT_SERIALIZATION_CONFIG, clientConfig: HttpClientConfig = DEFAULT_HTTP_CLIENT_CONFIG&#41;: HttpResponse<B, H&#62;_
+
+
+__________________________________________
+
+
+## **post**
+
+### _post<B <: HttpBody, H <: HttpHeaders&#62;&#40;url: String &#124; UrlBuilder, headers: HttpHeaders = {}, body: HttpBody &#124; Null = null, requestConfig: HttpRequestConfig = DEFAULT_HTTP_REQUEST_CONFIG, serializationConfig: SerializationConfig = DEFAULT_SERIALIZATION_CONFIG, clientConfig: HttpClientConfig = DEFAULT_HTTP_CLIENT_CONFIG&#41;: HttpResponse<B, H&#62;_
+
+
+__________________________________________
+
+
+## **postMultipart**
+
+### _postMultipart<B <: HttpBody, H <: HttpHeaders&#62;&#40;url: String &#124; UrlBuilder, body: Multipart, headers: HttpHeaders = {}, requestConfig: HttpRequestConfig = DEFAULT_HTTP_REQUEST_CONFIG, serializationConfig: SerializationConfig = DEFAULT_SERIALIZATION_CONFIG, clientConfig: HttpClientConfig = DEFAULT_HTTP_CLIENT_CONFIG&#41;: HttpResponse<B, H&#62;_
+
+
+__________________________________________
+
+
+## **put**
+
+### _put<B <: HttpBody, H <: HttpHeaders&#62;&#40;url: String &#124; UrlBuilder, headers: HttpHeaders = {}, body: HttpBody &#124; Null = null, requestConfig: HttpRequestConfig = DEFAULT_HTTP_REQUEST_CONFIG, serializationConfig: SerializationConfig = DEFAULT_SERIALIZATION_CONFIG, clientConfig: HttpClientConfig = DEFAULT_HTTP_CLIENT_CONFIG&#41;: HttpResponse<B, H&#62;_
+
+
+__________________________________________
+
+
+## **readBody**
+
+### _readBody<B <: HttpBody&#62;&#40;mimeType: String, body: Binary, serializationConfig: SerializationConfig&#41;: B_
+
+Helper function to read a `Binary` body instance.
+
+##### Parameters
+
+| Name | Type | Description|
+|------|------|------------|
+| mimeType | `String` | The MIME type to use.|
+| body | `Binary` | The desired body parse.|
+| serializationConfig | `SerializationConfig` | The HTTP serialization configuration to use.|
+
+__________________________________________
+
+
+## **readHttpResponseBody**
+
+### _readHttpResponseBody<B <: HttpBody, H <: HttpHeaders&#62;&#40;httpResponse: HttpResponse<Binary, H&#62;, serializationConfig: SerializationConfig&#41;: HttpResponse<B, H&#62;_
+
+Helper function to read a `HttpResponse` with a `Binary` body instance.
+
+##### Parameters
+
+| Name | Type | Description|
+|------|------|------------|
+| httpResponse | `HttpResponse<Binary,H&#62;` | The desired `HttpResponse` to parse.|
+| serializationConfig | `SerializationConfig` | The HTTP serialization configuration to use.|
+
+__________________________________________
+
+
+## **resolveTemplateWith**
+
+### _resolveTemplateWith&#40;uri: String, context: Object&#41;: String_
 
 Replace the templates of a url according to RFC6570
 __________________________________________
 
 
-## **url** [↑↑](#index )
+## **sendRequest**
 
-### _url(parts: Array<String>, interpolation: Array<StringCoerceable>): String_
+### _sendRequest<H <: HttpHeaders&#62;&#40;request: HttpRequest<Binary&#62;, requestConfig: HttpRequestConfig = DEFAULT_HTTP_REQUEST_CONFIG, clientConfig: HttpClientConfig = DEFAULT_HTTP_CLIENT_CONFIG&#41;: HttpResponse<Binary, H&#62;_
+
+
+__________________________________________
+
+
+## **sendRequestAndReadResponse**
+
+### _sendRequestAndReadResponse<B <: HttpBody, H <: HttpHeaders&#62;&#40;request: HttpRequest, requestConfig: HttpRequestConfig = DEFAULT_HTTP_REQUEST_CONFIG, serializationConfig: SerializationConfig = DEFAULT_SERIALIZATION_CONFIG, clientConfig: HttpClientConfig = DEFAULT_HTTP_CLIENT_CONFIG&#41;: HttpResponse<B, H&#62;_
+
+
+__________________________________________
+
+
+## **trace**
+
+### _trace<B <: HttpBody, H <: HttpHeaders&#62;&#40;url: String &#124; UrlBuilder, headers: HttpHeaders = {}, requestConfig: HttpRequestConfig = DEFAULT_HTTP_REQUEST_CONFIG, serializationConfig: SerializationConfig = DEFAULT_SERIALIZATION_CONFIG, clientConfig: HttpClientConfig = DEFAULT_HTTP_CLIENT_CONFIG&#41;: HttpResponse<B, H&#62;_
+
+
+__________________________________________
+
+
+## **url**
+
+### _url&#40;parts: Array<String&#62;, interpolation: Array<StringCoerceable&#62;&#41;: String_
 
 String interpolator function to build a URL
 __________________________________________
@@ -160,69 +242,32 @@ __________________________________________
 
 
 
-__________________________________________
+# Variables
 
-# Types
-
-### **BasicAuth** [↑↑](#index )
+## **DEFAULT_HTTP_CLIENT_CONFIG**
 
 
+Variable used to identify the default HTTP client configuration.
+
+## **DEFAULT_HTTP_REQUEST_CONFIG**
 
 
-#### Definition
+Variable used to identify the default HTTP request configuration.
 
-```dataweave
-{ username: String, password: String }
-```
+## **DEFAULT_SERIALIZATION_CONFIG**
 
 
-### **HttpClientResponse** [↑↑](#index )
+Variable used to identify the default HTTP serialization configuration.
 
-
-
-
-#### Definition
-
-```dataweave
-{ contentType: String, status: Number, statusText?: String, headers: HeadersType, body?: BodyType, cookies?: HttpCookies }
-```
-
-
-### **HttpRequest** [↑↑](#index )
+## **OCTET_STREAM_MIME_TYPE**
 
 
 
 
-#### Definition
-
-```dataweave
-{ headers?: HttpHeaders, body?: T, // Config properties
-config?: { defaultContentType?: String, followRedirects?: Boolean, readerProperties?: Object, writerProperties?: Object, readTimeout?: Number, requestTimeout?: Number } }
-```
-
-
-### **OAuth** [↑↑](#index )
+## **X_BINARY_MIME_TYPE**
 
 
 
-
-#### Definition
-
-```dataweave
-{ token: String }
-```
-
-
-### **UrlBuilder** [↑↑](#index )
-
-
-
-
-#### Definition
-
-```dataweave
-{ url: String, queryParams?: QueryParams }
-```
 
 
 
