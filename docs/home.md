@@ -13,7 +13,7 @@ This library allows the user to interact with everything that is related to File
 ________________________________
 
 
-# Http Library
+# HTTP Library
 
 This library allows the user to call or serve http.
 
