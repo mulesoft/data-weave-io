@@ -19,7 +19,6 @@
         "Accept": "*/*",
         "Content-Type": "application/xml"
       },
-      "cookies": {},
       "body": "<?xml version='1.0' encoding='UTF-8'?><root><user>Mariano</user></root>"
     },
     "binary": true
@@ -32,7 +31,6 @@
         "Accept": "*/*",
         "Content-Type": "application/xml"
       },
-      "cookies": {},
       "body": "<?xml version='1.0' encoding='UTF-8'?>\n<root>\n  <user>Mariano</user>\n</root>"
     },
     "binary": true,

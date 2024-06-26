@@ -10,7 +10,6 @@
 import * from dw::core::Arrays
 import * from dw::core::Objects
 import * from dw::io::http::Types
-import * from dw::io::http::utils::HttpHeaders
 import * from dw::module::Mime
 import * from dw::module::Multipart
 import * from dw::Runtime

@@ -24,14 +24,14 @@ type HttpHeaders = {
   "Content-Type"?: String,
   Authorization?: String,
   ETag?: SimpleType,
-   _ ?: SimpleType
+  _*?: SimpleType
 }
 
 /**
  * DataWeave type for representing a HTTP request query parameters.
  */
 type QueryParams = {
-  _ ?: String
+  _*?: String
 }
 
 /**

@@ -224,9 +224,11 @@ fun createBinaryHttpRequest(request: HttpRequest, serializationConfig: Serializa
       update {
         case ."$(CONTENT_TYPE_HEADER)"! -> dw::module::Mime::toString(binaryBody.mime)
       }
-    var cookies = request.cookies default {}
     ---
-    createHttpRequest(request.method, request.url, headersWithContentType, binaryBody.body, cookies)
+    request update {
+      case .headers -> headersWithContentType
+      case .body -> binaryBody.body
+    }
   } else {
     method: request.method,
     url: request.url,
