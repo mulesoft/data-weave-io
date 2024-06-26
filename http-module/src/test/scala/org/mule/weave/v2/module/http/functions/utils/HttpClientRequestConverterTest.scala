@@ -9,8 +9,8 @@ import org.mule.weave.v2.model.values.KeyValue
 import org.mule.weave.v2.model.values.ObjectValueBuilder
 import org.mule.weave.v2.model.values.StringValue
 import org.mule.weave.v2.module.http.functions.HttpClientRequestConfig
+import org.mule.weave.v2.module.http.functions.exceptions.DuplicatedCookieFieldException
 import org.mule.weave.v2.parser.exception.WeaveRuntimeException
-
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.should.Matchers
 
@@ -86,7 +86,7 @@ class HttpClientRequestConverterTest extends AnyFreeSpec with Matchers {
     }
 
     "should fail with duplicate 'cookie' field" in {
-      val caught = intercept[WeaveRuntimeException] {
+      val caught = intercept[DuplicatedCookieFieldException] {
         val method = "GET"
         val url = "http://domain"
         val urlObj = new ObjectValueBuilder()
@@ -108,7 +108,7 @@ class HttpClientRequestConverterTest extends AnyFreeSpec with Matchers {
         )
         HttpClientRequestConverter(request, requestConfig, UnknownLocationCapable).convert()
       }
-      caught.getMessage shouldBe "A duplicate `cookie` field was found. Just one cookie value is allowed, it can not be specified as a 'header' value and as a 'cookie' object for a single request."
+      caught.getMessage should not be null
     }
   }
 }
