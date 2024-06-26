@@ -1,5 +1,5 @@
 {
-a: {
+  a: {
     statusText: "OK",
     status: 200,
     contentType: "application/json"
@@ -129,6 +129,30 @@ a: {
       domain: null,
       comment: null,
       path: "/"
+    }
+  },
+  ii: {
+    cookies: {},
+    body: {
+      cookies: {}
+    }
+  },
+  iii: {
+    cookies: {},
+    body: {
+      cookies: {
+        Token: "_asdf",
+        age: "39"
+      }
+    }
+  },
+  j: {
+    cookies: {},
+    body: {
+      cookies: {
+        Token: "_asdf",
+        age: "39"
+      }
     }
   }
 }

@@ -41,7 +41,14 @@ var server = api(serverConfig,
   })
 ---
 {
-  a: try(() -> sendRequest({method: "GET", url: 'http://$LOCALHOST/decompress'}, DEFAULT_HTTP_REQUEST_CONFIG, createClientConfig(false))).error,
+  a: do {
+    var result = try(() -> sendRequest({method: "GET", url: 'http://$LOCALHOST/decompress'}, DEFAULT_HTTP_REQUEST_CONFIG, createClientConfig(false))).error
+    ---
+    {
+      kind: result.kind,
+      message: result.message
+    }
+  },
   b: sendRequest({method: "GET", url: 'http://$LOCALHOST/decompress'}, DEFAULT_HTTP_REQUEST_CONFIG, createClientConfig(true)).body,
   c: sendRequest({method: "GET", url: 'http://$LOCALHOST/no-decompress'}, DEFAULT_HTTP_REQUEST_CONFIG, createClientConfig(true)).body,
   d: server.stop()
