@@ -172,19 +172,22 @@ fun patch<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder,
 * | method | `HttpMethod` | The desired HTTP request method.
 * | url | `String &#124; UrlBuilder` | The desired HTTP request url.
 * | headers | `HttpHeaders` | The HTTP request header to send.
+* | cookies | `HttpRequestCookies` | The HTTP request cookies to send.
 * | body | `HttpBody &#124; Null` |  The HTTP request body to send.
 * |===
 */
-fun createHttpRequest<T <: HttpBody>(method: HttpMethod, url: String | UrlBuilder, headers: HttpHeaders = {}, body: T | Null = null): HttpRequest<T> =
+fun createHttpRequest<T <: HttpBody>(method: HttpMethod, url: String | UrlBuilder, headers: HttpHeaders = {}, body: T | Null = null, cookies: HttpRequestCookies = {}): HttpRequest<T> =
   if (body != null) {
     method: method,
     url: url,
     headers: headers,
-    body: body
+    cookies: cookies,
+    body: body,
   } else {
     method: method,
     url: url,
-    headers: headers
+    headers: headers,
+    cookies: cookies
   }
 
 @RuntimePrivilege(requires = "http::Client")
@@ -222,11 +225,15 @@ fun createBinaryHttpRequest(request: HttpRequest, serializationConfig: Serializa
         case ."$(CONTENT_TYPE_HEADER)"! -> dw::module::Mime::toString(binaryBody.mime)
       }
     ---
-    createHttpRequest(request.method, request.url, headersWithContentType, binaryBody.body)
+    request update {
+      case .headers -> headersWithContentType
+      case .body -> binaryBody.body
+    }
   } else {
     method: request.method,
     url: request.url,
-    (headers: request.headers!) if (request.headers?)
+    (headers: request.headers!) if (request.headers?),
+    (cookies: request.cookies!) if (request.cookies?)
   }
 
 fun sendRequestAndReadResponse<B <: HttpBody, H <: HttpHeaders>(

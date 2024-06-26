@@ -9,8 +9,8 @@ import org.mule.weave.v2.model.values.KeyValue
 import org.mule.weave.v2.model.values.ObjectValueBuilder
 import org.mule.weave.v2.model.values.StringValue
 import org.mule.weave.v2.module.http.functions.HttpClientRequestConfig
+import org.mule.weave.v2.module.http.functions.exceptions.DuplicatedCookieFieldException
 import org.mule.weave.v2.parser.exception.WeaveRuntimeException
-
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.should.Matchers
 
@@ -56,12 +56,16 @@ class HttpClientRequestConverterTest extends AnyFreeSpec with Matchers {
       val headers = new ObjectValueBuilder()
         .addPair("header", "value")
         .build
+      val cookies = new ObjectValueBuilder()
+        .addPair("a", "A")
+        .build
       val bytes = new Array[Byte](0)
       val request = ObjectSeq(
         Seq(
           KeyValuePair(KeyValue("method"), StringValue(method)),
           KeyValuePair(KeyValue("url"), urlObj),
           KeyValuePair(KeyValue("headers"), headers),
+          KeyValuePair(KeyValue("cookies"), cookies),
           KeyValuePair(KeyValue("body"), BinaryValue(bytes))
         )
       )
@@ -70,14 +74,41 @@ class HttpClientRequestConverterTest extends AnyFreeSpec with Matchers {
 
       clientRequest.getMethod shouldBe method
       clientRequest.getUrl shouldBe url
-      clientRequest.getHeaders.size() shouldBe 1
+      clientRequest.getHeaders.size() shouldBe 2
       clientRequest.getHeaders.get("header").get(0) shouldBe "value"
+      clientRequest.getHeaders.get("Cookie").get(0) shouldBe "a=A"
       clientRequest.getQueryParams.size() shouldBe 1
       clientRequest.getQueryParams.get("param").get(0) shouldBe "value"
       clientRequest.getBody should not be null
       clientRequest.isFollowRedirects shouldBe requestConfig.followRedirects
       clientRequest.getRequestTimeout shouldBe requestConfig.requestTimeout.get
       clientRequest.getReadTimeout shouldBe requestConfig.readTimeout.get
+    }
+
+    "should fail with duplicate 'cookie' field" in {
+      val caught = intercept[DuplicatedCookieFieldException] {
+        val method = "GET"
+        val url = "http://domain"
+        val urlObj = new ObjectValueBuilder()
+          .addPair("url", url)
+          .build
+        val headers = new ObjectValueBuilder()
+          .addPair("Cookie", "key=value")
+          .build
+        val cookies = new ObjectValueBuilder()
+          .addPair("a", "A")
+          .build
+        val request = ObjectSeq(
+          Seq(
+            KeyValuePair(KeyValue("method"), StringValue(method)),
+            KeyValuePair(KeyValue("url"), urlObj),
+            KeyValuePair(KeyValue("headers"), headers),
+            KeyValuePair(KeyValue("cookies"), cookies)
+          )
+        )
+        HttpClientRequestConverter(request, requestConfig, UnknownLocationCapable).convert()
+      }
+      caught.getMessage should not be null
     }
   }
 }

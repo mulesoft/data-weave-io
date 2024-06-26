@@ -9,8 +9,11 @@ import org.mule.weave.v2.model.types.BinaryType
 import org.mule.weave.v2.model.types.NullType
 import org.mule.weave.v2.model.types.ObjectType
 import org.mule.weave.v2.model.types.StringType
+import org.mule.weave.v2.module.http.HttpHeader
 import org.mule.weave.v2.module.http.functions.HttpClientRequestConfig
+import org.mule.weave.v2.module.http.functions.exceptions.DuplicatedCookieFieldException
 import org.mule.weave.v2.module.http.functions.utils.HttpClientRequestConverter.BODY
+import org.mule.weave.v2.module.http.functions.utils.HttpClientRequestConverter.COOKIES
 import org.mule.weave.v2.module.http.functions.utils.HttpClientRequestConverter.HEADERS
 import org.mule.weave.v2.module.http.functions.utils.HttpClientRequestConverter.METHOD
 import org.mule.weave.v2.module.http.functions.utils.HttpClientRequestConverter.QUERY_PARAMS
@@ -46,6 +49,23 @@ class HttpClientRequestConverter(
         builder.addHeader(entry._1, value)
       })
     })
+
+    val maybeCookieHeader = headers.get(HttpHeader.COOKIE_HEADER)
+    val cookiesValue = selectObject(request, COOKIES).getOrElse(ObjectSeq.empty).toSeq()
+
+    // Cookie is allowed in a single place: Header or Cookie object
+    if (maybeCookieHeader.isDefined && maybeCookieHeader.get.nonEmpty && cookiesValue.nonEmpty) {
+      throw new DuplicatedCookieFieldException(location.location())
+    } else {
+      if (cookiesValue.nonEmpty) {
+        val cookieValue = cookiesValue.map(kvp => {
+          val name = kvp._1.evaluate.name
+          val value = StringType.coerce(kvp._2).evaluate.toString
+          s"$name=$value"
+        }).mkString(";")
+        builder.addHeader(HttpHeader.COOKIE_HEADER, cookieValue)
+      }
+    }
 
     val maybeBody = extractBody(request)
     if (maybeBody.isDefined) {
@@ -133,6 +153,7 @@ object HttpClientRequestConverter {
   private val QUERY_PARAMS = "queryParams"
   private val HEADERS = "headers"
   private val BODY = "body"
+  private val COOKIES = "cookies"
 
   def apply(
     request: ObjectSeq,

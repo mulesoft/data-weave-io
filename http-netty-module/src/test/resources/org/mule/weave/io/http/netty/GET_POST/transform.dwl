@@ -1,8 +1,7 @@
 %dw 2.0
-import * from dw::io::http::Types
+
 import * from dw::io::http::Client
 import form, field, file from dw::module::Multipart
-
 
 fun then<A, V>(result: A, assertions: (result: A) -> V): V = assertions(result)
 ---
@@ -78,7 +77,7 @@ fun then<A, V>(result: A, assertions: (result: A) -> V): V = assertions(result)
     mimeType: $.body.^mimeType,
     raw: $.body.^raw
   },
-  i: get('http://httpbin.org/cookies/set?k2=v2&k1=v1') then {
+  i: get({url: 'http://httpbin.org/cookies/set', queryParams: { k2: "v2", k1: "v1"}}) then {
     k1: {
      name: $.cookies.k1.name,
      value: $.cookies.k1.value,
@@ -98,6 +97,24 @@ fun then<A, V>(result: A, assertions: (result: A) -> V): V = assertions(result)
      domain: $.cookies.k2.domain,
      comment: $.cookies.k2.comment,
      path: $.cookies.k2.path
+    }
+  },
+  ii: get('http://httpbin.org/cookies') then {
+    cookies: $.cookies,
+    body: {
+      cookies: $.body.cookies
+    }
+  },
+  iii: get('http://httpbin.org/cookies', { Cookie: "Token=_asdf;age=39" }) then {
+    cookies: $.cookies,
+    body: {
+      cookies: $.body.cookies
+    }
+  },
+  j: sendRequestAndReadResponse( { method: "GET", url: 'http://httpbin.org/cookies', cookies: {Token: "_asdf", age: "39"}}) then {
+    cookies: $.cookies,
+    body: {
+      cookies: $.body.cookies
     }
   }
 }
