@@ -49,29 +49,29 @@ class HttpRequestFunction extends SecureTernaryFunctionValue {
       .getOrElse(throw new WeaveRuntimeException("HttpClientService was not registered", UnknownLocation))
 
     try {
-      if (ctx.serviceManager.loggingService.isInfoEnabled()) {
+      if (ctx.serviceManager.loggingService.isDebugEnabled()) {
         val buffer = HttpClientLoggingUtil.appendClientConfiguration(new StringBuilder(), clientConfiguration)
-        ctx.serviceManager.loggingService.logInfo(s"Searching HTTP Client for configuration: [${buffer.toString()}]")
+        ctx.serviceManager.loggingService.logDebug(s"Searching HTTP Client for configuration: [${buffer.toString()}]")
       }
 
       val client = httpClientService.getClient(clientConfiguration)
 
-      if (ctx.serviceManager.loggingService.isInfoEnabled()) {
-        ctx.serviceManager.loggingService.logInfo("Found HTTP Client instance")
+      if (ctx.serviceManager.loggingService.isDebugEnabled()) {
+        ctx.serviceManager.loggingService.logDebug("Found HTTP Client instance")
       }
 
-      if (ctx.serviceManager.loggingService.isInfoEnabled()) {
+      if (ctx.serviceManager.loggingService.isDebugEnabled()) {
         val buffer = HttpClientLoggingUtil.appendRequest(new StringBuilder(), request)
-        ctx.serviceManager.loggingService.logInfo(s"Sending request: [${buffer.toString()}]")
+        ctx.serviceManager.loggingService.logDebug(s"Sending request: [${buffer.toString()}]")
       }
 
       val httpResponse = client.request(request)
 
       new LazyValue({
         try {
-          if (ctx.serviceManager.loggingService.isInfoEnabled()) {
+          if (ctx.serviceManager.loggingService.isDebugEnabled()) {
             val buffer = HttpClientLoggingUtil.appendResponse(new StringBuilder(), httpResponse)
-            ctx.serviceManager.loggingService.logInfo(s"Received response: [${buffer.toString()}]")
+            ctx.serviceManager.loggingService.logDebug(s"Received response: [${buffer.toString()}]")
           }
           HttpClientResponseConverter(httpResponse, stopWatch).convert()
         } catch {

@@ -25,6 +25,6 @@ var server = api(serverConfig,
   b: do {
     var response = sendRequestAndReadResponse({method: "GET", url: 'http://$LOCALHOST/headers', headers: {a: "A", a: "B"}})
     ---
-    log(response).body.headers - "host" - "accept" - "user-agent" - "content-length"
+    response.body.headers - "host" - "accept" - "user-agent" - "content-length"
   }
 }
