@@ -110,7 +110,6 @@ public class HttpClientRequest {
         private int readTimeout = 60000;
         private int requestTimeout = 60000;
 
-
         /**
          * Declares the url where this {@link HttpClientRequest} will be sent. Required configuration.
          *

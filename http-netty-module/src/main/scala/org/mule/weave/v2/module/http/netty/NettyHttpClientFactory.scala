@@ -3,6 +3,7 @@ package org.mule.weave.v2.module.http.netty
 import org.asynchttpclient.Dsl.asyncHttpClient
 import org.asynchttpclient.Dsl.config
 import org.mule.weave.v2.core.exception.WeaveIllegalArgumentException
+import org.mule.weave.v2.module.http.netty.cookie.EmptyCookieStore
 import org.mule.weave.v2.module.http.service.HttpClientConfiguration
 import org.mule.weave.v2.parser.location.UnknownLocation
 
@@ -16,6 +17,10 @@ object NettyHttpClientFactory {
         asyncConfig.setUseInsecureTrustManager(true)
       }
     }
+
+    // Using empty cookie store
+    asyncConfig.setCookieStore(EmptyCookieStore())
+
     asyncConfig.setCompressionEnforced(configuration.isCompressionHeader)
 
     if (!configuration.isDecompress) {

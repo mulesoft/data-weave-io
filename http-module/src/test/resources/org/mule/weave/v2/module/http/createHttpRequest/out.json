@@ -10,6 +10,9 @@
     },
     "headers": {
       
+    },
+    "cookies": {
+      
     }
   },
   "post": {
@@ -17,12 +20,18 @@
     "url": "url",
     "headers": {
       
+    },
+    "cookies": {
+      
     }
   },
   "put": {
     "method": "PUT",
     "url": "url",
     "headers": {
+      
+    },
+    "cookies": {
       
     },
     "body": {

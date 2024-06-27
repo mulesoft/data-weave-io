@@ -24,14 +24,20 @@ type HttpHeaders = {
   "Content-Type"?: String,
   Authorization?: String,
   ETag?: SimpleType,
-  Cookie*?: String,
-   _ ?: SimpleType
+  _*?: SimpleType
 }
 
 /**
  * DataWeave type for representing a HTTP request query parameters.
  */
 type QueryParams = {
+  _*?: String
+}
+
+/**
+ * DataWeave type for representing a HTTP request cookies.
+ */
+type HttpRequestCookies = {
   _ ?: String
 }
 
@@ -141,12 +147,14 @@ type HttpResponseCookie = {
  * * `method`: The HTTP request method.
  * * `url`: The HTTP request url.
  * * `headers`: The HTTP request header.
+ * * `cookies`: The HTTP request cookies.
  * * `body`: The HTTP request body.
  */
 type HttpRequest<T <: HttpBody> = {
   method: HttpMethod,
   url: String | UrlBuilder,
   headers?: HttpHeaders,
+  cookies?: HttpRequestCookies,
   body?: T
 }
 
