@@ -226,7 +226,7 @@ fun createBinaryHttpRequest(request: HttpRequest, serializationConfig: Serializa
       }
     ---
     request update {
-      case .headers -> headersWithContentType
+      case .headers! -> headersWithContentType
       case .body -> binaryBody.body
     }
   } else {
