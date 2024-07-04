@@ -1,4 +1,16 @@
 {
+  "noHeadersBody": {
+    "request": {
+      "method": "POST",
+      "url": "http://localhost:8081/post",
+      "body": "{\n  \"root\": {\n    \"user\": \"Mariano\"\n  }\n}",
+      "headers": {
+        "Content-Type": "application/json"
+      }
+    },
+    "binary": true,
+    "contentType": "application/json"
+  },
   "noBody": {
     "method": "GET",
     "url": {

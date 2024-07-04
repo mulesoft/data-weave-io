@@ -4,6 +4,17 @@ import * from dw::io::http::Client
 output application/json
 ---
 {
+ noHeadersBody: do {
+  var request = createBinaryHttpRequest({
+    method: "POST",
+    url: "http://localhost:8081/post",
+    body: {
+      root: {user: "Mariano"}
+    }
+  }, DEFAULT_SERIALIZATION_CONFIG)
+  ---
+  { request: request, binary: request.body is Binary, contentType: request.headers."Content-Type"}
+ },
  noBody:
    createBinaryHttpRequest({
      method: "GET",
