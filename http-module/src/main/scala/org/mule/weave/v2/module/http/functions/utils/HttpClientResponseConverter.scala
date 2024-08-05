@@ -21,6 +21,7 @@ import org.mule.weave.v2.module.http.service.HttpClientHeaders
 import org.mule.weave.v2.module.http.service.HttpClientResponse
 import org.mule.weave.v2.module.reader.SourceProvider
 
+import java.io.PushbackInputStream
 import java.net.HttpCookie
 import scala.collection.JavaConverters._
 
@@ -43,8 +44,13 @@ class HttpClientResponseConverter(response: HttpClientResponse, stopWatch: StopW
 
     // body?
     response.getBody.ifPresent(body => {
-      val sourceProvider = SourceProvider(SeekableStream(body))
-      builder.addPair(BODY, BinaryValue(sourceProvider.asInputStream))
+      val pushback = new PushbackInputStream(body)
+      val byte = pushback.read
+      if (byte != -1) {
+        pushback.unread(byte)
+        val sourceProvider = SourceProvider(SeekableStream(pushback))
+        builder.addPair(BODY, BinaryValue(sourceProvider.asInputStream))
+      }
     })
 
     // cookies

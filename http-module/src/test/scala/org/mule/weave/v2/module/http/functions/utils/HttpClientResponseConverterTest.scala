@@ -23,7 +23,7 @@ class HttpClientResponseConverterTest extends AnyFreeSpec with Matchers {
       val status = 200
       val statusText = "OK"
       val contentType = "application/json"
-      val body = new ByteArrayInputStream(new Array[Byte](0))
+      val body = new ByteArrayInputStream(new String("Hi").getBytes)
 
       val headers = new util.HashMap[String, util.List[String]]()
       headers.put("header", Collections.singletonList("value"))
@@ -76,6 +76,21 @@ class HttpClientResponseConverterTest extends AnyFreeSpec with Matchers {
       maybeTotal.isDefined shouldBe true
       val totalNumber = maybeTotal.get.value.materialize.asInstanceOf[NumberValue]
       assert(totalNumber.evaluate.toLong >= sleep)
+    }
+
+    "should avoid body field when body input stream is empty" in {
+      val contentType = "application/json"
+      val body = new ByteArrayInputStream(new Array[Byte](0))
+
+      val headers = new util.HashMap[String, util.List[String]]()
+      headers.put("Content-Type", Collections.singletonList("contentType"))
+
+      val httpClientResponse = SimpleHttpClientResponse(200, "OK", SimpleHttpClientHeaders(headers), contentType, body)
+      val response = HttpClientResponseConverter(httpClientResponse, StopWatch(on = true)).convert()
+      val responseObj = response.evaluate
+      // body
+      val maybeBody = ObjectValueUtils.select(responseObj, "body")
+      maybeBody.isDefined shouldBe false
     }
   }
 }

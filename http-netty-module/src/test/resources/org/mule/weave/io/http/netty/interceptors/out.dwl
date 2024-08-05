@@ -1,7 +1,6 @@
 {
   a: {
     status: 401,
-    body: "" as Binary {base: "64"} as Binary {mimeType: null, raw: "" as Binary {base: "64"}},
     cookies: {},
     headers: {
       "Content-Length": "0"

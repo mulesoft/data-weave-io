@@ -49,6 +49,13 @@ var server = api(serverConfig,
       contentType: $.contentType,
       headers: $.headers
     },
-  d: server.stop()
+  d: sendRequestAndReadResponse({method: "GET", url: 'http://$LOCALHOST/content-type'})
+    then {
+      status: $.status,
+      contentType: $.contentType,
+      headers: $.headers,
+      body: $.body
+    },
+  e: server.stop()
 ]
 
