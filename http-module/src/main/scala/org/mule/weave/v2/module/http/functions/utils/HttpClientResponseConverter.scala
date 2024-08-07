@@ -22,7 +22,6 @@ import org.mule.weave.v2.module.http.service.HttpClientResponse
 import org.mule.weave.v2.module.reader.SourceProvider
 
 import java.io.InputStream
-import java.io.PushbackInputStream
 import java.lang.Long.parseLong
 import java.net.HttpCookie
 import scala.collection.JavaConverters._
@@ -97,24 +96,40 @@ class HttpClientResponseConverter(response: HttpClientResponse, stopWatch: StopW
     ObjectValue(entries.toArray)
   }
 
-  private def addBody(body: InputStream, statusCode: Int, headers: HttpClientHeaders, builder: ObjectValueBuilder)(implicit ctx: EvaluationContext) = {
+  private def addBody(body: InputStream, statusCode: Int, headers: HttpClientHeaders, builder: ObjectValueBuilder)(implicit ctx: EvaluationContext): Unit = {
+    var addBodyField = true
     val maybeContentLength = extractContentLength(headers)
+    maybeContentLength match {
+      case Some(contentLength) =>
+        // Validate content-length header
+        if (contentLength <= 0) {
+          addBodyField = false
+          ctx.serviceManager.loggingService.logDebug(s"Ignoring HTTP response body due $CONTENT_LENGTH_HEADER == 0")
+        }
+      case _ =>
+        // Validate status code
+        if (NO_CONTENT_STATUS_CODE == statusCode || NOT_MODIFIED_STATUS_CODE == statusCode || RESET_CONTENT_STATUS_CODE == statusCode) {
+          addBodyField = false
+          ctx.serviceManager.loggingService.logDebug(s"Ignoring HTTP response body due unsupported body at status-code: $statusCode")
+        }
+    }
     if (maybeContentLength.isDefined) {
       // Validate content-length header
       val contentLength = maybeContentLength.get
-      if (contentLength > 0) {
-        val sourceProvider = SourceProvider(SeekableStream(body))
-        builder.addPair(BODY, BinaryValue(sourceProvider.asInputStream))
-      } else if (contentLength == 0) {
+      if (contentLength <= 0) {
+        addBodyField = false
         ctx.serviceManager.loggingService.logDebug(s"Ignoring HTTP response body due $CONTENT_LENGTH_HEADER == 0")
-        // Validate status code
-      } else if (NO_CONTENT_STATUS_CODE == statusCode || NOT_MODIFIED_STATUS_CODE == statusCode || RESET_CONTENT_STATUS_CODE == statusCode) {
-        ctx.serviceManager.loggingService.logDebug(s"Ignoring HTTP response body due unsupported body at status-code: $statusCode")
-      } else {
-        addBodyIfNotEmpty(body, builder)
       }
     } else {
-      addBodyIfNotEmpty(body, builder)
+      if (NO_CONTENT_STATUS_CODE == statusCode || NOT_MODIFIED_STATUS_CODE == statusCode || RESET_CONTENT_STATUS_CODE == statusCode) {
+        addBodyField = false
+        ctx.serviceManager.loggingService.logDebug(s"Ignoring HTTP response body due unsupported body at status-code: $statusCode")
+      }
+    }
+
+    if (addBodyField) {
+      val sourceProvider = SourceProvider(SeekableStream(body))
+      builder.addPair(BODY, BinaryValue(sourceProvider.asInputStream))
     }
   }
 
@@ -135,18 +150,6 @@ class HttpClientResponseConverter(response: HttpClientResponse, stopWatch: StopW
       }
     } else {
       None
-    }
-  }
-
-  private def addBodyIfNotEmpty(body: InputStream, builder: ObjectValueBuilder)(implicit ctx: EvaluationContext): Unit = {
-    val pushback = new PushbackInputStream(body)
-    val byte = pushback.read
-    if (byte != -1) {
-      pushback.unread(byte)
-      val sourceProvider = SourceProvider(SeekableStream(pushback))
-      builder.addPair(BODY, BinaryValue(sourceProvider.asInputStream))
-    } else {
-      ctx.serviceManager.loggingService.logDebug("Ignoring HTTP response body due empty InputStream body")
     }
   }
 }

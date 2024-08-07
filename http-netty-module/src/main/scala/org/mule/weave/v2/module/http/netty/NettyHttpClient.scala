@@ -76,6 +76,7 @@ class NettyHttpClientResponse(response: Response, stopWatch: StopWatch) extends 
   }
 
   override def getBody: Optional[InputStream] = {
+    // response.hasResponseBody
     Optional.ofNullable(response.getResponseBodyAsStream)
   }
 
