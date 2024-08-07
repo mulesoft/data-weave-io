@@ -7,9 +7,9 @@ import java.util.Optional
 
 class SimpleHttpClientHeaders(initialHeaders: util.Map[String, util.List[String]]) extends HttpClientHeaders {
   private val headers = {
-    val treeMap = new util.TreeMap[String, util.List[String]](String.CASE_INSENSITIVE_ORDER)
-    treeMap.putAll(initialHeaders)
-    treeMap
+    val headersMap = new util.TreeMap[String, util.List[String]](String.CASE_INSENSITIVE_ORDER)
+    headersMap.putAll(initialHeaders)
+    headersMap
   }
 
   override def getHeaderNames: util.Set[String] = headers.keySet()
