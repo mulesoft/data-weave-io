@@ -22,6 +22,7 @@ DataWeave script.
 |[HttpMethod](#httpmethod ) | DataWeave type for representing a HTTP request methods.|
 |[HttpRequest](#httprequest ) | DataWeave type for representing an HTTP request.<br>Supports the following fields:|
 |[HttpRequestConfig](#httprequestconfig ) | DataWeave type for representing an HTTP request configuration.<br>Supports the following fields:|
+|[HttpRequestCookies](#httprequestcookies ) | DataWeave type for representing a HTTP request cookies.|
 |[HttpResponse](#httpresponse ) | DataWeave type for representing an HTTP response.<br>Supports the following fields:|
 |[HttpResponseCookie](#httpresponsecookie ) | DataWeave type for representing an HTTP response cookies.<br>Supports the following fields:|
 |[HttpResponseCookies](#httpresponsecookies ) | DataWeave type for representing HTTP response cookies.|
@@ -96,7 +97,7 @@ DataWeave type for representing a HTTP headers.
 #### Definition
 
 ```dataweave
-{ "Content-Type"?: String, Authorization?: String, ETag?: SimpleType, Cookie*?: String, _?: SimpleType }
+{ "Content-Type"?: String, Authorization?: String, ETag?: SimpleType, _*?: SimpleType }
 ```
 
 
@@ -121,12 +122,13 @@ Supports the following fields:
 - `method`: The HTTP request method.
 - `url`: The HTTP request url.
 - `headers`: The HTTP request header.
+- `cookies`: The HTTP request cookies.
 - `body`: The HTTP request body.
 
 #### Definition
 
 ```dataweave
-{ method: HttpMethod, url: String | UrlBuilder, headers?: HttpHeaders, body?: T }
+{ method: HttpMethod, url: String | UrlBuilder, headers?: HttpHeaders, cookies?: HttpRequestCookies, body?: T }
 ```
 
 
@@ -144,6 +146,18 @@ Supports the following fields:
 
 ```dataweave
 { followRedirects?: Boolean, readTimeout?: Number, requestTimeout?: Number }
+```
+
+
+### **HttpRequestCookies**
+
+
+DataWeave type for representing a HTTP request cookies.
+
+#### Definition
+
+```dataweave
+{ _?: String }
 ```
 
 
@@ -221,7 +235,7 @@ DataWeave type for representing a HTTP request query parameters.
 #### Definition
 
 ```dataweave
-{ _?: String }
+{ _*?: String }
 ```
 
 
