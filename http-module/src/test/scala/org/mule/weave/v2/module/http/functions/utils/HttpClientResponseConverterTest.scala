@@ -6,7 +6,7 @@ import org.mule.weave.v2.model.values.NumberValue
 import org.mule.weave.v2.module.http.SimpleHttpClientHeaders
 import org.mule.weave.v2.module.http.SimpleHttpClientResponse
 import org.mule.weave.v2.module.http.service.HttpClientResponse
-
+import org.scalatest.Assertion
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.should.Matchers
 
@@ -23,10 +23,12 @@ class HttpClientResponseConverterTest extends AnyFreeSpec with Matchers {
       val status = 200
       val statusText = "OK"
       val contentType = "application/json"
-      val body = new ByteArrayInputStream(new Array[Byte](0))
+      val content = new String("Hi").getBytes
+      val body = new ByteArrayInputStream(content)
 
       val headers = new util.HashMap[String, util.List[String]]()
       headers.put("header", Collections.singletonList("value"))
+      headers.put("Content-Length", Collections.singletonList(content.length.toString))
       headers.put(HttpClientResponse.SET_COOKIE, Collections.singletonList("cookie=value"))
 
       val httpClientResponse = SimpleHttpClientResponse(status, statusText, SimpleHttpClientHeaders(headers), contentType, body)
@@ -76,6 +78,61 @@ class HttpClientResponseConverterTest extends AnyFreeSpec with Matchers {
       maybeTotal.isDefined shouldBe true
       val totalNumber = maybeTotal.get.value.materialize.asInstanceOf[NumberValue]
       assert(totalNumber.evaluate.toLong >= sleep)
+    }
+
+    "should ignore body field when content-length header is 0" in {
+      val contentType = "application/json"
+      val body = new ByteArrayInputStream(new Array[Byte](0))
+
+      val headers = new util.HashMap[String, util.List[String]]()
+      headers.put("content-length", Collections.singletonList("0"))
+      headers.put("Content-Type", Collections.singletonList(contentType))
+
+      val httpClientResponse = SimpleHttpClientResponse(200, "OK", SimpleHttpClientHeaders(headers), contentType, body)
+      val response = HttpClientResponseConverter(httpClientResponse, StopWatch(on = true)).convert()
+      val responseObj = response.evaluate
+      // body
+      val maybeBody = ObjectValueUtils.select(responseObj, "body")
+      maybeBody.isDefined shouldBe false
+    }
+
+    "should ignore body field when content-length is undefined and status code is one of (204, 205, 304)" in {
+      def doTest(statusCode: Int, statusText: String): Assertion = {
+        val contentType = "application/json"
+        val body = new ByteArrayInputStream(new Array[Byte](0))
+        val headers = new util.HashMap[String, util.List[String]]()
+        headers.put("Content-Type", Collections.singletonList(contentType))
+
+        val httpClientResponse = SimpleHttpClientResponse(statusCode, statusText, SimpleHttpClientHeaders(headers), contentType, body)
+        val response = HttpClientResponseConverter(httpClientResponse, StopWatch(on = true)).convert()
+        val responseObj = response.evaluate
+        // body
+        val maybeBody = ObjectValueUtils.select(responseObj, "body")
+        maybeBody.isDefined shouldBe false
+      }
+      doTest(204, "N0_CONTENT")
+      doTest(205, "RESET_CONTENT")
+      doTest(304, "NOT_MODIFIED")
+    }
+
+    "should send body when field when content-length is undefined or not a number" in {
+      def doTest(headers: util.Map[String, util.List[String]], contentType: String): Assertion = {
+        val body = new ByteArrayInputStream(new Array[Byte](0))
+        val httpClientResponse = SimpleHttpClientResponse(200, "OK", SimpleHttpClientHeaders(headers), contentType, body)
+        val response = HttpClientResponseConverter(httpClientResponse, StopWatch(on = true)).convert()
+        val responseObj = response.evaluate
+        // body
+        val maybeBody = ObjectValueUtils.select(responseObj, "body")
+        maybeBody.isDefined shouldBe true
+      }
+      var headers = new util.HashMap[String, util.List[String]]()
+      headers.put("Content-Type", Collections.singletonList("application/json"))
+      // No content-length
+      doTest(headers, "application/json")
+      // Not a number content-length
+      headers = new util.HashMap[String, util.List[String]]()
+      headers.put("Content-Length", Collections.singletonList("Hi"))
+      doTest(headers, "application/json")
     }
   }
 }

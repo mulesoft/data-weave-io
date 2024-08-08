@@ -5,7 +5,12 @@ import org.mule.weave.v2.module.http.service.HttpClientHeaders
 import java.util
 import java.util.Optional
 
-class SimpleHttpClientHeaders(headers: util.Map[String, util.List[String]]) extends HttpClientHeaders {
+class SimpleHttpClientHeaders(initialHeaders: util.Map[String, util.List[String]]) extends HttpClientHeaders {
+  private val headers = {
+    val headersMap = new util.TreeMap[String, util.List[String]](String.CASE_INSENSITIVE_ORDER)
+    headersMap.putAll(initialHeaders)
+    headersMap
+  }
 
   override def getHeaderNames: util.Set[String] = headers.keySet()
 
