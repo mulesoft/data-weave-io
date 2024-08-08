@@ -12,7 +12,6 @@ import * from dw::core::URL
 import * from dw::io::http::BodyUtils
 import * from dw::io::http::Types
 import * from dw::io::http::utils::HttpHeaders
-import * from dw::module::Mime
 import * from dw::module::Multipart
 
 /**
@@ -44,9 +43,6 @@ var DEFAULT_SERIALIZATION_CONFIG = {
   readerProperties: {},
   writerProperties: {}
 }
-
-var OCTET_STREAM_MIME_TYPE = { 'type': "application", subtype: "octet-stream", parameters: {} }
-var X_BINARY_MIME_TYPE = { 'type': "application", subtype: "x-binary", parameters: {} }
 
 fun get<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder,
   headers: HttpHeaders = {},
@@ -271,7 +267,7 @@ fun readHttpResponseBody<B <: HttpBody, H <: HttpHeaders>(httpResponse: HttpResp
     var httpResponseWithBody = httpResponse update {
       case .body -> do {
         if (contentType != null)
-         readBody(contentType, responseBody, serializationConfig)
+          readBody(contentType, responseBody, serializationConfig)
         else
           responseBody <~ { "mimeType": null, "raw": responseBody }
       }
@@ -294,25 +290,7 @@ fun readHttpResponseBody<B <: HttpBody, H <: HttpHeaders>(httpResponse: HttpResp
 * | serializationConfig | `SerializationConfig` | The HTTP serialization configuration to use.
 * |===
 */
-fun readBody<B <: HttpBody>(mimeType: String, body: Binary, serializationConfig: SerializationConfig): B = do {
-  var mimeResult = fromString(mimeType)
-  @Lazy
-  var parsedBody =
-    if (mimeResult.success) do {
-      var mime = mimeResult.result!
-      var isBinaryMimeType = isHandledBy(OCTET_STREAM_MIME_TYPE, mime) or isHandledBy(X_BINARY_MIME_TYPE, mime)
-      ---
-      if (isBinaryMimeType)
-        body
-      else
-        readFromBinary(mime, body, serializationConfig.readerProperties default {})
-      }
-    else
-      body
-  ---
-  // Preserve mimeType and raw schemas
-  (parsedBody as B) <~ { "mimeType": mimeType, "raw": body }
-}
+fun readBody<B <: HttpBody>(mimeType: String, body: Binary, serializationConfig: SerializationConfig): B = native("http::ReadBodyFunction")
 
 /**
 * String interpolator function to build a URL

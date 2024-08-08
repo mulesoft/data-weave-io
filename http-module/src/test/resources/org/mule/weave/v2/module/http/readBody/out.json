@@ -17,5 +17,25 @@
     "body": true,
     "mimeType": "application/octet-stream",
     "raw": true
+  },
+  "d": {
+    "raw": "{\n  \"name\": \"Ma\n}",
+    "mimeType": "application/json",
+    "result": {
+      "success": false,
+      "error": {
+        "kind": "ReaderParsingException",
+        "message": "Unexpected character '\\u000a' at response.body@[2:14] (line:column), expected '\"', while reading `response.body` as Json.\n \n2|   \"name\": \"Ma\n                ^"
+      },
+      "result": null
+    }
+  },
+  "e": {
+    "lastName": "ケン",
+    "name": "Mariano",
+    "age": 32,
+    "year": 1983,
+    "male": true,
+    "married": false
   }
 }

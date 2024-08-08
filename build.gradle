@@ -47,7 +47,7 @@ subprojects {
 
     repositories {
 //        if(Boolean.getBoolean("mavenLocal")) {
-//            mavenLocal()
+            mavenLocal()
 //        }
         mavenCentral()
         maven {
