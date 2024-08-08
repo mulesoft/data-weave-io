@@ -266,8 +266,11 @@ fun readHttpResponseBody<B <: HttpBody, H <: HttpHeaders>(httpResponse: HttpResp
     var contentType = httpResponse.contentType
     var httpResponseWithBody = httpResponse update {
       case .body -> do {
-        if (contentType != null)
-          readBody(contentType, responseBody, serializationConfig)
+        if (contentType != null) do {
+          var readerProperties = serializationConfig.readerProperties default {}
+          ---
+          readBody(contentType, responseBody, readerProperties)
+        }
         else
           responseBody <~ { "mimeType": null, "raw": responseBody }
       }
@@ -290,7 +293,7 @@ fun readHttpResponseBody<B <: HttpBody, H <: HttpHeaders>(httpResponse: HttpResp
 * | serializationConfig | `SerializationConfig` | The HTTP serialization configuration to use.
 * |===
 */
-fun readBody<B <: HttpBody>(mimeType: String, body: Binary, serializationConfig: SerializationConfig): B = native("http::ReadBodyFunction")
+fun readBody<B <: HttpBody>(mimeType: String, body: Binary, readerProperties: Object = {}): B = native("http::ReadBodyFunction")
 
 /**
 * String interpolator function to build a URL
@@ -308,7 +311,7 @@ fun resolveTemplateWith(uri: String, context: Object): String =
 * Utility function that adds the proper Authorization header based on the supported Auth type.
 **/
 fun createAuthorizationHeader(kind: OAuth | BasicAuth): {| Authorization: String |} = do {
-    kind  match {
+    kind match {
         case is OAuth -> { Authorization: "Bearer $($.token)"}
         case is BasicAuth -> do {
           var base = toBase64("$($.username):$($.password)" as Binary {encoding: "UTF-8"})

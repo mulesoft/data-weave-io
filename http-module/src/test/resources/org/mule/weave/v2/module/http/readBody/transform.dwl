@@ -10,17 +10,17 @@ type User = {
 ---
 {
  a:
-   readBody("application/json",in0, DEFAULT_SERIALIZATION_CONFIG),
+   readBody("application/json",in0),
  b:
-   readBody("application/xml", in1, DEFAULT_SERIALIZATION_CONFIG).user,
+   readBody("application/xml", in1).user,
  c: do {
-   var body = readBody("application/octet-stream", in2, DEFAULT_SERIALIZATION_CONFIG)
+   var body = readBody("application/octet-stream", in2)
    ---
    { body: body is Binary, mimeType: body.^.mimeType, raw: body.^.raw is Binary}
  },
  // should not fail on broken binaries
  d: do {
-   var body = readBody("application/json", in3, DEFAULT_SERIALIZATION_CONFIG)
+   var body = readBody("application/json", in3)
    ---
    {
      raw: body.^raw,
@@ -39,6 +39,15 @@ type User = {
      }
    }
  },
- // Use encoding
- e: readBody("application/json; charset=UTF-32", in4, DEFAULT_SERIALIZATION_CONFIG)
+ // Use charset
+ e: readBody("application/json; charset=UTF-32", in4),
+ // Use reader properties
+ f: do {
+   var body = readBody("application/csv", in5, {separator: "|"})
+   ---
+   {
+     name: body[0]."Name",
+     age: body[0]."Age"
+   }
+ }
 }

@@ -1,8 +1,10 @@
 package org.mule.weave.v2.module.http.values
 
 import org.mule.weave.v2.model.EvaluationContext
+import org.mule.weave.v2.model.structure.ObjectSeq
 import org.mule.weave.v2.model.structure.schema.Schema
 import org.mule.weave.v2.model.structure.schema.SchemaProperty
+import org.mule.weave.v2.model.types.StringType
 import org.mule.weave.v2.model.types.Type
 import org.mule.weave.v2.model.values.BinaryValue
 import org.mule.weave.v2.model.values.SchemaValue
@@ -10,12 +12,13 @@ import org.mule.weave.v2.model.values.StringValue
 import org.mule.weave.v2.model.values.Value
 import org.mule.weave.v2.model.values.wrappers.DelegateValue
 import org.mule.weave.v2.module.DataFormatManager
+import org.mule.weave.v2.module.core.multipart.MultiPartDataFormat
 import org.mule.weave.v2.module.http.functions.utils.MimeTypeUtil
 import org.mule.weave.v2.module.reader.SourceProvider
 import org.mule.weave.v2.parser.location.Location
 import org.mule.weave.v2.parser.module.MimeType
 
-class HttpClientResponseBodyValue(mimeType: String, sourceProvider: SourceProvider, readerProperties: Map[String, Any], location: Location) extends DelegateValue {
+class HttpClientResponseBodyValue(mimeType: String, sourceProvider: SourceProvider, readerProperties: ObjectSeq, location: Location) extends DelegateValue {
 
   private var bodyValue: Value[Any] = _
   private var valueTypeValue: Type = _
@@ -71,14 +74,17 @@ class HttpClientResponseBodyValue(mimeType: String, sourceProvider: SourceProvid
     location
   }
 
-  private def readFromBinary(mimeType: MimeType, sourceProvider: SourceProvider, readerProperties: Map[String, Any])(implicit ctx: EvaluationContext): Value[_] = {
+  private def readFromBinary(mimeType: MimeType, sourceProvider: SourceProvider, readerProperties: ObjectSeq)(implicit ctx: EvaluationContext): Value[_] = {
     DataFormatManager.byContentType(mimeType).map(df => {
       val reader = df.reader(sourceProvider)
-      readerProperties.foreach(ro => {
-        reader.setOption(location, ro._1, ro._2)
-      })
-      // Extract boundary
-      if (mimeType.mainType == "multipart") {
+      val keyValuePairs = readerProperties.toIterator()
+      for (kvp <- keyValuePairs) {
+        val propertyName = kvp._1.evaluate(ctx).name
+        val value = StringType.coerce(kvp._2).evaluate(ctx)
+        reader.setOption(kvp._1.location(), propertyName, value)
+      }
+      // Configure boundary
+      if (df.isInstanceOf[MultiPartDataFormat]) {
         val boundary = mimeType.parameters.get("boundary")
         if (boundary.isDefined) {
           reader.setOption(location, "boundary", boundary.get)
@@ -93,5 +99,5 @@ class HttpClientResponseBodyValue(mimeType: String, sourceProvider: SourceProvid
 
 object HttpClientResponseBodyValue {
 
-  def apply(mimeType: String, sourceProvider: SourceProvider, readerProperties: Map[String, Any], location: Location): HttpClientResponseBodyValue = new HttpClientResponseBodyValue(mimeType, sourceProvider, readerProperties, location)
+  def apply(mimeType: String, sourceProvider: SourceProvider, readerProperties: ObjectSeq, location: Location): HttpClientResponseBodyValue = new HttpClientResponseBodyValue(mimeType, sourceProvider, readerProperties, location)
 }
