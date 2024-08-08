@@ -290,7 +290,7 @@ fun readHttpResponseBody<B <: HttpBody, H <: HttpHeaders>(httpResponse: HttpResp
 * | Name | Type | Description
 * | mimeType | `String` | The MIME type to use.
 * | body | `Binary` | The desired body parse.
-* | serializationConfig | `SerializationConfig` | The HTTP serialization configuration to use.
+* | readerProperties | `Object` | The reader configuration properties used for read the body.
 * |===
 */
 fun readBody<B <: HttpBody>(mimeType: String, body: Binary, readerProperties: Object = {}): B = native("http::ReadBodyFunction")
