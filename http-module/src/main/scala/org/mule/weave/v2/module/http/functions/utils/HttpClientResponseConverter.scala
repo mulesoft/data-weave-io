@@ -107,6 +107,7 @@ class HttpClientResponseConverter(response: HttpClientResponse, stopWatch: StopW
         ctx.serviceManager.loggingService.logDebug(s"Ignoring HTTP response body field because $CONTENT_LENGTH_HEADER header value is $contentLength")
       }
     } else {
+      // Validate status code
       if (NO_CONTENT_STATUS_CODE == statusCode || NOT_MODIFIED_STATUS_CODE == statusCode || RESET_CONTENT_STATUS_CODE == statusCode) {
         addBodyField = false
         ctx.serviceManager.loggingService.logDebug(s"Ignoring HTTP response body field because the status: $statusCode does not support body")
