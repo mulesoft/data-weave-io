@@ -29,6 +29,17 @@
     }
   },
   {
-    "d": true
+    "d": {
+      "status": 200,
+      "contentType": "application/xml",
+      "headers": {
+        "content-length": "0",
+        "Content-Type": "application/xml"
+      },
+      "body": null
+    }
+  },
+  {
+    "e": true
   }
 ]
