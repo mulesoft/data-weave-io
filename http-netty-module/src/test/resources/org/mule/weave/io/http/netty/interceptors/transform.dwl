@@ -42,7 +42,7 @@ var server = api(
   a: sendRequestAndReadResponse( { method: "GET", url: 'http://$LOCALHOST/test1'})
     then {
      status: ($).status,
-     body: $.body,
+     (body: $.body) if ($.body?),
      (contentType: $.contentType) if ($.contentType?),
      cookies: $.cookies,
      headers: do {
