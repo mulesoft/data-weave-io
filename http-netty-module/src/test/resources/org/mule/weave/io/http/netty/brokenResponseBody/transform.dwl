@@ -3,6 +3,10 @@ import * from dw::io::http::Server
 import * from dw::io::http::Client
 import * from dw::Runtime
 
+type User = {
+  name: String
+}
+
 var serverConfig = { host: "localhost", port: dw::io::http::utils::Port::freePort() }
 var LOCALHOST = '$(serverConfig.host):$(serverConfig.port)'
 var server = api(serverConfig,
@@ -40,7 +44,7 @@ var server = api(serverConfig,
      raw: response.body.^raw,
      mimeType: response.body.^mimeType,
      body: do {
-       var bodyResult = try(() -> response.body)
+       var bodyResult = try(() -> response.body as User)
        ---
        {
          success: bodyResult.success,
