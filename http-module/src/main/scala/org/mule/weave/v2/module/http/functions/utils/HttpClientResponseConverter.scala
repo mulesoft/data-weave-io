@@ -99,31 +99,17 @@ class HttpClientResponseConverter(response: HttpClientResponse, stopWatch: StopW
   private def addBody(body: InputStream, statusCode: Int, headers: HttpClientHeaders, builder: ObjectValueBuilder)(implicit ctx: EvaluationContext): Unit = {
     var addBodyField = true
     val maybeContentLength = extractContentLength(headers)
-    maybeContentLength match {
-      case Some(contentLength) =>
-        // Validate content-length header
-        if (contentLength <= 0) {
-          addBodyField = false
-          ctx.serviceManager.loggingService.logDebug(s"Ignoring HTTP response body field because $CONTENT_LENGTH_HEADER header value is $contentLength")
-        }
-      case _ =>
-        // Validate status code
-        if (NO_CONTENT_STATUS_CODE == statusCode || NOT_MODIFIED_STATUS_CODE == statusCode || RESET_CONTENT_STATUS_CODE == statusCode) {
-          addBodyField = false
-          ctx.serviceManager.loggingService.logDebug(s"Ignoring HTTP response body field because the status: $statusCode does not support body")
-        }
-    }
     if (maybeContentLength.isDefined) {
       // Validate content-length header
       val contentLength = maybeContentLength.get
       if (contentLength <= 0) {
         addBodyField = false
-        ctx.serviceManager.loggingService.logDebug(s"Ignoring HTTP response body due $CONTENT_LENGTH_HEADER == 0")
+        ctx.serviceManager.loggingService.logDebug(s"Ignoring HTTP response body field because $CONTENT_LENGTH_HEADER header value is $contentLength")
       }
     } else {
       if (NO_CONTENT_STATUS_CODE == statusCode || NOT_MODIFIED_STATUS_CODE == statusCode || RESET_CONTENT_STATUS_CODE == statusCode) {
         addBodyField = false
-        ctx.serviceManager.loggingService.logDebug(s"Ignoring HTTP response body due unsupported body at status-code: $statusCode")
+        ctx.serviceManager.loggingService.logDebug(s"Ignoring HTTP response body field because the status: $statusCode does not support body")
       }
     }
 
