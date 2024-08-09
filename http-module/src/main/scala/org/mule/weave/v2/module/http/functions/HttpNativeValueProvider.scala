@@ -7,7 +7,8 @@ class HttpNativeValueProvider extends NativeValueProvider {
 
   val functions: Map[String, FunctionValue] = Map(
     ("HttpServerFunction", new HttpServerFunction()),
-    ("HttpRequestFunction", new HttpRequestFunction()))
+    ("HttpRequestFunction", new HttpRequestFunction()),
+    ("ReadBodyFunction", new ReadBodyFunction()))
 
   override def name(): String = "http"
 
