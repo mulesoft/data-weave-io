@@ -14,7 +14,6 @@ DataWeave script.
 |------|------------|
 | [formatHeader](#formatheader ) | Formats the given HTTP header value with the following rules:<br>- The first char of every word is in upper case and the remaining chars are in lower case.|
 | [normalizeHeaders](#normalizeheaders ) | Normalize the name of the given `HttpHeaders` value following the `formatHeader` function rules.|
-| [readFromBinary](#readfrombinary ) | Reads a `Binary` body value and returns the parsed content.|
 | [writeToBinary](#writetobinary ) | Transforms the given HTTP body to a `BinaryBodyType` using:<br>- `contentType`: to select the proper DataFormat<br>- `properties`: the set of configuration properties specified by the DataFormat to write the current body.|
 
 
@@ -136,25 +135,6 @@ __________________________________________
 ### _normalizeHeaders<H <: HttpHeaders&#62;&#40;headers: Null&#41;: { _?: String }_
 
 Helper method of `normalizeHeaders` to work with Null
-__________________________________________
-
-
-## **readFromBinary**
-
-### _readFromBinary&#40;mime: MimeType, payload: Binary, properties: Object = {}&#41;: Any_
-
-Reads a `Binary` body value and returns the parsed content.
-
-If this function can cannot determine the DataFormat to use by the `MimeType` value returns the received `Binary` value.
-
-##### Parameters
-
-| Name | Type | Description|
-|------|------|------------|
-| mime | `MimeType` | The MIME type value used to select the proper DataFormat.|
-| payload | `Binary` | The body value to be parsed.|
-| properties | `Object` | The set of configuration properties specified by the DataFormat to read the current body.|
-
 __________________________________________
 
 
