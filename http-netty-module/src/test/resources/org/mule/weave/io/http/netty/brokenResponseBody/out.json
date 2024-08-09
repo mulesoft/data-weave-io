@@ -1,0 +1,37 @@
+[
+  {
+    "a": {
+      "status": 200,
+      "contentType": "application/json",
+      "headers": {
+        "transfer-encoding": "chunked",
+        "Content-Type": "application/json"
+      },
+      "raw": "{\"name\": \"Ma",
+      "mimeType": "application/json"
+    }
+  },
+  {
+    "b": {
+      "status": 200,
+      "contentType": "application/json",
+      "headers": {
+        "transfer-encoding": "chunked",
+        "Content-Type": "application/json"
+      },
+      "raw": "{\"name\": \"Ma",
+      "mimeType": "application/json",
+      "body": {
+        "success": false,
+        "error": {
+          "kind": "ReaderParsingException",
+          "message": "Unexpected end-of-input at response.body@[1:13] (line:column), expected '\"', while reading `response.body` as Json.\n \n1| {\"name\": \"Ma\n               ^"
+        },
+        "result": null
+      }
+    }
+  },
+  {
+    "z": true
+  }
+]
