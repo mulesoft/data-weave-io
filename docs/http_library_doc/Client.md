@@ -39,8 +39,6 @@ DataWeave script.
 | [DEFAULT_HTTP_CLIENT_CONFIG](#default_http_client_config ) | Variable used to identify the default HTTP client configuration.|
 | [DEFAULT_HTTP_REQUEST_CONFIG](#default_http_request_config ) | Variable used to identify the default HTTP request configuration.|
 | [DEFAULT_SERIALIZATION_CONFIG](#default_serialization_config ) | Variable used to identify the default HTTP serialization configuration.|
-| [OCTET_STREAM_MIME_TYPE](#octet_stream_mime_type ) | |
-| [X_BINARY_MIME_TYPE](#x_binary_mime_type ) | |
 
 
 
@@ -87,7 +85,7 @@ __________________________________________
 
 ## **createHttpRequest**
 
-### _createHttpRequest<T <: HttpBody&#62;&#40;method: HttpMethod, url: String &#124; UrlBuilder, headers: HttpHeaders = {}, body: T &#124; Null = null&#41;: HttpRequest<T&#62;_
+### _createHttpRequest<T <: HttpBody&#62;&#40;method: HttpMethod, url: String &#124; UrlBuilder, headers: HttpHeaders = {}, body: T &#124; Null = null, cookies: HttpRequestCookies = {}&#41;: HttpRequest<T&#62;_
 
 Helper function to create an `HttpRequest` instance.
 
@@ -98,6 +96,7 @@ Helper function to create an `HttpRequest` instance.
 | method | `HttpMethod` | The desired HTTP request method.|
 | url | `String &#124; UrlBuilder` | The desired HTTP request url.|
 | headers | `HttpHeaders` | The HTTP request header to send.|
+| cookies | `HttpRequestCookies` | The HTTP request cookies to send.|
 | body | `HttpBody &#124; Null` |  The HTTP request body to send.|
 
 __________________________________________
@@ -169,7 +168,7 @@ __________________________________________
 
 ## **readBody**
 
-### _readBody<B <: HttpBody&#62;&#40;mimeType: String, body: Binary, serializationConfig: SerializationConfig&#41;: B_
+### _readBody<B <: HttpBody&#62;&#40;mimeType: String, body: Binary, readerProperties: Object = {}&#41;: B_
 
 Helper function to read a `Binary` body instance.
 
@@ -179,7 +178,7 @@ Helper function to read a `Binary` body instance.
 |------|------|------------|
 | mimeType | `String` | The MIME type to use.|
 | body | `Binary` | The desired body parse.|
-| serializationConfig | `SerializationConfig` | The HTTP serialization configuration to use.|
+| readerProperties | `Object` | The reader configuration properties used for read the body.|
 
 __________________________________________
 
@@ -258,16 +257,6 @@ Variable used to identify the default HTTP request configuration.
 
 
 Variable used to identify the default HTTP serialization configuration.
-
-## **OCTET_STREAM_MIME_TYPE**
-
-
-
-
-## **X_BINARY_MIME_TYPE**
-
-
-
 
 
 
