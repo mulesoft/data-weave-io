@@ -150,7 +150,7 @@ subprojects {
     }
 
     task docs(dependsOn: weavedoc, type: Zip) {
-        classifier = "weavedocs"
+        archiveClassifier = "weavedocs"
         from 'build/docs/weavedocs/'
     }
 
