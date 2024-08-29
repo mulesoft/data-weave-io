@@ -14,8 +14,13 @@ scheduleTriggerCommand : "@daily"
 upstreamProjects:
     DataWeave/data-weave/master
     DataWeave/data-weave-tooling-extra/master
+jdkTool: OPEN-JDK17
 additionalTestConfigs:
-  ubuntu-jdk11:
-    jdkTool: OPEN-JDK11
-  jdk17:
-    jdkTool: OPEN-JDK17
+  arm-jdk17:
+    agentLabel: ubuntu-22.04-arm
+    environmentVariables:
+      TEST_ENVIRONMENT: "arm-jdk17"
+  jdk21:
+    jdkTool: TEMURIN-JDK21
+    environmentVariables:
+      TEST_ENVIRONMENT: "jdk21"

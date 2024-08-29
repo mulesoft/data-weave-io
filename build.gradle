@@ -45,6 +45,16 @@ subprojects {
     group = "org.mule.weave"
     version = projectVersion
 
+    compileJava {
+        sourceCompatibility = 17
+        targetCompatibility = 17
+    }
+
+    compileScala {
+        sourceCompatibility = 17
+        targetCompatibility = 17
+    }
+
     repositories {
 //        if(Boolean.getBoolean("mavenLocal")) {
 //            mavenLocal()
@@ -140,7 +150,7 @@ subprojects {
     }
 
     task docs(dependsOn: weavedoc, type: Zip) {
-        classifier = "weavedocs"
+        archiveClassifier = "weavedocs"
         from 'build/docs/weavedocs/'
     }
 
