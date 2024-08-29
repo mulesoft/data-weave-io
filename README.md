@@ -17,6 +17,7 @@ The following table describes the `DataWeave IO` and the `DataWeave` version com
 
 | DataWeave IO | DataWeave |
 |--------------|-----------|
+| 2.9.x        | 2.9.x     |
 | 2.8.x        | 2.8.x     |
 | 2.7.x        | 2.7.x     |
 | 0.10.x       | 2.6.x     |
