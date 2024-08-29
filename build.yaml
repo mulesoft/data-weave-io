@@ -21,6 +21,6 @@ additionalTestConfigs:
     environmentVariables:
       TEST_ENVIRONMENT: "arm-jdk17"
   jdk21:
-    testJdkTool: TEMURIN-JDK21
+    jdkTool: TEMURIN-JDK21
     environmentVariables:
       TEST_ENVIRONMENT: "jdk21"
