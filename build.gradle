@@ -44,17 +44,17 @@ subprojects {
 
     group = "org.mule.weave"
     version = projectVersion
-/*
+
     compileJava {
-        sourceCompatibility = 17
-        targetCompatibility = 17
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
 
     compileScala {
-        sourceCompatibility = 17
-        targetCompatibility = 17
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
-*/
+
     repositories {
 //        if(Boolean.getBoolean("mavenLocal")) {
 //            mavenLocal()
