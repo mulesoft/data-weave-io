@@ -22,6 +22,7 @@ additionalTestConfigs:
       TEST_ENVIRONMENT: "jdk17"
   arm-jdk17:
     agentLabel: ubuntu-22.04-arm
+    jdkTool: OPEN-JDK17
     environmentVariables:
       TEST_ENVIRONMENT: "arm-jdk17"
   jdk21:
