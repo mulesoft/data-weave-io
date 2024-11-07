@@ -21,6 +21,12 @@ object NettyHttpClientFactory {
     // Using empty cookie store
     asyncConfig.setCookieStore(EmptyCookieStore())
 
+    //The weave.netty.client.honorProxyProperties allows disabling the system properties configuration for proxy setup.
+    val skipSetUseProxyProperties = sys.props.get("weave.netty.client.honorProxyProperties") exists (_ equalsIgnoreCase "false")
+    if (!skipSetUseProxyProperties) {
+      asyncConfig.setUseProxyProperties(true)
+    }
+
     asyncConfig.setCompressionEnforced(configuration.isCompressionHeader)
 
     if (!configuration.isDecompress) {
