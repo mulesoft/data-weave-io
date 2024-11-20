@@ -30,7 +30,7 @@ var DEFAULT_HTTP_CLIENT_CONFIG = {
 * Variable used to identify the default HTTP request configuration.
 */
 var DEFAULT_HTTP_REQUEST_CONFIG = {
-  followRedirect: false,
+  followRedirects: false,
   readTimeout: 60000,
   requestTimeout: 60000
 }
