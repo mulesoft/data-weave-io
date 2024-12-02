@@ -6,7 +6,6 @@ dependencies {
     api project(":http-module")
     api group: 'io.netty', name: 'netty-codec-http', version: '4.1.77.Final'
     api group: 'org.asynchttpclient', name: 'async-http-client', version: '2.12.3'
-    api group: 'org.mule.weave', name: 'cache-service', version: weaveVersion
     api group: 'org.mule.weave', name: 'caffeine-cache-service', version: weaveVersion
     implementation group: 'org.mule.weave', name: 'runtime', version: weaveVersion
 
