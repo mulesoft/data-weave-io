@@ -9,7 +9,7 @@ import org.mule.weave.v2.model.types.BinaryType
 import org.mule.weave.v2.model.types.NullType
 import org.mule.weave.v2.model.types.ObjectType
 import org.mule.weave.v2.model.types.StringType
-import org.mule.weave.v2.module.http.HttpHeader
+import org.mule.weave.v2.module.http
 import org.mule.weave.v2.module.http.functions.HttpClientRequestConfig
 import org.mule.weave.v2.module.http.functions.exceptions.DuplicatedCookieFieldException
 import org.mule.weave.v2.module.http.functions.utils.HttpClientRequestConverter.BODY
@@ -18,6 +18,8 @@ import org.mule.weave.v2.module.http.functions.utils.HttpClientRequestConverter.
 import org.mule.weave.v2.module.http.functions.utils.HttpClientRequestConverter.METHOD
 import org.mule.weave.v2.module.http.functions.utils.HttpClientRequestConverter.QUERY_PARAMS
 import org.mule.weave.v2.module.http.functions.utils.HttpClientRequestConverter.URL
+import org.mule.weave.v2.module.http.service.HttpClientHeaders
+import org.mule.weave.v2.module.http.service.HttpClientQueryParams.HttpQueryParam
 import org.mule.weave.v2.module.http.service.HttpClientRequest
 import org.mule.weave.v2.parser.exception.WeaveRuntimeException
 import org.mule.weave.v2.parser.location.LocationCapable
@@ -37,24 +39,23 @@ class HttpClientRequestConverter(
 
     val url = extractUrl(request, location)
     builder.setUrl(url.url)
-    url.queryParams.foreach(entry => {
-      entry._2.foreach(value => {
-        builder.addQueryParam(entry._1, value)
-      })
+
+    // Configuring query params
+    url.queryParams.foreach(queryParam => {
+      builder.addQueryParam(queryParam)
     })
 
-    val headers = extractHeaders(request)
-    headers.foreach(entry => {
-      entry._2.foreach(value => {
-        builder.addHeader(entry._1, value)
-      })
+    // Configuring headers
+    val httpClientHeaders = extractHeaders(request)
+    httpClientHeaders.getHeaders.forEach(header => {
+      builder.addHeader(header)
     })
 
-    val maybeCookieHeader = headers.get(HttpHeader.COOKIE_HEADER)
+    val maybeCookieHeader = httpClientHeaders.firstValue(http.HttpHeader.COOKIE_HEADER)
     val cookiesValue = selectObject(request, COOKIES).getOrElse(ObjectSeq.empty).toSeq()
 
     // Cookie is allowed in a single place: Header or Cookie object
-    if (maybeCookieHeader.isDefined && maybeCookieHeader.get.nonEmpty && cookiesValue.nonEmpty) {
+    if (maybeCookieHeader.isPresent && maybeCookieHeader.get.nonEmpty && cookiesValue.nonEmpty) {
       throw new DuplicatedCookieFieldException(location.location())
     } else {
       if (cookiesValue.nonEmpty) {
@@ -63,10 +64,11 @@ class HttpClientRequestConverter(
           val value = StringType.coerce(kvp._2).evaluate.toString
           s"$name=$value"
         }).mkString(";")
-        builder.addHeader(HttpHeader.COOKIE_HEADER, cookieValue)
+        builder.addHeader(http.HttpHeader.COOKIE_HEADER, cookieValue)
       }
     }
 
+    // Configuring body
     val maybeBody = extractBody(request)
     if (maybeBody.isDefined) {
       val body = maybeBody.get
@@ -90,43 +92,31 @@ class HttpClientRequestConverter(
     val urlValue = select(request, URL).getOrElse(throw new WeaveRuntimeException(s"Missing '$URL' value", location.location()))
     urlValue.evaluate match {
       case url: StringType.T =>
-        Url(url.toString, Map.empty[String, Seq[String]])
+        Url(url.toString, Seq.empty[HttpQueryParam])
 
       case urlBuilder: ObjectType.T =>
-        var queryParams = Map.empty[String, Seq[String]]
+        var queryParams = Seq.empty[HttpQueryParam]
         val urlObjectSeq = urlBuilder.materialize()
         val queryParamsValue = selectObject(urlObjectSeq, QUERY_PARAMS).getOrElse(ObjectSeq.empty)
         val url = selectString(urlObjectSeq, URL).getOrElse(throw new WeaveRuntimeException(s"Missing '$URL' value", location.location()))
         queryParamsValue.toSeq().foreach(kvp => {
           val name = kvp._1.evaluate.name
-          val value: String = StringType.coerce(kvp._2).evaluate.toString
-          val maybeValues = queryParams.get(name)
-          if (maybeValues.isDefined) {
-            val values = maybeValues.get :+ value
-            queryParams += (name -> values)
-          } else {
-            queryParams += (name -> Seq(value))
-          }
+          val value = StringType.coerce(kvp._2).evaluate.toString
+          queryParams = queryParams :+ new HttpQueryParam(name, value)
         })
         Url(url, queryParams)
     }
   }
 
-  private def extractHeaders(request: ObjectSeq)(implicit ctx: EvaluationContext): Map[String, Seq[String]] = {
-    var headers = Map.empty[String, Seq[String]]
+  private def extractHeaders(request: ObjectSeq)(implicit ctx: EvaluationContext): HttpClientHeaders = {
+    val builder = new HttpClientHeaders.Builder()
     val headersValue = selectObject(request, HEADERS).getOrElse(ObjectSeq.empty)
     headersValue.toSeq().foreach(kvp => {
       val name = kvp._1.evaluate.name
       val value = StringType.coerce(kvp._2).evaluate.toString
-      val maybeValues = headers.get(name)
-      if (maybeValues.isDefined) {
-        val values = maybeValues.get :+ value
-        headers += (name -> values)
-      } else {
-        headers += (name -> Seq(value))
-      }
+      builder.addHeader(name, value)
     })
-    headers
+    builder.build()
   }
 
   private def extractBody(request: ObjectSeq)(implicit ctx: EvaluationContext): Option[InputStream] = {
@@ -145,7 +135,7 @@ class HttpClientRequestConverter(
   }
 }
 
-case class Url(url: String, queryParams: Map[String, Seq[String]])
+case class Url(url: String, queryParams: Seq[HttpQueryParam])
 
 object HttpClientRequestConverter {
   private val METHOD = "method"

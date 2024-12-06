@@ -7,6 +7,8 @@
 */
 %dw 2.0
 
+import * from dw::io::http::Types
+
 var ACCEPT_HEADER = "Accept"
 var ACCEPT_CHARSET_HEADER = "Accept-Charset"
 var ACCEPT_ENCODING_HEADER = "Accept-Encoding"
@@ -88,3 +90,195 @@ var ACCESS_CONTROL_ALLOW_ORIGIN = "Access-Control-Allow-Origin"
 var ACCESS_CONTROL_ALLOW_METHODS = "Access-Control-Allow-Methods"
 var ACCESS_CONTROL_ALLOW_HEADERS = "Access-Control-Allow-Headers"
 var ACCESS_CONTROL_MAX_AGE = "Access-Control-Max-Age"
+
+/**
+* Formats the given HTTP header value with the following rules:
+* * The first char of every word is in upper case and the remaining chars are in lower case.
+*
+*
+* === Parameters
+*
+* [%header, cols="1,1,3"]
+* |===
+* | Name | Type | Description
+* | header | `String` | The header value to format.
+* |===
+*
+* === Example
+*
+* This example format several HTTP header values.
+*
+* ==== Source
+*
+* [source,DataWeave,linenums]
+* ----
+* %dw 2.0
+* output application/json
+* import * from dw::io::http::utils::HttpHeaders
+* ---
+* {
+*   a: formatHeader("Authorization"),
+*   b: formatHeader("Content-Type"),
+*   c: formatHeader("cache-control"),
+*   d: formatHeader("Accept-ENCODING"),
+*   e: formatHeader("Set-Cookie"),
+*   f: formatHeader("x-uow")
+* }
+* ----
+*
+* ==== Output
+*
+* [source,Json,linenums]
+* ----
+* {
+*   "a": "Authorization",
+*   "b": "Content-Type",
+*   "c": "Cache-Control",
+*   "d": "Accept-Encoding",
+*   "e": "Set-Cookie",
+*   "f": "X-Uow"
+* }
+* ----
+*
+**/
+fun formatHeader(header: String): String =
+  lower(header)
+    replace /\b([a-z])/
+    with upper($[0])
+
+/**
+* Normalize the name of the given `HttpHeaders` value following the `formatHeader` function rules.
+*
+* === Parameters
+*
+* [%header, cols="1,1,3"]
+* |===
+* | Name | Type | Description
+* | headers | `HttpHeaders` | The HTTP header value to normalize.
+* |===
+*
+* === Example
+*
+* This example normalize several HTTP header values.
+*
+* ==== Source
+*
+* [source,DataWeave,linenums]
+* ----
+* %dw 2.0
+* output application/json
+* import * from dw::io::http::utils::HttpHeaders
+* ---
+* normalizeHeaders({
+*   "Authorization": "authorization value",
+*   "Content-Type": "application/xml",
+*   "cache-control": "no-cache",
+*   "Accept-ENCODING": "gzip",
+*   "Set-Cookie": "value",
+*   "x-uow": "uow"})
+* ----
+*
+* ==== Output
+*
+* [source,Json,linenums]
+* ----
+* {
+*   "Authorization": "authorization value",
+*   "Content-Type": "application/xml",
+*   "Cache-Control": "no-cache",
+*   "Accept-Encoding": "gzip",
+*   "Set-Cookie": "value",
+*   "X-Uow": "uow"
+* }
+* ----
+*
+**/
+fun normalizeHeaders<H <: HttpHeaders>(headers: H): {_?: SimpleType} =
+  headers mapObject ((value, key, index) -> {(formatHeader(key)): value})
+
+/**
+* Helper function of `normalizeHeaders` to work with a `null` value.
+**/
+fun normalizeHeaders<H <: HttpHeaders>(headers: Null): {_?: SimpleType} = {}
+
+/**
+*
+* Gets an `Array` of HTTP header values for a given HTTP header name ignoring case.
+*
+* === Parameters
+*
+* [%header, cols="1,1,3"]
+* |===
+* | Name | Type | Description
+* | `headers` | `HttpHeaders` | The HTTP headers.
+* | `name` | String | The HTTP header name to search.
+* |===
+*
+* === Example
+*
+* This example search for the `Content-Type` header.
+*
+* ==== Source
+*
+* [source,DataWeave,linenums]
+* ----
+* %dw 2.0
+* output application/json
+*
+* var headers = {
+*   'content-type': "application/json",
+*   'Content-Length': "128",
+*   'Age': "15"
+* }
+* ---
+* findValuesIgnoreCase(headers, 'Content-Length')
+*
+* ----
+*
+* ==== Output
+*
+* [source,JSON,linenums]
+* ----
+* [ "application/json" ]
+* ----
+*
+* === Example
+*
+* This example search for the `Content-Type` header. (Notice that the `Content-Type` header is duplicated)
+*
+* ==== Source
+*
+* [source,DataWeave,linenums]
+* ----
+* %dw 2.0
+* output application/json
+*
+* var headers = {
+*   'content-type': "application/json",
+*   'CONTENT-TYPE': "multipart/form-data",
+*   'Content-Length': "128",
+*   'Age': "15"
+* }
+* ---
+* findValuesIgnoreCase(headers, 'Content-Length')
+* ----
+*
+* ==== Output
+*
+* [source,JSON,linenums]
+* ----
+* [ "application/json", "multipart/form-data" ]
+* ----
+*
+**/
+fun findValuesIgnoreCase<H <: HttpHeaders>(headers: H, name: String): Array<SimpleType> = do {
+  var headerToFind = lower(name)
+  var matchingHeaders = headers filterObject ((value, key, index) -> lower(key as String) == headerToFind)
+  ---
+  valuesOf(matchingHeaders) map ($ as SimpleType)
+}
+
+/**
+* Helper function of `findValuesIgnoreCase` to work with a `null` value.
+**/
+fun findValuesIgnoreCase<H <: HttpHeaders>(headers: Null, name: String): Array<SimpleType> = []

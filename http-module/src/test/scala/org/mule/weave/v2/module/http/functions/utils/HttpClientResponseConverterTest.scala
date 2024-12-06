@@ -3,8 +3,8 @@ package org.mule.weave.v2.module.http.functions.utils
 import org.mule.weave.v2.core.util.ObjectValueUtils
 import org.mule.weave.v2.model.EvaluationContext
 import org.mule.weave.v2.model.values.NumberValue
-import org.mule.weave.v2.module.http.SimpleHttpClientHeaders
 import org.mule.weave.v2.module.http.SimpleHttpClientResponse
+import org.mule.weave.v2.module.http.service.HttpClientHeaders
 import org.mule.weave.v2.module.http.service.HttpClientResponse
 import org.scalatest.Assertion
 import org.scalatest.freespec.AnyFreeSpec
@@ -31,7 +31,7 @@ class HttpClientResponseConverterTest extends AnyFreeSpec with Matchers {
       headers.put("Content-Length", Collections.singletonList(content.length.toString))
       headers.put(HttpClientResponse.SET_COOKIE, Collections.singletonList("cookie=value"))
 
-      val httpClientResponse = SimpleHttpClientResponse(status, statusText, SimpleHttpClientHeaders(headers), contentType, body)
+      val httpClientResponse = SimpleHttpClientResponse(status, statusText, HttpClientHeaders.of(headers), contentType, body)
       val stopWatch = StopWatch(on = true)
       val sleep = 1000
       Thread.sleep(sleep)
@@ -88,7 +88,7 @@ class HttpClientResponseConverterTest extends AnyFreeSpec with Matchers {
       headers.put("content-length", Collections.singletonList("0"))
       headers.put("Content-Type", Collections.singletonList(contentType))
 
-      val httpClientResponse = SimpleHttpClientResponse(200, "OK", SimpleHttpClientHeaders(headers), contentType, body)
+      val httpClientResponse = SimpleHttpClientResponse(200, "OK", HttpClientHeaders.of(headers), contentType, body)
       val response = HttpClientResponseConverter(httpClientResponse, StopWatch(on = true)).convert()
       val responseObj = response.evaluate
       // body
@@ -103,7 +103,7 @@ class HttpClientResponseConverterTest extends AnyFreeSpec with Matchers {
         val headers = new util.HashMap[String, util.List[String]]()
         headers.put("Content-Type", Collections.singletonList(contentType))
 
-        val httpClientResponse = SimpleHttpClientResponse(statusCode, statusText, SimpleHttpClientHeaders(headers), contentType, body)
+        val httpClientResponse = SimpleHttpClientResponse(statusCode, statusText, HttpClientHeaders.of(headers), contentType, body)
         val response = HttpClientResponseConverter(httpClientResponse, StopWatch(on = true)).convert()
         val responseObj = response.evaluate
         // body
@@ -118,7 +118,7 @@ class HttpClientResponseConverterTest extends AnyFreeSpec with Matchers {
     "should send body when field when content-length is undefined or not a number" in {
       def doTest(headers: util.Map[String, util.List[String]], contentType: String): Assertion = {
         val body = new ByteArrayInputStream(new Array[Byte](0))
-        val httpClientResponse = SimpleHttpClientResponse(200, "OK", SimpleHttpClientHeaders(headers), contentType, body)
+        val httpClientResponse = SimpleHttpClientResponse(200, "OK", HttpClientHeaders.of(headers), contentType, body)
         val response = HttpClientResponseConverter(httpClientResponse, StopWatch(on = true)).convert()
         val responseObj = response.evaluate
         // body
@@ -131,7 +131,7 @@ class HttpClientResponseConverterTest extends AnyFreeSpec with Matchers {
       doTest(headers, "application/json")
       // Not a number content-length
       headers = new util.HashMap[String, util.List[String]]()
-      headers.put("Content-Length", Collections.singletonList("Hi"))
+      headers.put("content-length", Collections.singletonList("Hi"))
       doTest(headers, "application/json")
     }
   }

@@ -71,14 +71,14 @@ fun postMultipart<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder,
   requestConfig: HttpRequestConfig = DEFAULT_HTTP_REQUEST_CONFIG,
   serializationConfig: SerializationConfig = DEFAULT_SERIALIZATION_CONFIG,
   clientConfig: HttpClientConfig = DEFAULT_HTTP_CLIENT_CONFIG): HttpResponse<B, H> = do {
-  var normalizedHeaders = normalizeHeaders(headers)
-  var newHeaders = if (normalizedHeaders[CONTENT_TYPE_HEADER]?)
-    headers
-  else
-    // Update 'Content-Type' header (using normalized headers to avoid Content-Type header duplication)
-    normalizedHeaders update {
+  var contentTypeHeaders = findValuesIgnoreCase(headers, CONTENT_TYPE_HEADER)
+  var newHeaders = if (isEmpty(contentTypeHeaders))
+    // Set 'Content-Type' header
+    headers update {
       case ."$(CONTENT_TYPE_HEADER)"! -> "multipart/form-data"
     }
+  else
+    headers
   var httpRequest =  createHttpRequest("POST", url, newHeaders, body)
   ---
   sendRequestAndReadResponse(httpRequest)
@@ -211,15 +211,33 @@ fun sendRequest<H <: HttpHeaders>(
 fun createBinaryHttpRequest(request: HttpRequest, serializationConfig: SerializationConfig): HttpRequest<Binary> =
   if (request.body != null) do {
     var headers = request.headers default {}
-    var normalizedHeaders = normalizeHeaders(headers)
-    var requestContentType = normalizedHeaders[CONTENT_TYPE_HEADER] default serializationConfig.contentType
+    var contentTypesHeaders = findValuesIgnoreCase(headers, CONTENT_TYPE_HEADER)
+    var requestContentType = if (isEmpty(contentTypesHeaders)) do {
+      serializationConfig.contentType
+    } else do {
+      contentTypesHeaders[0] as String
+    }
     var writerProperties = serializationConfig.writerProperties default {}
     var binaryBody = writeToBinary(request.body, requestContentType, writerProperties)
-    // Update 'Content-Type' header (using normalized headers to avoid Content-Type header duplication)
-    var headersWithContentType = normalizedHeaders
-      update {
+
+    var headersWithContentType = if (isEmpty(contentTypesHeaders)) do {
+      // Set 'Content-Type' header
+      headers update {
         case ."$(CONTENT_TYPE_HEADER)"! -> dw::module::Mime::toString(binaryBody.mime)
       }
+    } else do {
+      // Update 'Content-Type' header
+      var lowerContentTypeHeader = lower(CONTENT_TYPE_HEADER)
+      ---
+      headers mapObject ((value, key, index) -> do {
+        var headerName = lower(key as String)
+        ---
+        if (headerName == lowerContentTypeHeader)
+          { (key): dw::module::Mime::toString(binaryBody.mime) }
+        else
+         { (key): value}
+      })
+    }
     ---
     request update {
       case .headers! -> headersWithContentType
