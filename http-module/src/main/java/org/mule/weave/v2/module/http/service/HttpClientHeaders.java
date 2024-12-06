@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Representation of an HTTP headers.
@@ -22,8 +23,6 @@ public class HttpClientHeaders {
     }
 
     /**
-     * Return a {@link List} of HTTP Query Param
-     *
      * @return the {@link List} of {@link HttpHeader}.
      */
     public List<HttpHeader> getHeaders() {
@@ -31,8 +30,6 @@ public class HttpClientHeaders {
     }
 
     /**
-     * Return a {@link Set} of header names
-     *
      * @return the {@link Set} of header names.
      */
     public Set<String> names() {
@@ -40,6 +37,15 @@ public class HttpClientHeaders {
                 .stream()
                 .map(HttpHeader::getName)
                 .collect(toSet());
+    }
+
+    /**
+     * @return the {@link Set} of HTTP header names ignoring case.
+     */
+    public Set<String> namesIgnoreCase() {
+        final Set<String> names = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        headers.forEach(header -> names.add(header.getName()));
+        return names;
     }
 
     /**

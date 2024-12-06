@@ -22,8 +22,6 @@ public class HttpClientQueryParams {
     }
 
     /**
-     * Return a {@link List} of HTTP Query Param
-     *
      * @return the {@link List} of {@link HttpQueryParam}.
      */
     public List<HttpQueryParam> getQueryParams() {
@@ -31,7 +29,6 @@ public class HttpClientQueryParams {
     }
 
     /**
-     * Return a {@link Set} of HTTP query param names
      *
      * @return the {@link Set} of HTTP query param names.
      */
@@ -43,16 +40,13 @@ public class HttpClientQueryParams {
     }
 
     /**
-     * Return a {@link Set} of HTTP query param names ignoring case.
-     *
-     * @return the {@link Set} of HTTP query param names.
+     * @return the {@link Set} of HTTP query param names ignoring case.
      */
     public Set<String> namesIgnoreCase() {
         final Set<String> names = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         queryParams.forEach(queryParam -> names.add(queryParam.getName()));
         return names;
     }
-
 
     /**
      * Gets a {@link List} of HTTP query params values for a given {@code name}.
