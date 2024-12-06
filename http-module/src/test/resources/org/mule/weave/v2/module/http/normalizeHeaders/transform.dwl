@@ -1,7 +1,7 @@
 %dw 2.0
 output application/json
 
-import * from dw::io::http::BodyUtils
+import * from dw::io::http::utils::HttpHeaders
 ---
 normalizeHeaders({
     "Authorization": "authorization value",

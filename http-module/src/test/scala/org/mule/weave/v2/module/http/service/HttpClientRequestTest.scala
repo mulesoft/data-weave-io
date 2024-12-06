@@ -31,8 +31,8 @@ class HttpClientRequestTest extends AnyFreeSpec with Matchers {
 
       request.getMethod shouldBe method
       request.getUrl shouldBe url
-      request.getHeaders.isEmpty shouldBe true
-      request.getQueryParams.isEmpty shouldBe true
+      request.getHeaders.getHeaders.isEmpty shouldBe true
+      request.getQueryParams.getQueryParams.isEmpty shouldBe true
       request.getBody shouldBe null
       request.isFollowRedirects shouldBe false
       request.getRequestTimeout shouldBe 60000
@@ -60,10 +60,10 @@ class HttpClientRequestTest extends AnyFreeSpec with Matchers {
 
       request.getMethod shouldBe method
       request.getUrl shouldBe url
-      request.getHeaders.size() shouldBe 1
-      request.getHeaders.get("header").get(0) shouldBe "value"
-      request.getQueryParams.size() shouldBe 1
-      request.getQueryParams.get("param").get(0) shouldBe "value"
+      request.getHeaders.getHeaders.size() shouldBe 1
+      request.getHeaders.allValues("header").get(0) shouldBe "value"
+      request.getQueryParams.getQueryParams.size() shouldBe 1
+      request.getQueryParams.allValues("param").get(0) shouldBe "value"
       request.getBody should not be null
       request.isFollowRedirects shouldBe followRedirects
       request.getRequestTimeout shouldBe requestTimeout

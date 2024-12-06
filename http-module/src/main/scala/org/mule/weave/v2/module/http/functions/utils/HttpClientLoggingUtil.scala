@@ -1,5 +1,6 @@
 package org.mule.weave.v2.module.http.functions.utils
 
+import org.mule.weave.v2.module.http.HttpHeader
 import org.mule.weave.v2.module.http.service.HttpClientConfiguration
 import org.mule.weave.v2.module.http.service.HttpClientRequest
 import org.mule.weave.v2.module.http.service.HttpClientResponse
@@ -40,21 +41,25 @@ object HttpClientLoggingUtil {
   }
 
   private def appendQueryParams(buffer: StringBuilder, httpClientRequest: HttpClientRequest): Unit = {
-    if (!httpClientRequest.getQueryParams.isEmpty) {
-      buffer.append('?')
-      val iterator = httpClientRequest.getQueryParams.asScala.iterator
-      while (iterator.hasNext) {
-        val queryParam = iterator.next()
-        val valuesIterator = queryParam._2.iterator()
-        while (valuesIterator.hasNext) {
-          val value = valuesIterator.next()
-          buffer.append(s"${queryParam._1}=$value")
-          if (valuesIterator.hasNext) {
-            buffer.append('&')
+    if (httpClientRequest.getQueryParams != null) {
+      val queryParams = httpClientRequest.getQueryParams
+      val queryParamsNames = queryParams.namesIgnoreCase
+      if (!queryParamsNames.isEmpty) {
+        buffer.append('?')
+        val iterator = queryParamsNames.asScala.iterator
+        while (iterator.hasNext) {
+          val queryParamName = iterator.next()
+          val valuesIterator = queryParams.allValuesIgnoreCase(queryParamName).iterator()
+          while (valuesIterator.hasNext) {
+            val value = valuesIterator.next()
+            buffer.append(s"$queryParamName=$value")
+            if (valuesIterator.hasNext) {
+              buffer.append('&')
+            }
           }
-        }
-        if (iterator.hasNext) {
-          buffer.append(',')
+          if (iterator.hasNext) {
+            buffer.append(',')
+          }
         }
       }
     }
@@ -62,9 +67,8 @@ object HttpClientLoggingUtil {
 
   private def resolveContentType(httpClientRequest: HttpClientRequest): String = {
     val buffer = new StringBuilder()
-    val maybeContentType = Option(httpClientRequest.getHeaders.get("Content-Type"))
-    if (maybeContentType.isDefined) {
-      val contentTypes = maybeContentType.get
+    if (httpClientRequest.getHeaders != null) {
+      val contentTypes = httpClientRequest.getHeaders.allValuesIgnoreCase(HttpHeader.CONTENT_TYPE_HEADER)
       if (!contentTypes.isEmpty) {
         val iterator = contentTypes.asScala.iterator
         while (iterator.hasNext) {

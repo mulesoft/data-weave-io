@@ -66,21 +66,14 @@ class HttpClientResponseConverter(response: HttpClientResponse, stopWatch: StopW
     builder.withSchema(schema)
   }
 
-  private def asHeadersValue(headers: HttpClientHeaders): Value[_] = {
-    val entries = if (headers != null) {
-      val names = headers.getHeaderNames
-      if (names != null) {
-        names.asScala.flatMap(name => {
-          headers.getHeaderValues(name).asScala.map(value => {
-            KeyValuePair(KeyValue(name), StringValue(value))
-          })
-        })
+  private def asHeadersValue(httpClientHeaders: HttpClientHeaders): Value[_] = {
+    val entries =
+      if (httpClientHeaders != null && httpClientHeaders.getHeaders != null) {
+        httpClientHeaders.getHeaders.asScala.map(header =>
+          KeyValuePair(KeyValue(header.getName), StringValue(header.getValue)))
       } else {
         Seq.empty[KeyValuePair]
       }
-    } else {
-      Seq.empty[KeyValuePair]
-    }
     ObjectValue(entries.toArray)
   }
 
@@ -104,13 +97,17 @@ class HttpClientResponseConverter(response: HttpClientResponse, stopWatch: StopW
       val contentLength = maybeContentLength.get
       if (contentLength <= 0) {
         addBodyField = false
-        ctx.serviceManager.loggingService.logDebug(s"Ignoring HTTP response body field because $CONTENT_LENGTH_HEADER header value is $contentLength")
+        if (ctx.serviceManager.loggingService.isDebugEnabled()) {
+          ctx.serviceManager.loggingService.logDebug(s"Ignoring HTTP response body field because $CONTENT_LENGTH_HEADER header value is $contentLength")
+        }
       }
     } else {
       // Validate status code
       if (NO_CONTENT_STATUS_CODE == statusCode || NOT_MODIFIED_STATUS_CODE == statusCode || RESET_CONTENT_STATUS_CODE == statusCode) {
         addBodyField = false
-        ctx.serviceManager.loggingService.logDebug(s"Ignoring HTTP response body field because the status: $statusCode does not support body")
+        if (ctx.serviceManager.loggingService.isDebugEnabled()) {
+          ctx.serviceManager.loggingService.logDebug(s"Ignoring HTTP response body field because the status: $statusCode does not support body")
+        }
       }
     }
 
@@ -122,7 +119,7 @@ class HttpClientResponseConverter(response: HttpClientResponse, stopWatch: StopW
 
   private def extractContentLength(headers: HttpClientHeaders): Option[Long] = {
     if (headers != null) {
-      val contentLengthHeaderValues = headers.getHeaderValue(CONTENT_LENGTH_HEADER)
+      val contentLengthHeaderValues = headers.firstValueIgnoreCase(CONTENT_LENGTH_HEADER)
       if (contentLengthHeaderValues.isPresent) {
         var contentLength: Option[Long] = None
         try {

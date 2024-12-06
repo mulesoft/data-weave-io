@@ -55,7 +55,7 @@ fun then<A, V>(result: A, assertions: (result: A) -> V): V = assertions(result)
     field('field', 'value'),
     field({name: 'field2', value:'value2'}),
     file({name: 'fileX', path: 'MyApi.dwl' }),
-    file('fileY','MyApi.dwl')]), {"Content-TYPE": "multipart/form-data"})
+    file('fileY','MyApi.dwl')]))
     then {
      mimeType : $.body.^mimeType,
      body : $.body as Object - "headers" - "origin",
