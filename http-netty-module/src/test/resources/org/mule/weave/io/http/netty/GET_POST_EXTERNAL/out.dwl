@@ -1,9 +1,4 @@
 {
-  b: {
-    statusText: "OK",
-    status: 200,
-    headersIsEmpty: false
-  },
   d: {
     body: true,
     bodySize: true,

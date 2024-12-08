@@ -6,13 +6,6 @@ import form, field, file from dw::module::Multipart
 fun then<A, V>(result: A, assertions: (result: A) -> V): V = assertions(result)
 ---
 {
-  // validate urlEncode in invalid uri characters
-  b: get('http://httpbin.org/anything/%7Basdasd%7D?a')
-    then {
-      "statusText": $.statusText,
-      "status" : $.status,
-      "headersIsEmpty": isEmpty($.headers)
-    },
   // Test octet-stream & chunked streaming
   d: get( 'http://httpbin.org/stream-bytes/1024?chunk_size=128') then {
        body: $.body is Binary,

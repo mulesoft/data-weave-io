@@ -4,6 +4,25 @@
     "status": 200,
     "contentType": "application/json"
   },
+  "b": {
+    "status": 200,
+    "statusText": "OK",
+    "body": {
+      "body": null,
+      "method": "GET",
+      "path": "/echo/anything/%7Basdasd%7D",
+      "queryParams": {
+        "a": ""
+      },
+      "headers": {
+        "accept": "*/*",
+        "user-agent": "AHC/2.1",
+        "content-length": "0"
+      }
+    },
+    "cookies": {},
+    "contentType": "application/json"
+  },
   "c": {
     "statusText": "OK",
     "status": 200,
@@ -16,22 +35,36 @@
   "f":  {
     "mimeType": "application/json",
     "body": {
-      "args": {
+      "body": null,
+      "method": "POST",
+      "path": "/echo",
+      "queryParams": {
         "asd": "123",
         "space": "Mariano de Achaval"
       },
-      "path": "/post"
+      "headers": {
+        "accept": "*/*",
+        "user-agent": "AHC/2.1",
+        "content-length": "0"
+      }
     },
     "contentType": "application/json"
   },
   "g": {
     "mimeType": "application/json",
     "body": {
-      "args": {
+      "body": null,
+      "method": "POST",
+      "path": "/echo",
+      "queryParams": {
         "asd": "123",
         "space": "Mariano de Achaval"
       },
-      "path": "/post"
+      "headers": {
+        "accept": "*/*",
+        "user-agent": "AHC/2.1",
+        "content-length": "0"
+      }
     },
     "contentType": "application/json"
   },

@@ -10,13 +10,18 @@ var serverConfig = { host: "localhost", port: dw::io::http::utils::Port::freePor
 var LOCALHOST = '$(serverConfig.host):$(serverConfig.port)'
 var server = api(serverConfig,
   {
-    "/get": {
-      "GET": (req) -> {
-        responseStatus: 200,
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: '{"name": "Mariano"}' as Binary
+    "/echo.*": {
+      "GET": (req: HttpServerRequest) -> do {
+        {
+          responseStatus: 200,
+          body: req
+        }
+      },
+      "POST": (req: HttpServerRequest) -> do {
+        {
+          responseStatus: 200,
+          body: req
+        }
       }
     },
     "/bytes": {
@@ -27,18 +32,6 @@ var server = api(serverConfig,
           "Content-Length": sizeOf(in0)
         },
         body: in0
-      }
-    },
-    "/post": {
-      "POST": (req) -> {
-        responseStatus: 200,
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: {
-          args: req.queryParams,
-          path: req.path
-        }
       }
     },
     "/cookies": {
@@ -61,18 +54,37 @@ var server = api(serverConfig,
           headers: headers
         }
       }
-    },
+    }
   })
 
 ---
 {
   a: do {
-    var response = get( 'http://$LOCALHOST/get')
+    var response = get( 'http://$LOCALHOST/echo')
     ---
     {
       statusText: response.statusText,
       status: response.status,
       contentType: response.contentType
+    }
+  },
+  // validate urlEncode in invalid uri characters
+  b: do {
+    var response = get('http://$LOCALHOST/echo/anything/%7Basdasd%7D?a')
+    var body = response.body
+    ---
+    {
+      status : response.status,
+      statusText: response.statusText,
+      body: {
+        body: body.body,
+        method: body.method,
+        path: body.path,
+        queryParams: body.queryParams,
+        headers: (body.headers as Object) - "host"
+      },
+      cookies: response.cookies,
+      contentType: response.contentType,
     }
   },
   c: do {
@@ -86,25 +98,39 @@ var server = api(serverConfig,
     }
   },
   f: do {
-    var response = post(`http://$LOCALHOST/post?asd=$(123)&space=$("Mariano de Achaval")`)
+    var response = post(`http://$LOCALHOST/echo?asd=$(123)&space=$("Mariano de Achaval")`)
+    var body = response.body
     ---
     {
       mimeType: response.body.^mimeType,
-      body: response.body,
+      body: {
+        body: body.body,
+        method: body.method,
+        path: body.path,
+        queryParams: body.queryParams,
+        headers: (body.headers as Object) - "host"
+      },
       contentType: response.contentType,
     }
   },
   g: do {
-    var response = post({url: "http://$LOCALHOST/post", queryParams: {asd: "123", space: "Mariano de Achaval"}})
+    var response = post({url: "http://$LOCALHOST/echo", queryParams: {asd: "123", space: "Mariano de Achaval"}})
+    var body = response.body
     ---
     {
       mimeType: response.body.^mimeType,
-      body: response.body,
+      body: {
+        body: body.body,
+        method: body.method,
+        path: body.path,
+        queryParams: body.queryParams,
+        headers: (body.headers as Object) - "host"
+      },
       contentType: response.contentType,
     }
   },
   h: do {
-    var response = sendRequest({ method: "POST", url: "http://$LOCALHOST/post", queryParams: { asd: "123", space: "Mariano de Achaval" }})
+    var response = sendRequest({ method: "POST", url: "http://$LOCALHOST/echo", queryParams: { asd: "123", space: "Mariano de Achaval" }})
     ---
     {
       contentType: response.contentType,
