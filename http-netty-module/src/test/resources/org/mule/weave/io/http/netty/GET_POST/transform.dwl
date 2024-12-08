@@ -3,6 +3,7 @@
 import * from dw::io::http::utils::HttpHeaders
 import * from dw::io::http::Client
 import * from dw::io::http::Server
+import form, field, file from dw::module::Multipart
 
 output application/json
 
@@ -97,12 +98,69 @@ var server = api(serverConfig,
       headers: response.headers
     }
   },
+  e: do {
+    var response = post( 'http://$LOCALHOST/echo', { "Content-Type": "multipart/form-data"},form([
+      field('field', 'value'),
+      field({name: 'field2', value:'value2'}),
+      file({name: 'fileX', path: 'MyApi.dwl' }),
+      file('fileY','MyApi.dwl')]))
+    var body = response.body
+    ---
+    {
+      mimeType : body.^mimeType,
+      body: {
+        body: body.body,
+        method: body.method,
+        path: body.path,
+        queryParams: body.queryParams,
+      },
+      contentType : response.contentType,
+    }
+  },
+  ee: do {
+    var response = postMultipart( 'http://$LOCALHOST/echo', form([
+      field('field', 'value'),
+      field({name: 'field2', value:'value2'}),
+      file({name: 'fileX', path: 'MyApi.dwl' }),
+      file('fileY','MyApi.dwl')]), { "Content-TYPE": "multipart/form-data"})
+    var body = response.body
+    ---
+    {
+      mimeType: body.^mimeType,
+      body: {
+        body: body.body,
+        method: body.method,
+        path: body.path,
+        queryParams: body.queryParams,
+      },
+      contentType: response.contentType
+    }
+  },
+  eee: do {
+    var response = postMultipart( 'http://$LOCALHOST/echo', form([
+      field('field', 'value'),
+      field({name: 'field2', value:'value2'}),
+      file({name: 'fileX', path: 'MyApi.dwl' }),
+      file('fileY','MyApi.dwl')]))
+    var body = response.body
+    ---
+    {
+      mimeType: body.^mimeType,
+      body: {
+        body: body.body,
+        method: body.method,
+        path: body.path,
+        queryParams: body.queryParams,
+      },
+      contentType: response.contentType
+    }
+  },
   f: do {
     var response = post(`http://$LOCALHOST/echo?asd=$(123)&space=$("Mariano de Achaval")`)
     var body = response.body
     ---
     {
-      mimeType: response.body.^mimeType,
+      mimeType: body.^mimeType,
       body: {
         body: body.body,
         method: body.method,
