@@ -29,7 +29,7 @@
       "url": "http://localhost:8081/post",
       "headers": {
         "Accept": "*/*",
-        "Content-Type": "application/xml"
+        "content-type": "application/xml"
       },
       "body": "<?xml version='1.0' encoding='UTF-8'?><root><user>Mariano</user></root>"
     },
