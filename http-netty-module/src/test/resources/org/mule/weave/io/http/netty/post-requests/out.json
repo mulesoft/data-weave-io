@@ -1,0 +1,45 @@
+{
+  "a": {
+    "mimeType": "application/json",
+    "body": {
+      "body": null,
+      "method": "POST",
+      "path": "/post",
+      "queryParams": {
+        "asd": "123",
+        "space": "Mariano de Achaval"
+      },
+      "headers": {
+        "accept": "*/*",
+        "user-agent": "AHC/2.1",
+        "content-length": "0"
+      }
+    },
+    "contentType": "application/json"
+  },
+  "b": {
+    "mimeType": "application/json",
+    "body": {
+      "body": null,
+      "method": "POST",
+      "path": "/post",
+      "queryParams": {
+        "asd": "123",
+        "space": "Mariano de Achaval"
+      },
+      "headers": {
+        "accept": "*/*",
+        "user-agent": "AHC/2.1",
+        "content-length": "0"
+      }
+    },
+    "contentType": "application/json"
+  },
+  "c": {
+    "contentType": "application/json",
+    "bodyIsBinary": true,
+    "mimeType": null,
+    "raw": null
+  },
+  "z": true
+}

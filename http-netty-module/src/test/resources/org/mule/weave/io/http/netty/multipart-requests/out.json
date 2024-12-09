@@ -1,38 +1,111 @@
 {
   "a": {
-    "statusText": "OK",
-    "status": 200,
+    "mimeType": "application/json",
+    "body": {
+      "body": {
+        "parts": {
+          "field": {
+            "headers": {
+              "Content-Disposition": {
+                "name": "field",
+                "subtype": "form-data"
+              }
+            },
+            "content": "value"
+          },
+          "field2": {
+            "headers": {
+              "Content-Disposition": {
+                "name": "field2",
+                "subtype": "form-data"
+              }
+            },
+            "content": "value2"
+          },
+          "fileX": {
+            "headers": {
+              "Content-Type": "application/octet-stream",
+              "Content-Disposition": {
+                "name": "fileX",
+                "filename": "filename",
+                "subtype": "form-data"
+              }
+            },
+            "content": "import * from dw::io::http::Server\n\nvar serverConfig = {host:\"localhost\", port: 8081, \"Content-Type\": \"application/xml\"}\n\nfun main() =\napi(serverConfig,\n  {\n    \"/test\": {\n      GET: (request) -> {\n         body: {\n           name: \"Mariano\"\n         }\n      },\n      POST: (request) -> {\n        body: {\n           name: request.body.name\n        }\n      }\n    }\n  }\n)\n\n"
+          },
+          "fileY": {
+            "headers": {
+              "Content-Type": "application/octet-stream",
+              "Content-Disposition": {
+                "name": "fileY",
+                "filename": "filename",
+                "subtype": "form-data"
+              }
+            },
+            "content": "import * from dw::io::http::Server\n\nvar serverConfig = {host:\"localhost\", port: 8081, \"Content-Type\": \"application/xml\"}\n\nfun main() =\napi(serverConfig,\n  {\n    \"/test\": {\n      GET: (request) -> {\n         body: {\n           name: \"Mariano\"\n         }\n      },\n      POST: (request) -> {\n        body: {\n           name: request.body.name\n        }\n      }\n    }\n  }\n)\n\n"
+          }
+        }
+      },
+      "method": "POST",
+      "path": "/multipart",
+      "queryParams": {}
+    },
     "contentType": "application/json"
   },
   "b": {
-    "status": 200,
-    "statusText": "OK",
+    "mimeType": "application/json",
     "body": {
-      "body": null,
-      "method": "GET",
-      "path": "/echo/anything/%7Basdasd%7D",
-      "queryParams": {
-        "a": ""
+      "body": {
+        "parts": {
+          "field": {
+            "headers": {
+              "Content-Disposition": {
+                "name": "field",
+                "subtype": "form-data"
+              }
+            },
+            "content": "value"
+          },
+          "field2": {
+            "headers": {
+              "Content-Disposition": {
+                "name": "field2",
+                "subtype": "form-data"
+              }
+            },
+            "content": "value2"
+          },
+          "fileX": {
+            "headers": {
+              "Content-Type": "application/octet-stream",
+              "Content-Disposition": {
+                "name": "fileX",
+                "filename": "filename",
+                "subtype": "form-data"
+              }
+            },
+            "content": "import * from dw::io::http::Server\n\nvar serverConfig = {host:\"localhost\", port: 8081, \"Content-Type\": \"application/xml\"}\n\nfun main() =\napi(serverConfig,\n  {\n    \"/test\": {\n      GET: (request) -> {\n         body: {\n           name: \"Mariano\"\n         }\n      },\n      POST: (request) -> {\n        body: {\n           name: request.body.name\n        }\n      }\n    }\n  }\n)\n\n"
+          },
+          "fileY": {
+            "headers": {
+              "Content-Type": "application/octet-stream",
+              "Content-Disposition": {
+                "name": "fileY",
+                "filename": "filename",
+                "subtype": "form-data"
+              }
+            },
+            "content": "import * from dw::io::http::Server\n\nvar serverConfig = {host:\"localhost\", port: 8081, \"Content-Type\": \"application/xml\"}\n\nfun main() =\napi(serverConfig,\n  {\n    \"/test\": {\n      GET: (request) -> {\n         body: {\n           name: \"Mariano\"\n         }\n      },\n      POST: (request) -> {\n        body: {\n           name: request.body.name\n        }\n      }\n    }\n  }\n)\n\n"
+          }
+        }
       },
-      "headers": {
-        "accept": "*/*",
-        "user-agent": "AHC/2.1",
-        "content-length": "0"
-      }
+      "method": "POST",
+      "path": "/multipart",
+      "queryParams": {}
     },
-    "cookies": {},
     "contentType": "application/json"
   },
   "c": {
-    "statusText": "OK",
-    "status": 200,
-    "contentType": "application/octet-stream",
-    "headers": {
-      "Content-Type": "application/octet-stream",
-      "content-length": "516224"
-    }
-  },
-  "e": {
     "mimeType": "application/json",
     "body": {
       "body": {
@@ -80,188 +153,10 @@
         }
       },
       "method": "POST",
-      "path": "/echo",
+      "path": "/multipart",
       "queryParams": {}
     },
     "contentType": "application/json"
-  },
-  "ee": {
-    "mimeType": "application/json",
-    "body": {
-      "body": {
-        "parts": {
-          "field": {
-            "headers": {
-              "Content-Disposition": {
-                "name": "field",
-                "subtype": "form-data"
-              }
-            },
-            "content": "value"
-          },
-          "field2": {
-            "headers": {
-              "Content-Disposition": {
-                "name": "field2",
-                "subtype": "form-data"
-              }
-            },
-            "content": "value2"
-          },
-          "fileX": {
-            "headers": {
-              "Content-Type": "application/octet-stream",
-              "Content-Disposition": {
-                "name": "fileX",
-                "filename": "filename",
-                "subtype": "form-data"
-              }
-            },
-            "content": "import * from dw::io::http::Server\n\nvar serverConfig = {host:\"localhost\", port: 8081, \"Content-Type\": \"application/xml\"}\n\nfun main() =\napi(serverConfig,\n  {\n    \"/test\": {\n      GET: (request) -> {\n         body: {\n           name: \"Mariano\"\n         }\n      },\n      POST: (request) -> {\n        body: {\n           name: request.body.name\n        }\n      }\n    }\n  }\n)\n\n"
-          },
-          "fileY": {
-            "headers": {
-              "Content-Type": "application/octet-stream",
-              "Content-Disposition": {
-                "name": "fileY",
-                "filename": "filename",
-                "subtype": "form-data"
-              }
-            },
-            "content": "import * from dw::io::http::Server\n\nvar serverConfig = {host:\"localhost\", port: 8081, \"Content-Type\": \"application/xml\"}\n\nfun main() =\napi(serverConfig,\n  {\n    \"/test\": {\n      GET: (request) -> {\n         body: {\n           name: \"Mariano\"\n         }\n      },\n      POST: (request) -> {\n        body: {\n           name: request.body.name\n        }\n      }\n    }\n  }\n)\n\n"
-          }
-        }
-      },
-      "method": "POST",
-      "path": "/echo",
-      "queryParams": {}
-    },
-    "contentType": "application/json"
-  },
-  "eee": {
-    "mimeType": "application/json",
-    "body": {
-      "body": {
-        "parts": {
-          "field": {
-            "headers": {
-              "Content-Disposition": {
-                "name": "field",
-                "subtype": "form-data"
-              }
-            },
-            "content": "value"
-          },
-          "field2": {
-            "headers": {
-              "Content-Disposition": {
-                "name": "field2",
-                "subtype": "form-data"
-              }
-            },
-            "content": "value2"
-          },
-          "fileX": {
-            "headers": {
-              "Content-Type": "application/octet-stream",
-              "Content-Disposition": {
-                "name": "fileX",
-                "filename": "filename",
-                "subtype": "form-data"
-              }
-            },
-            "content": "import * from dw::io::http::Server\n\nvar serverConfig = {host:\"localhost\", port: 8081, \"Content-Type\": \"application/xml\"}\n\nfun main() =\napi(serverConfig,\n  {\n    \"/test\": {\n      GET: (request) -> {\n         body: {\n           name: \"Mariano\"\n         }\n      },\n      POST: (request) -> {\n        body: {\n           name: request.body.name\n        }\n      }\n    }\n  }\n)\n\n"
-          },
-          "fileY": {
-            "headers": {
-              "Content-Type": "application/octet-stream",
-              "Content-Disposition": {
-                "name": "fileY",
-                "filename": "filename",
-                "subtype": "form-data"
-              }
-            },
-            "content": "import * from dw::io::http::Server\n\nvar serverConfig = {host:\"localhost\", port: 8081, \"Content-Type\": \"application/xml\"}\n\nfun main() =\napi(serverConfig,\n  {\n    \"/test\": {\n      GET: (request) -> {\n         body: {\n           name: \"Mariano\"\n         }\n      },\n      POST: (request) -> {\n        body: {\n           name: request.body.name\n        }\n      }\n    }\n  }\n)\n\n"
-          }
-        }
-      },
-      "method": "POST",
-      "path": "/echo",
-      "queryParams": {}
-    },
-    "contentType": "application/json"
-  },
-  "f": {
-    "mimeType": "application/json",
-    "body": {
-      "body": null,
-      "method": "POST",
-      "path": "/echo",
-      "queryParams": {
-        "asd": "123",
-        "space": "Mariano de Achaval"
-      },
-      "headers": {
-        "accept": "*/*",
-        "user-agent": "AHC/2.1",
-        "content-length": "0"
-      }
-    },
-    "contentType": "application/json"
-  },
-  "g": {
-    "mimeType": "application/json",
-    "body": {
-      "body": null,
-      "method": "POST",
-      "path": "/echo",
-      "queryParams": {
-        "asd": "123",
-        "space": "Mariano de Achaval"
-      },
-      "headers": {
-        "accept": "*/*",
-        "user-agent": "AHC/2.1",
-        "content-length": "0"
-      }
-    },
-    "contentType": "application/json"
-  },
-  "h": {
-    "contentType": "application/json",
-    "bodyIsBinary": true,
-    "mimeType": null,
-    "raw": null
-  },
-  "i": {
-    "k1": {
-      "name": "k1",
-      "value": "v1",
-      "maxAge": -1,
-      "httpOnly": false,
-      "secure": false,
-      "domain": null,
-      "comment": null,
-      "path": "/"
-    }
-  },
-  "ii": {
-    "cookies": {},
-    "body": {
-      "cookies": null
-    }
-  },
-  "iii": {
-    "cookies": {},
-    "body": {
-      "cookies": "Token=_asdf;age=39"
-    }
-  },
-  "j": {
-    "cookies": {},
-    "body": {
-      "cookies": "Token=_asdf;age=39"
-    }
   },
   "z": true
 }

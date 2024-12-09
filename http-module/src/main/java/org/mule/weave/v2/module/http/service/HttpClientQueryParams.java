@@ -92,7 +92,7 @@ public class HttpClientQueryParams {
         public Builder addQueryParam(String name, String value) {
             requireNonNull(name, "name cannot be null");
             requireNonNull(value, "value cannot be null");
-            return addQueryParam(new HttpQueryParam(name, value));
+            return addQueryParam(HttpQueryParam.of(name, value));
         }
 
         /**
@@ -143,6 +143,17 @@ public class HttpClientQueryParams {
          */
         public String getValue() {
             return value;
+        }
+
+        /**
+         * Creates an instance of {@link HttpQueryParam}.
+         *
+         * @param name the name of the HTTP queryParam.
+         * @param value the value of the HTTP queryParam.
+         * @return @return an {@link HttpQueryParam} .
+         */
+        public static HttpQueryParam of(String name, String value) {
+            return new HttpQueryParam(name, value);
         }
     }
 }

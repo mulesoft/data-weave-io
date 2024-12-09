@@ -130,7 +130,7 @@ public class HttpClientHeaders {
         public Builder addHeader(String name, String value) {
             requireNonNull(name, "name must not be null");
             requireNonNull(value, "value must not be null");
-            return addHeader(new HttpHeader(name, value));
+            return addHeader(HttpHeader.of(name, value));
         }
 
         /**
@@ -181,6 +181,17 @@ public class HttpClientHeaders {
          */
         public String getValue() {
             return value;
+        }
+
+        /**
+         * Creates an instance of {@link HttpHeader}.
+         *
+         * @param name the name of the HTTP header.
+         * @param value the value of the HTTP header.
+         * @return @return an {@link HttpHeader} .
+         */
+        public static HttpHeader of(String name, String value) {
+            return new HttpHeader(name, value);
         }
     }
 }
