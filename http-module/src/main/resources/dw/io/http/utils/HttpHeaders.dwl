@@ -193,8 +193,8 @@ fun normalizeHeader(header: String): String =
 * ----
 *
 **/
-fun normalizeHeaders<H <: HttpHeaders>(headers: H): {_?: SimpleType} =
-  headers mapObject ((value, key, index) -> {(normalizeHeader(key)): value})
+fun normalizeHeaders(headers: HttpHeaders): HttpHeaders =
+  headers mapObject ((value, key, index) -> { (normalizeHeader(key as String)): value })
 
 /**
 * Helper function of `normalizeHeaders` to work with a `null` value.
@@ -271,7 +271,7 @@ fun normalizeHeaders<H <: HttpHeaders>(headers: Null): {_?: SimpleType} = {}
 * ----
 *
 **/
-fun findValuesIgnoreCase<H <: HttpHeaders>(headers: H, name: String): Array<SimpleType> = do {
+fun findValuesIgnoreCase(headers: HttpHeaders, name: String): Array<SimpleType> = do {
   var headerToFind = lower(name)
   var matchingHeaders = headers filterObject ((value, key, index) -> lower(key as String) == headerToFind)
   ---
@@ -281,7 +281,7 @@ fun findValuesIgnoreCase<H <: HttpHeaders>(headers: H, name: String): Array<Simp
 /**
 * Helper function of `findValuesIgnoreCase` to work with a `null` value.
 **/
-fun findValuesIgnoreCase<H <: HttpHeaders>(headers: Null, name: String): Array<SimpleType> = []
+fun findValuesIgnoreCase(headers: Null, name: String): Array<SimpleType> = []
 
 /**
 *
@@ -330,7 +330,7 @@ fun findValuesIgnoreCase<H <: HttpHeaders>(headers: Null, name: String): Array<S
 * ----
 *
 **/
-fun updateHeaderValueIgnoreCase<H <: HttpHeaders>(headers: H, headerName: String, headerValue: SimpleType) = do {
+fun updateHeaderValueIgnoreCase(headers: HttpHeaders, headerName: String, headerValue: SimpleType): HttpHeaders = do {
   var lowerHeaderName = lower(headerName)
   var updatedHeaders = headers mapObject ((value, key, index) -> do {
     var headerName = lower(key as String)

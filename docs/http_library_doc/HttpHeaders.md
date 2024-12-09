@@ -116,7 +116,7 @@ __________________________________________
 
 ## **findValuesIgnoreCase**
 
-### _findValuesIgnoreCase<H <: HttpHeaders&#62;&#40;headers: H, name: String&#41;: Array<SimpleType&#62;_
+### _findValuesIgnoreCase&#40;headers: HttpHeaders, name: String&#41;: Array<SimpleType&#62;_
 
 Gets an `Array` of HTTP header values for a given HTTP header name ignoring case.
 
@@ -181,7 +181,7 @@ findValuesIgnoreCase(headers, 'content-type')
 ```
 __________________________________________
 
-### _findValuesIgnoreCase<H <: HttpHeaders&#62;&#40;headers: Null, name: String&#41;: Array<SimpleType&#62;_
+### _findValuesIgnoreCase&#40;headers: Null, name: String&#41;: Array<SimpleType&#62;_
 
 Helper function of `findValuesIgnoreCase` to work with a `null` value.
 __________________________________________
@@ -240,7 +240,7 @@ __________________________________________
 
 ## **normalizeHeaders**
 
-### _normalizeHeaders<H <: HttpHeaders&#62;&#40;headers: H&#41;: { _?: SimpleType }_
+### _normalizeHeaders&#40;headers: HttpHeaders&#41;: HttpHeaders_
 
 Normalize the name of the given `HttpHeaders` value following the `normalizeHeader` function rules.
 
@@ -293,7 +293,7 @@ __________________________________________
 
 ## **updateHeaderValueIgnoreCase**
 
-### _updateHeaderValueIgnoreCase<H <: HttpHeaders&#62;&#40;headers: H, headerName: String, headerValue: SimpleType&#41;_
+### _updateHeaderValueIgnoreCase&#40;headers: HttpHeaders, headerName: String, headerValue: SimpleType&#41;: HttpHeaders_
 
 Update an specific HTTP header with the given value for a set of `HttpHeaders` ignoring case.
 
