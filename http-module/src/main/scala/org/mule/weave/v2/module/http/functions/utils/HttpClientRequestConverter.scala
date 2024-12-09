@@ -9,7 +9,7 @@ import org.mule.weave.v2.model.types.BinaryType
 import org.mule.weave.v2.model.types.NullType
 import org.mule.weave.v2.model.types.ObjectType
 import org.mule.weave.v2.model.types.StringType
-import org.mule.weave.v2.module.http
+import org.mule.weave.v2.module.http.HttpHeader
 import org.mule.weave.v2.module.http.functions.HttpClientRequestConfig
 import org.mule.weave.v2.module.http.functions.exceptions.DuplicatedCookieFieldException
 import org.mule.weave.v2.module.http.functions.utils.HttpClientRequestConverter.BODY
@@ -51,7 +51,7 @@ class HttpClientRequestConverter(
       builder.addHeader(header)
     })
 
-    val maybeCookieHeader = httpClientHeaders.firstValue(http.HttpHeader.COOKIE_HEADER)
+    val maybeCookieHeader = httpClientHeaders.firstValueIgnoreCase(HttpHeader.COOKIE_HEADER)
     val cookiesValue = selectObject(request, COOKIES).getOrElse(ObjectSeq.empty).toSeq()
 
     // Cookie is allowed in a single place: Header or Cookie object
@@ -64,7 +64,7 @@ class HttpClientRequestConverter(
           val value = StringType.coerce(kvp._2).evaluate.toString
           s"$name=$value"
         }).mkString(";")
-        builder.addHeader(http.HttpHeader.COOKIE_HEADER, cookieValue)
+        builder.addHeader(HttpHeader.COOKIE_HEADER, cookieValue)
       }
     }
 

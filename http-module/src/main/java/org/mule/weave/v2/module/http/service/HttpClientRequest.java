@@ -101,7 +101,7 @@ public class HttpClientRequest {
         private String url;
         private String method;
         private final HttpClientHeaders.Builder headersBuilder = new HttpClientHeaders.Builder();
-        private final HttpClientQueryParams.Builder queryParamsBuilder = new HttpClientQueryParams.Builder();;
+        private final HttpClientQueryParams.Builder queryParamsBuilder = new HttpClientQueryParams.Builder();
         private InputStream body = null;
         private boolean followRedirects = false;
         private int readTimeout = 60000;
