@@ -71,7 +71,7 @@ fun postMultipart<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder,
   requestConfig: HttpRequestConfig = DEFAULT_HTTP_REQUEST_CONFIG,
   serializationConfig: SerializationConfig = DEFAULT_SERIALIZATION_CONFIG,
   clientConfig: HttpClientConfig = DEFAULT_HTTP_CLIENT_CONFIG): HttpResponse<B, H> = do {
-  var contentTypeHeaders = findValuesIgnoreCase(headers, CONTENT_TYPE_HEADER)
+  var contentTypeHeaders = allHeadersWith(headers, CONTENT_TYPE_HEADER)
   var newHeaders = if (isEmpty(contentTypeHeaders))
     // Set 'Content-Type' header
     headers update {
@@ -211,23 +211,15 @@ fun sendRequest<H <: HttpHeaders>(
 fun createBinaryHttpRequest(request: HttpRequest, serializationConfig: SerializationConfig): HttpRequest<Binary> =
   if (request.body != null) do {
     var headers = request.headers default {}
-    var contentTypesHeaders = findValuesIgnoreCase(headers, CONTENT_TYPE_HEADER)
-    var requestContentType = if (isEmpty(contentTypesHeaders)) do {
-      serializationConfig.contentType
-    } else do {
-      contentTypesHeaders[0] as String
-    }
+    var contentTypesHeaders = allHeadersWith(headers, CONTENT_TYPE_HEADER)
+    var requestContentType = (contentTypesHeaders[0].value as String) default serializationConfig.contentType
     var writerProperties = serializationConfig.writerProperties default {}
     var binaryBody = writeToBinary(request.body, requestContentType, writerProperties)
-
-    var headersWithContentType = if (isEmpty(contentTypesHeaders)) do {
-      // Set 'Content-Type' header
-      headers update {
-        case ."$(CONTENT_TYPE_HEADER)"! -> dw::module::Mime::toString(binaryBody.mime)
-      }
-    } else do {
-      updateHeaderValueIgnoreCase(headers, CONTENT_TYPE_HEADER, dw::module::Mime::toString(binaryBody.mime))
+    var contentTypeHeader = {
+      name: contentTypesHeaders[0].name default CONTENT_TYPE_HEADER,
+      value: dw::module::Mime::toString(binaryBody.mime)
     }
+    var headersWithContentType = headers withHeader contentTypeHeader
     ---
     request update {
       case .headers! -> headersWithContentType

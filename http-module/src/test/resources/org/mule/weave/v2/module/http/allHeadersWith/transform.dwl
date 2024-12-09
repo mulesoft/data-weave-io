@@ -15,10 +15,10 @@ var headers = {
  }
 ---
 {
-  a: findValuesIgnoreCase(headers, CONTENT_TYPE_HEADER),
-  b: findValuesIgnoreCase(headers, 'Cache-Control'),
-  c: findValuesIgnoreCase(headers, 'duplicated'),
-  d: findValuesIgnoreCase(headers, 'non-exists'),
-  e: findValuesIgnoreCase({}, CONTENT_TYPE_HEADER),
-  f: findValuesIgnoreCase(null, CONTENT_TYPE_HEADER),
+  a: allHeadersWith(headers, CONTENT_TYPE_HEADER),
+  b: headers allHeadersWith 'Cache-Control',
+  c: allHeadersWith(headers, 'duplicated'),
+  d: allHeadersWith(headers, 'non-exists'),
+  e: allHeadersWith({}, CONTENT_TYPE_HEADER),
+  f: allHeadersWith(null, CONTENT_TYPE_HEADER),
 }

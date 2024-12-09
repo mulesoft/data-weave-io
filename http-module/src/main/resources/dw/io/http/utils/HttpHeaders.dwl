@@ -9,6 +9,15 @@
 
 import * from dw::io::http::Types
 
+/**
+ * DataWeave type for representing an HTTP Header entry.
+ * Supports the following fields:
+ *
+ * * `name`: The HTTP header name.
+ * * `value`: The HTTP header value.
+ */
+type HttpHeaderEntry = { name: String, value: SimpleType }
+
 var ACCEPT_HEADER = "Accept"
 var ACCEPT_CHARSET_HEADER = "Accept-Charset"
 var ACCEPT_ENCODING_HEADER = "Accept-Encoding"
@@ -203,7 +212,7 @@ fun normalizeHeaders<H <: HttpHeaders>(headers: Null): {_?: SimpleType} = {}
 
 /**
 *
-* Gets an `Array` of HTTP header values for a given HTTP header name ignoring case.
+* Gets an `Array` of `HttpHeader` for a given HTTP header name ignoring case.
 *
 * === Parameters
 *
@@ -231,7 +240,7 @@ fun normalizeHeaders<H <: HttpHeaders>(headers: Null): {_?: SimpleType} = {}
 *   'Age': "15"
 * }
 * ---
-* findValuesIgnoreCase(headers, 'Content-Type')
+* allHeaderWith(headers, 'Content-Type')
 *
 * ----
 *
@@ -239,7 +248,7 @@ fun normalizeHeaders<H <: HttpHeaders>(headers: Null): {_?: SimpleType} = {}
 *
 * [source,JSON,linenums]
 * ----
-* [ "application/json" ]
+* [ { "name": "content-type", "value": "application/json" } ]
 * ----
 *
 * === Example
@@ -260,32 +269,38 @@ fun normalizeHeaders<H <: HttpHeaders>(headers: Null): {_?: SimpleType} = {}
 *   'Age': "15"
 * }
 * ---
-* findValuesIgnoreCase(headers, 'content-type')
+* allHeadersWith(headers, 'content-type')
 * ----
 *
 * ==== Output
 *
 * [source,JSON,linenums]
 * ----
-* [ "application/json", "multipart/form-data" ]
+* [
+*   { "name": "content-type", "value": "application/json" },
+*   { "name": "CONTENT-TYPE", "value": "multipart/form-data" }
+* ]
 * ----
 *
 **/
-fun findValuesIgnoreCase(headers: HttpHeaders, name: String): Array<SimpleType> = do {
+fun allHeadersWith(headers: HttpHeaders, name: String): Array<HttpHeaderEntry> = do {
   var headerToFind = lower(name)
   var matchingHeaders = headers filterObject ((value, key, index) -> lower(key as String) == headerToFind)
   ---
-  valuesOf(matchingHeaders) map ($ as SimpleType)
+  matchingHeaders pluck ((value, key, index) -> {
+    name: key as String,
+    value: value
+  })
 }
 
 /**
-* Helper function of `findValuesIgnoreCase` to work with a `null` value.
+* Helper function of `allHeadersWith` to work with a `null` value.
 **/
-fun findValuesIgnoreCase(headers: Null, name: String): Array<SimpleType> = []
+fun allHeadersWith(headers: Null, name: String): Array<HttpHeaderEntry> = []
 
 /**
 *
-* Update an specific HTTP header with the given value for a set of `HttpHeaders` ignoring case.
+* Set an specific HTTP header to a set of `HttpHeaders`.
 *
 * === Parameters
 *
@@ -293,8 +308,7 @@ fun findValuesIgnoreCase(headers: Null, name: String): Array<SimpleType> = []
 * |===
 * | Name | Type | Description
 * | `headers` | `HttpHeaders` | The HTTP headers.
-* | `headerName` | String | The HTTP header name to update.
-* | `headerValue` | String | The HTTP header value to set.
+* | `header` | `HttpHeader` | The HTTP header to set.
 * |===
 *
 * === Example
@@ -314,7 +328,7 @@ fun findValuesIgnoreCase(headers: Null, name: String): Array<SimpleType> = []
 *   'Age': "15"
 * }
 * ---
-* updateHeaderValueIgnoreCase(headers, 'Content-Type', "application/xml")
+* withHeader(headers, { "name": "Content-Type", "value": "application/xml" })
 *
 * ----
 *
@@ -323,23 +337,20 @@ fun findValuesIgnoreCase(headers: Null, name: String): Array<SimpleType> = []
 * [source,JSON,linenums]
 * ----
 * {
-*   "content-type": "application/xml",
 *   "Content-Length": "128",
-*   "Age": "15"
+*   "Age": "15",
+*   "Content-Type": "application/xml"
 *  }
 * ----
 *
 **/
-fun updateHeaderValueIgnoreCase(headers: HttpHeaders, headerName: String, headerValue: SimpleType): HttpHeaders = do {
-  var lowerHeaderName = lower(headerName)
-  var updatedHeaders = headers mapObject ((value, key, index) -> do {
-    var headerName = lower(key as String)
-    ---
-    if (headerName == lowerHeaderName)
-      { (key): headerValue }
-    else
-      { (key): value }
+fun withHeader(headers: HttpHeaders, header: HttpHeaderEntry): HttpHeaders = do {
+  var headerToFind = lower(header.name)
+  var remainingHeaders = headers filterObject ((value, key, index) -> do {
+   var headerName = lower(key)
+   ---
+   headerName != headerToFind
   })
   ---
-  updatedHeaders
+  remainingHeaders ++ { (header.name): header.value }
 }

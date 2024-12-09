@@ -1,26 +1,26 @@
 {
   "a": {
-    "content-type": "application/xml",
     "Content-Length": "128",
     "Age": "15",
     "Duplicated": "ValueA",
-    "Duplicated": "ValueB"
+    "DUPLICATED": "ValueB",
+    "Content-Type": "application/xml"
   },
   "b": {
     "content-type": "application/json",
     "Content-Length": "128",
     "Age": "15",
     "Duplicated": "ValueA",
-    "Duplicated": "ValueB"
+    "DUPLICATED": "ValueB",
+    "missingHeader": "newValue"
   },
   "c": {
-
+    "Content-Type": "application/json"
   },
   "d": {
     "content-type": "application/json",
     "Content-Length": "128",
     "Age": "15",
-    "Duplicated": "ValueC",
     "Duplicated": "ValueC"
   }
 }

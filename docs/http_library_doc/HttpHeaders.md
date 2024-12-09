@@ -12,10 +12,10 @@ DataWeave script.
 ### Functions
 | Name | Description|
 |------|------------|
-| [findValuesIgnoreCase](#findvaluesignorecase ) | Gets an `Array` of HTTP header values for a given HTTP header name ignoring case.|
+| [allHeadersWith](#allheaderswith ) | Gets an `Array` of `HttpHeader` for a given HTTP header name ignoring case.|
 | [normalizeHeader](#normalizeheader ) | Formats the given HTTP header value with the following rules:<br>- The first char of every word is in upper case and the remaining chars are in lower case.|
 | [normalizeHeaders](#normalizeheaders ) | Normalize the name of the given `HttpHeaders` value following the `normalizeHeader` function rules.|
-| [updateHeaderValueIgnoreCase](#updateheadervalueignorecase ) | Update an specific HTTP header with the given value for a set of `HttpHeaders` ignoring case.|
+| [withHeader](#withheader ) | Set an specific HTTP header to a set of `HttpHeaders`.|
 
 
 ### Variables
@@ -105,6 +105,12 @@ DataWeave script.
 
 
 
+### Types
+| Name | Description|
+|------|------------|
+|[HttpHeaderEntry](#httpheaderentry ) | DataWeave type for representing an HTTP Header entry.<br>Supports the following fields:|
+
+
 
 
 
@@ -114,11 +120,11 @@ __________________________________________
 
 # Functions
 
-## **findValuesIgnoreCase**
+## **allHeadersWith**
 
-### _findValuesIgnoreCase&#40;headers: HttpHeaders, name: String&#41;: Array<SimpleType&#62;_
+### _allHeadersWith&#40;headers: HttpHeaders, name: String&#41;: Array<HttpHeaderEntry&#62;_
 
-Gets an `Array` of HTTP header values for a given HTTP header name ignoring case.
+Gets an `Array` of `HttpHeader` for a given HTTP header name ignoring case.
 
 ##### Parameters
 
@@ -144,14 +150,14 @@ var headers = {
   'Age': "15"
 }
 ---
-findValuesIgnoreCase(headers, 'Content-Type')
+allHeaderWith(headers, 'Content-Type')
 
 ```
 
 ###### Output
 
 ```json
-[ "application/json" ]
+[ { "name": "content-type", "value": "application/json" } ]
 ```
 
 ##### Example
@@ -171,19 +177,22 @@ var headers = {
   'Age': "15"
 }
 ---
-findValuesIgnoreCase(headers, 'content-type')
+allHeadersWith(headers, 'content-type')
 ```
 
 ###### Output
 
 ```json
-[ "application/json", "multipart/form-data" ]
+[
+  { "name": "content-type", "value": "application/json" },
+  { "name": "CONTENT-TYPE", "value": "multipart/form-data" }
+]
 ```
 __________________________________________
 
-### _findValuesIgnoreCase&#40;headers: Null, name: String&#41;: Array<SimpleType&#62;_
+### _allHeadersWith&#40;headers: Null, name: String&#41;: Array<HttpHeaderEntry&#62;_
 
-Helper function of `findValuesIgnoreCase` to work with a `null` value.
+Helper function of `allHeadersWith` to work with a `null` value.
 __________________________________________
 
 
@@ -291,19 +300,18 @@ Helper function of `normalizeHeaders` to work with a `null` value.
 __________________________________________
 
 
-## **updateHeaderValueIgnoreCase**
+## **withHeader**
 
-### _updateHeaderValueIgnoreCase&#40;headers: HttpHeaders, headerName: String, headerValue: SimpleType&#41;: HttpHeaders_
+### _withHeader&#40;headers: HttpHeaders, header: HttpHeaderEntry&#41;: HttpHeaders_
 
-Update an specific HTTP header with the given value for a set of `HttpHeaders` ignoring case.
+Set an specific HTTP header to a set of `HttpHeaders`.
 
 ##### Parameters
 
 | Name | Type | Description|
 |------|------|------------|
 | `headers` | `HttpHeaders` | The HTTP headers.|
-| `headerName` | String | The HTTP header name to update.|
-| `headerValue` | String | The HTTP header value to set.|
+| `header` | `HttpHeader` | The HTTP header to set.|
 
 
 ##### Example
@@ -322,7 +330,7 @@ var headers = {
   'Age': "15"
 }
 ---
-updateHeaderValueIgnoreCase(headers, 'Content-Type', "application/xml")
+withHeader(headers, { "name": "Content-Type", "value": "application/xml" })
 
 ```
 
@@ -330,9 +338,9 @@ updateHeaderValueIgnoreCase(headers, 'Content-Type', "application/xml")
 
 ```json
 {
-  "content-type": "application/xml",
   "Content-Length": "128",
-  "Age": "15"
+  "Age": "15",
+  "Content-Type": "application/xml"
  }
 ```
 __________________________________________
@@ -746,6 +754,26 @@ __________________________________________
 
 
 
+
+
+__________________________________________
+
+# Types
+
+### **HttpHeaderEntry**
+
+
+DataWeave type for representing an HTTP Header entry.
+Supports the following fields:
+
+- `name`: The HTTP header name.
+- `value`: The HTTP header value.
+
+#### Definition
+
+```dataweave
+{ name: String, value: SimpleType }
+```
 
 
 
