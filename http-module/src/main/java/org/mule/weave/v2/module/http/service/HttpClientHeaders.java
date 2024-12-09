@@ -188,7 +188,7 @@ public class HttpClientHeaders {
          *
          * @param name the name of the HTTP header.
          * @param value the value of the HTTP header.
-         * @return @return an {@link HttpHeader} .
+         * @return an {@link HttpHeader} .
          */
         public static HttpHeader of(String name, String value) {
             return new HttpHeader(name, value);

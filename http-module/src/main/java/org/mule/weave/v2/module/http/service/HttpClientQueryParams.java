@@ -150,7 +150,7 @@ public class HttpClientQueryParams {
          *
          * @param name the name of the HTTP queryParam.
          * @param value the value of the HTTP queryParam.
-         * @return @return an {@link HttpQueryParam} .
+         * @return an {@link HttpQueryParam} .
          */
         public static HttpQueryParam of(String name, String value) {
             return new HttpQueryParam(name, value);

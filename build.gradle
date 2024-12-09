@@ -45,6 +45,11 @@ subprojects {
     group = "org.mule.weave"
     version = projectVersion
 
+    java {
+        withJavadocJar()
+        withSourcesJar()
+    }
+
     compileJava {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
