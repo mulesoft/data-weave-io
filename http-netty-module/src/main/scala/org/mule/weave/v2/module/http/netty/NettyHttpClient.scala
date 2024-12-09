@@ -1,6 +1,5 @@
 package org.mule.weave.v2.module.http.netty
 
-import io.netty.handler.codec.http.HttpHeaders
 import org.asynchttpclient.AsyncHttpClient
 import org.asynchttpclient.RequestBuilder
 import org.asynchttpclient.Response
@@ -13,7 +12,6 @@ import org.mule.weave.v2.module.http.service.metadata.NumberMetadataValue
 import org.mule.weave.v2.module.http.service.metadata.ObjectMetadataValue
 
 import java.io.InputStream
-import java.util
 import java.util.Optional
 
 class NettyHttpClient(client: AsyncHttpClient) extends HttpClient {
@@ -24,17 +22,20 @@ class NettyHttpClient(client: AsyncHttpClient) extends HttpClient {
     val builder = new RequestBuilder()
     builder.setUrl(request.getUrl)
     builder.setMethod(request.getMethod)
-    request.getQueryParams.forEach((name, values) => {
-      values.forEach(value => {
-        builder.addQueryParam(name, value)
+
+    if (request.getQueryParams != null) {
+      request.getQueryParams.getQueryParams.forEach(q => {
+        builder.addQueryParam(q.getName, q.getValue)
       })
-    })
+    }
 
-    request.getHeaders.forEach((name, values) => {
-      builder.addHeader(name, values)
-    })
+    if (request.getHeaders != null) {
+      request.getHeaders.getHeaders.forEach(h => {
+        builder.addHeader(h.getName, h.getValue)
+      })
+    }
 
-    if (Option(request.getBody).isDefined) {
+    if (request.getBody != null) {
       builder.setBody(request.getBody)
     }
 
@@ -59,6 +60,19 @@ class NettyHttpClientResponse(response: Response, stopWatch: StopWatch) extends 
 
   private val TIMERS_KEY = "timers"
 
+  private lazy val _headers = {
+    val builder = new HttpClientHeaders.Builder()
+    val responseHeaders = response.getHeaders
+    if (responseHeaders != null) {
+      val iterator = responseHeaders.iteratorAsString()
+      while (iterator.hasNext) {
+        val next = iterator.next()
+        builder.addHeader(next.getKey, next.getValue)
+      }
+    }
+    builder.build()
+  }
+
   override def getStatus: Int = {
     response.getStatusCode
   }
@@ -68,7 +82,7 @@ class NettyHttpClientResponse(response: Response, stopWatch: StopWatch) extends 
   }
 
   override def getHeaders: HttpClientHeaders = {
-    new NettyHttpClientHeaders(response.getHeaders)
+    _headers
   }
 
   override def getContentType: Optional[String] = {
@@ -95,20 +109,5 @@ class NettyHttpClientResponse(response: Response, stopWatch: StopWatch) extends 
     builder.addKeyValuePair(TIMERS_KEY, timersBuilder.build())
     val metadata = builder.build()
     Optional.ofNullable(metadata)
-  }
-}
-
-class NettyHttpClientHeaders(headers: HttpHeaders) extends HttpClientHeaders {
-
-  override def getHeaderNames: util.Set[String] = {
-    headers.names()
-  }
-
-  override def getHeaderValues(name: String): util.List[String] = {
-    headers.getAll(name)
-  }
-
-  override def getHeaderValue(name: String): Optional[String] = {
-    Optional.ofNullable(headers.get(name))
   }
 }
