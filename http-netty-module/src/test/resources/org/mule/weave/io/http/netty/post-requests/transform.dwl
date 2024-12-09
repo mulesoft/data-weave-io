@@ -63,5 +63,49 @@ var server = api(serverConfig,
       raw: response.body.^raw
     }
   },
+  d: do {
+    var request = {
+      method: "POST",
+      url: {
+        url: "http://$LOCALHOST/post",
+        queryParams: {
+          asd: "123",
+          space: "Mariano de Achaval",
+          a: "a",
+          A: "A"
+        }
+      },
+      headers: {
+        "CONTENT-Type": "application/xml",
+        "X-API-TOKEN": "1st Token",
+        "X-Api-Token": "2nd Token"
+      },
+      cookies: {
+        "Cookie1": "A",
+        "cookie1": "b"
+      },
+      body: {
+        root: {
+          child: "Hi"
+        }
+      }
+    }
+    var response = sendRequestAndReadResponse(request)
+    var body = response.body
+    ---
+    {
+      status: response.status,
+      headers: response.headers,
+      mimeType: body.^mimeType,
+      body: {
+        body: body.body,
+        method: body.method,
+        path: body.path,
+        queryParams: body.queryParams,
+        headers: (body.headers as Object) - "host"
+      },
+      contentType: response.contentType,
+    }
+  },
   z: server.stop()
 }
