@@ -231,7 +231,7 @@ fun normalizeHeaders<H <: HttpHeaders>(headers: Null): {_?: SimpleType} = {}
 *   'Age': "15"
 * }
 * ---
-* findValuesIgnoreCase(headers, 'Content-Length')
+* findValuesIgnoreCase(headers, 'Content-Type')
 *
 * ----
 *
@@ -260,7 +260,7 @@ fun normalizeHeaders<H <: HttpHeaders>(headers: Null): {_?: SimpleType} = {}
 *   'Age': "15"
 * }
 * ---
-* findValuesIgnoreCase(headers, 'Content-Length')
+* findValuesIgnoreCase(headers, 'content-type')
 * ----
 *
 * ==== Output
@@ -282,3 +282,64 @@ fun findValuesIgnoreCase<H <: HttpHeaders>(headers: H, name: String): Array<Simp
 * Helper function of `findValuesIgnoreCase` to work with a `null` value.
 **/
 fun findValuesIgnoreCase<H <: HttpHeaders>(headers: Null, name: String): Array<SimpleType> = []
+
+/**
+*
+* Update an specific HTTP header with the given value for a set of `HttpHeaders` ignoring case.
+*
+* === Parameters
+*
+* [%header, cols="1,1,3"]
+* |===
+* | Name | Type | Description
+* | `headers` | `HttpHeaders` | The HTTP headers.
+* | `headerName` | String | The HTTP header name to update.
+* | `headerValue` | String | The HTTP header value to set.
+* |===
+*
+* === Example
+*
+* This example update the `Content-Type` header.
+*
+* ==== Source
+*
+* [source,DataWeave,linenums]
+* ----
+* %dw 2.0
+* output application/json
+*
+* var headers = {
+*   'content-type': "application/json",
+*   'Content-Length': "128",
+*   'Age': "15"
+* }
+* ---
+* updateHeaderValueIgnoreCase(headers, 'Content-Type', "application/xml")
+*
+* ----
+*
+* ==== Output
+*
+* [source,JSON,linenums]
+* ----
+* {
+*   "content-type": "application/xml",
+*   "Content-Length": "128",
+*   "Age": "15"
+*  }
+* ----
+*
+**/
+fun updateHeaderValueIgnoreCase<H <: HttpHeaders>(headers: H, headerName: String, headerValue: SimpleType) = do {
+  var lowerHeaderName = lower(headerName)
+  var updatedHeaders = headers mapObject ((value, key, index) -> do {
+    var headerName = lower(key as String)
+    ---
+    if (headerName == lowerHeaderName)
+      { (key): headerValue }
+    else
+      { (key): value }
+  })
+  ---
+  updatedHeaders
+}

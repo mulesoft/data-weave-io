@@ -1,0 +1,26 @@
+{
+  "a": {
+    "content-type": "application/xml",
+    "Content-Length": "128",
+    "Age": "15",
+    "Duplicated": "ValueA",
+    "Duplicated": "ValueB"
+  },
+  "b": {
+    "content-type": "application/json",
+    "Content-Length": "128",
+    "Age": "15",
+    "Duplicated": "ValueA",
+    "Duplicated": "ValueB"
+  },
+  "c": {
+
+  },
+  "d": {
+    "content-type": "application/json",
+    "Content-Length": "128",
+    "Age": "15",
+    "Duplicated": "ValueC",
+    "Duplicated": "ValueC"
+  }
+}

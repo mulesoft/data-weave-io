@@ -226,17 +226,7 @@ fun createBinaryHttpRequest(request: HttpRequest, serializationConfig: Serializa
         case ."$(CONTENT_TYPE_HEADER)"! -> dw::module::Mime::toString(binaryBody.mime)
       }
     } else do {
-      // Update 'Content-Type' header
-      var lowerContentTypeHeader = lower(CONTENT_TYPE_HEADER)
-      ---
-      headers mapObject ((value, key, index) -> do {
-        var headerName = lower(key as String)
-        ---
-        if (headerName == lowerContentTypeHeader)
-          { (key): dw::module::Mime::toString(binaryBody.mime) }
-        else
-         { (key): value}
-      })
+      updateHeaderValueIgnoreCase(headers, CONTENT_TYPE_HEADER, dw::module::Mime::toString(binaryBody.mime))
     }
     ---
     request update {

@@ -9,6 +9,14 @@ DataWeave script.
 
 # Index
 
+### Functions
+| Name | Description|
+|------|------------|
+| [findValuesIgnoreCase](#findvaluesignorecase ) | Gets an `Array` of HTTP header values for a given HTTP header name ignoring case.|
+| [formatHeader](#formatheader ) | Formats the given HTTP header value with the following rules:<br>- The first char of every word is in upper case and the remaining chars are in lower case.|
+| [normalizeHeaders](#normalizeheaders ) | Normalize the name of the given `HttpHeaders` value following the `formatHeader` function rules.|
+| [updateHeaderValueIgnoreCase](#updateheadervalueignorecase ) | Update an specific HTTP header with the given value for a set of `HttpHeaders` ignoring case.|
+
 
 ### Variables
 | Name | Description|
@@ -103,6 +111,231 @@ DataWeave script.
 
 __________________________________________
 
+
+# Functions
+
+## **findValuesIgnoreCase**
+
+### _findValuesIgnoreCase<H <: HttpHeaders&#62;&#40;headers: H, name: String&#41;: Array<SimpleType&#62;_
+
+Gets an `Array` of HTTP header values for a given HTTP header name ignoring case.
+
+##### Parameters
+
+| Name | Type | Description|
+|------|------|------------|
+| `headers` | `HttpHeaders` | The HTTP headers.|
+| `name` | String | The HTTP header name to search.|
+
+
+##### Example
+
+This example search for the `Content-Type` header.
+
+###### Source
+
+```dataweave
+%dw 2.0
+output application/json
+
+var headers = {
+  'content-type': "application/json",
+  'Content-Length': "128",
+  'Age': "15"
+}
+---
+findValuesIgnoreCase(headers, 'Content-Type')
+
+```
+
+###### Output
+
+```json
+[ "application/json" ]
+```
+
+##### Example
+
+This example search for the `Content-Type` header. (Notice that the `Content-Type` header is duplicated)
+
+###### Source
+
+```dataweave
+%dw 2.0
+output application/json
+
+var headers = {
+  'content-type': "application/json",
+  'CONTENT-TYPE': "multipart/form-data",
+  'Content-Length': "128",
+  'Age': "15"
+}
+---
+findValuesIgnoreCase(headers, 'content-type')
+```
+
+###### Output
+
+```json
+[ "application/json", "multipart/form-data" ]
+```
+__________________________________________
+
+### _findValuesIgnoreCase<H <: HttpHeaders&#62;&#40;headers: Null, name: String&#41;: Array<SimpleType&#62;_
+
+Helper function of `findValuesIgnoreCase` to work with a `null` value.
+__________________________________________
+
+
+## **formatHeader**
+
+### _formatHeader&#40;header: String&#41;: String_
+
+Formats the given HTTP header value with the following rules:
+- The first char of every word is in upper case and the remaining chars are in lower case.
+
+
+##### Parameters
+
+| Name | Type | Description|
+|------|------|------------|
+| header | `String` | The header value to format.|
+
+
+##### Example
+
+This example format several HTTP header values.
+
+###### Source
+
+```dataweave
+%dw 2.0
+output application/json
+import * from dw::io::http::utils::HttpHeaders
+---
+{
+  a: formatHeader("Authorization"),
+  b: formatHeader("Content-Type"),
+  c: formatHeader("cache-control"),
+  d: formatHeader("Accept-ENCODING"),
+  e: formatHeader("Set-Cookie"),
+  f: formatHeader("x-uow")
+}
+```
+
+###### Output
+
+```json
+{
+  "a": "Authorization",
+  "b": "Content-Type",
+  "c": "Cache-Control",
+  "d": "Accept-Encoding",
+  "e": "Set-Cookie",
+  "f": "X-Uow"
+}
+```
+__________________________________________
+
+
+## **normalizeHeaders**
+
+### _normalizeHeaders<H <: HttpHeaders&#62;&#40;headers: H&#41;: { _?: SimpleType }_
+
+Normalize the name of the given `HttpHeaders` value following the `formatHeader` function rules.
+
+##### Parameters
+
+| Name | Type | Description|
+|------|------|------------|
+| headers | `HttpHeaders` | The HTTP header value to normalize.|
+
+
+##### Example
+
+This example normalize several HTTP header values.
+
+###### Source
+
+```dataweave
+%dw 2.0
+output application/json
+import * from dw::io::http::utils::HttpHeaders
+---
+normalizeHeaders({
+  "Authorization": "authorization value",
+  "Content-Type": "application/xml",
+  "cache-control": "no-cache",
+  "Accept-ENCODING": "gzip",
+  "Set-Cookie": "value",
+  "x-uow": "uow"})
+```
+
+###### Output
+
+```json
+{
+  "Authorization": "authorization value",
+  "Content-Type": "application/xml",
+  "Cache-Control": "no-cache",
+  "Accept-Encoding": "gzip",
+  "Set-Cookie": "value",
+  "X-Uow": "uow"
+}
+```
+__________________________________________
+
+### _normalizeHeaders<H <: HttpHeaders&#62;&#40;headers: Null&#41;: { _?: SimpleType }_
+
+Helper function of `normalizeHeaders` to work with a `null` value.
+__________________________________________
+
+
+## **updateHeaderValueIgnoreCase**
+
+### _updateHeaderValueIgnoreCase<H <: HttpHeaders&#62;&#40;headers: H, headerName: String, headerValue: SimpleType&#41;_
+
+Update an specific HTTP header with the given value for a set of `HttpHeaders` ignoring case.
+
+##### Parameters
+
+| Name | Type | Description|
+|------|------|------------|
+| `headers` | `HttpHeaders` | The HTTP headers.|
+| `headerName` | String | The HTTP header name to update.|
+| `headerValue` | String | The HTTP header value to set.|
+
+
+##### Example
+
+This example update the `Content-Type` header.
+
+###### Source
+
+```dataweave
+%dw 2.0
+output application/json
+
+var headers = {
+  'content-type': "application/json",
+  'Content-Length': "128",
+  'Age': "15"
+}
+---
+updateHeaderValueIgnoreCase(headers, 'Content-Type', "application/xml")
+
+```
+
+###### Output
+
+```json
+{
+  "content-type": "application/xml",
+  "Content-Length": "128",
+  "Age": "15"
+ }
+```
+__________________________________________
 
 
 
