@@ -63,15 +63,7 @@ public interface HttpClientResponse {
      */
     default Optional<String> getLocation() {
         Optional<HttpClientHeaders> headers = ofNullable(getHeaders());
-        if (headers.isPresent()) {
-            Optional<List<String>> locationHeaderValues = ofNullable(headers.get().getHeaderValues(LOCATION));
-            if (locationHeaderValues.isPresent()) {
-                return locationHeaderValues.get()
-                        .stream()
-                        .findFirst();
-            }
-        }
-        return empty();
+        return headers.flatMap(httpClientHeaders -> httpClientHeaders.firstValueIgnoreCase(LOCATION));
     }
 
     /**
@@ -82,14 +74,12 @@ public interface HttpClientResponse {
     default List<HttpCookie> getCookies() {
         final Optional<HttpClientHeaders> headers = ofNullable(getHeaders());
         if (headers.isPresent()) {
-            Optional<List<String>> setCookiesHeaderValues = ofNullable(headers.get().getHeaderValues(SET_COOKIE));
-            if (setCookiesHeaderValues.isPresent()) {
-               return setCookiesHeaderValues.get()
-                        .stream()
-                        .map(HttpCookie::parse)
-                        .flatMap(Collection::stream)
-                        .collect(toList());
-            }
+            List<String> setCookiesHeaderValues = headers.get().allValuesIgnoreCase(SET_COOKIE);
+            return setCookiesHeaderValues
+                    .stream()
+                    .map(HttpCookie::parse)
+                    .flatMap(Collection::stream)
+                    .collect(toList());
         }
         return emptyList();
     }

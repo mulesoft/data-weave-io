@@ -7,6 +7,17 @@
 */
 %dw 2.0
 
+import * from dw::io::http::Types
+
+/**
+ * DataWeave type for representing an HTTP Header entry.
+ * Supports the following fields:
+ *
+ * * `name`: The HTTP header name.
+ * * `value`: The HTTP header value.
+ */
+type HttpHeaderEntry = { name: String, value: SimpleType }
+
 var ACCEPT_HEADER = "Accept"
 var ACCEPT_CHARSET_HEADER = "Accept-Charset"
 var ACCEPT_ENCODING_HEADER = "Accept-Encoding"
@@ -88,3 +99,258 @@ var ACCESS_CONTROL_ALLOW_ORIGIN = "Access-Control-Allow-Origin"
 var ACCESS_CONTROL_ALLOW_METHODS = "Access-Control-Allow-Methods"
 var ACCESS_CONTROL_ALLOW_HEADERS = "Access-Control-Allow-Headers"
 var ACCESS_CONTROL_MAX_AGE = "Access-Control-Max-Age"
+
+/**
+* Formats the given HTTP header value with the following rules:
+* * The first char of every word is in upper case and the remaining chars are in lower case.
+*
+*
+* === Parameters
+*
+* [%header, cols="1,1,3"]
+* |===
+* | Name | Type | Description
+* | header | `String` | The header value to format.
+* |===
+*
+* === Example
+*
+* This example format several HTTP header values.
+*
+* ==== Source
+*
+* [source,DataWeave,linenums]
+* ----
+* %dw 2.0
+* output application/json
+* import * from dw::io::http::utils::HttpHeaders
+* ---
+* {
+*   a: normalizeHeader("Authorization"),
+*   b: normalizeHeader("Content-Type"),
+*   c: normalizeHeader("cache-control"),
+*   d: normalizeHeader("Accept-ENCODING"),
+*   e: normalizeHeader("Set-Cookie"),
+*   f: normalizeHeader("x-uow")
+* }
+* ----
+*
+* ==== Output
+*
+* [source,Json,linenums]
+* ----
+* {
+*   "a": "Authorization",
+*   "b": "Content-Type",
+*   "c": "Cache-Control",
+*   "d": "Accept-Encoding",
+*   "e": "Set-Cookie",
+*   "f": "X-Uow"
+* }
+* ----
+*
+**/
+fun normalizeHeader(header: String): String =
+  lower(header)
+    replace /\b([a-z])/
+    with upper($[0])
+
+/**
+* Normalize the name of the given `HttpHeaders` value following the `normalizeHeader` function rules.
+*
+* === Parameters
+*
+* [%header, cols="1,1,3"]
+* |===
+* | Name | Type | Description
+* | headers | `HttpHeaders` | The HTTP header value to normalize.
+* |===
+*
+* === Example
+*
+* This example normalize several HTTP header values.
+*
+* ==== Source
+*
+* [source,DataWeave,linenums]
+* ----
+* %dw 2.0
+* output application/json
+* import * from dw::io::http::utils::HttpHeaders
+* ---
+* normalizeHeaders({
+*   "Authorization": "authorization value",
+*   "Content-Type": "application/xml",
+*   "cache-control": "no-cache",
+*   "Accept-ENCODING": "gzip",
+*   "Set-Cookie": "value",
+*   "x-uow": "uow"})
+* ----
+*
+* ==== Output
+*
+* [source,Json,linenums]
+* ----
+* {
+*   "Authorization": "authorization value",
+*   "Content-Type": "application/xml",
+*   "Cache-Control": "no-cache",
+*   "Accept-Encoding": "gzip",
+*   "Set-Cookie": "value",
+*   "X-Uow": "uow"
+* }
+* ----
+*
+**/
+fun normalizeHeaders(headers: HttpHeaders): HttpHeaders =
+  headers mapObject ((value, key, index) -> { (normalizeHeader(key as String)): value })
+
+/**
+* Helper function of `normalizeHeaders` to work with a `null` value.
+**/
+fun normalizeHeaders<H <: HttpHeaders>(headers: Null): {_?: SimpleType} = {}
+
+/**
+*
+* Gets an `Array` of `HttpHeader` for a given HTTP header name ignoring case.
+*
+* === Parameters
+*
+* [%header, cols="1,1,3"]
+* |===
+* | Name | Type | Description
+* | `headers` | `HttpHeaders` | The HTTP headers.
+* | `name` | String | The HTTP header name to search.
+* |===
+*
+* === Example
+*
+* This example search for the `Content-Type` header.
+*
+* ==== Source
+*
+* [source,DataWeave,linenums]
+* ----
+* %dw 2.0
+* output application/json
+*
+* var headers = {
+*   'content-type': "application/json",
+*   'Content-Length': "128",
+*   'Age': "15"
+* }
+* ---
+* allHeaderWith(headers, 'Content-Type')
+*
+* ----
+*
+* ==== Output
+*
+* [source,JSON,linenums]
+* ----
+* [ { "name": "content-type", "value": "application/json" } ]
+* ----
+*
+* === Example
+*
+* This example search for the `Content-Type` header. (Notice that the `Content-Type` header is duplicated)
+*
+* ==== Source
+*
+* [source,DataWeave,linenums]
+* ----
+* %dw 2.0
+* output application/json
+*
+* var headers = {
+*   'content-type': "application/json",
+*   'CONTENT-TYPE': "multipart/form-data",
+*   'Content-Length': "128",
+*   'Age': "15"
+* }
+* ---
+* allHeadersWith(headers, 'content-type')
+* ----
+*
+* ==== Output
+*
+* [source,JSON,linenums]
+* ----
+* [
+*   { "name": "content-type", "value": "application/json" },
+*   { "name": "CONTENT-TYPE", "value": "multipart/form-data" }
+* ]
+* ----
+*
+**/
+fun allHeadersWith(headers: HttpHeaders, name: String): Array<HttpHeaderEntry> = do {
+  var headerToFind = lower(name)
+  var matchingHeaders = headers filterObject ((value, key, index) -> lower(key as String) == headerToFind)
+  ---
+  matchingHeaders pluck ((value, key, index) -> {
+    name: key as String,
+    value: value
+  })
+}
+
+/**
+* Helper function of `allHeadersWith` to work with a `null` value.
+**/
+fun allHeadersWith(headers: Null, name: String): Array<HttpHeaderEntry> = []
+
+/**
+*
+* Set an specific HTTP header to a set of `HttpHeaders`.
+*
+* === Parameters
+*
+* [%header, cols="1,1,3"]
+* |===
+* | Name | Type | Description
+* | `headers` | `HttpHeaders` | The HTTP headers.
+* | `header` | `HttpHeader` | The HTTP header to set.
+* |===
+*
+* === Example
+*
+* This example update the `Content-Type` header.
+*
+* ==== Source
+*
+* [source,DataWeave,linenums]
+* ----
+* %dw 2.0
+* output application/json
+*
+* var headers = {
+*   'content-type': "application/json",
+*   'Content-Length': "128",
+*   'Age': "15"
+* }
+* ---
+* withHeader(headers, { "name": "Content-Type", "value": "application/xml" })
+*
+* ----
+*
+* ==== Output
+*
+* [source,JSON,linenums]
+* ----
+* {
+*   "Content-Length": "128",
+*   "Age": "15",
+*   "Content-Type": "application/xml"
+*  }
+* ----
+*
+**/
+fun withHeader(headers: HttpHeaders, header: HttpHeaderEntry): HttpHeaders = do {
+  var headerToFind = lower(header.name)
+  var remainingHeaders = headers filterObject ((value, key, index) -> do {
+   var headerName = lower(key)
+   ---
+   headerName != headerToFind
+  })
+  ---
+  remainingHeaders ++ { (header.name): header.value }
+}

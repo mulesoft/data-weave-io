@@ -45,6 +45,15 @@ subprojects {
     group = "org.mule.weave"
     version = projectVersion
 
+    java {
+        withJavadocJar()
+        withSourcesJar()
+    }
+
+    javadoc {
+        options.addStringOption('Xdoclint:none', '-quiet')
+    }
+
     compileJava {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11

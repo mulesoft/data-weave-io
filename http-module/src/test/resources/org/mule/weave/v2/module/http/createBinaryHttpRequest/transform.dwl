@@ -25,7 +25,7 @@ output application/json
    var request = createBinaryHttpRequest({
      method: "POST",
      url: "http://localhost:8081/post",
-     headers: {"Content-Type": "application/xml", "Accept": "*/*"},
+     headers: {"content-type": "application/xml", "Accept": "*/*"},
      body: {
        root: {user: "Mariano"}
      }

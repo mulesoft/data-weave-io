@@ -97,7 +97,7 @@ DataWeave type for representing a HTTP headers.
 #### Definition
 
 ```dataweave
-{ "Content-Type"?: String, Authorization?: String, ETag?: SimpleType, _*?: SimpleType }
+{ _*?: SimpleType }
 ```
 
 

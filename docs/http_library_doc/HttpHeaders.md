@@ -9,6 +9,14 @@ DataWeave script.
 
 # Index
 
+### Functions
+| Name | Description|
+|------|------------|
+| [allHeadersWith](#allheaderswith ) | Gets an `Array` of `HttpHeader` for a given HTTP header name ignoring case.|
+| [normalizeHeader](#normalizeheader ) | Formats the given HTTP header value with the following rules:<br>- The first char of every word is in upper case and the remaining chars are in lower case.|
+| [normalizeHeaders](#normalizeheaders ) | Normalize the name of the given `HttpHeaders` value following the `normalizeHeader` function rules.|
+| [withHeader](#withheader ) | Set an specific HTTP header to a set of `HttpHeaders`.|
+
 
 ### Variables
 | Name | Description|
@@ -97,12 +105,245 @@ DataWeave script.
 
 
 
+### Types
+| Name | Description|
+|------|------------|
+|[HttpHeaderEntry](#httpheaderentry ) | DataWeave type for representing an HTTP Header entry.<br>Supports the following fields:|
+
+
 
 
 
 
 __________________________________________
 
+
+# Functions
+
+## **allHeadersWith**
+
+### _allHeadersWith&#40;headers: HttpHeaders, name: String&#41;: Array<HttpHeaderEntry&#62;_
+
+Gets an `Array` of `HttpHeader` for a given HTTP header name ignoring case.
+
+##### Parameters
+
+| Name | Type | Description|
+|------|------|------------|
+| `headers` | `HttpHeaders` | The HTTP headers.|
+| `name` | String | The HTTP header name to search.|
+
+
+##### Example
+
+This example search for the `Content-Type` header.
+
+###### Source
+
+```dataweave
+%dw 2.0
+output application/json
+
+var headers = {
+  'content-type': "application/json",
+  'Content-Length': "128",
+  'Age': "15"
+}
+---
+allHeaderWith(headers, 'Content-Type')
+
+```
+
+###### Output
+
+```json
+[ { "name": "content-type", "value": "application/json" } ]
+```
+
+##### Example
+
+This example search for the `Content-Type` header. (Notice that the `Content-Type` header is duplicated)
+
+###### Source
+
+```dataweave
+%dw 2.0
+output application/json
+
+var headers = {
+  'content-type': "application/json",
+  'CONTENT-TYPE': "multipart/form-data",
+  'Content-Length': "128",
+  'Age': "15"
+}
+---
+allHeadersWith(headers, 'content-type')
+```
+
+###### Output
+
+```json
+[
+  { "name": "content-type", "value": "application/json" },
+  { "name": "CONTENT-TYPE", "value": "multipart/form-data" }
+]
+```
+__________________________________________
+
+### _allHeadersWith&#40;headers: Null, name: String&#41;: Array<HttpHeaderEntry&#62;_
+
+Helper function of `allHeadersWith` to work with a `null` value.
+__________________________________________
+
+
+## **normalizeHeader**
+
+### _normalizeHeader&#40;header: String&#41;: String_
+
+Formats the given HTTP header value with the following rules:
+- The first char of every word is in upper case and the remaining chars are in lower case.
+
+
+##### Parameters
+
+| Name | Type | Description|
+|------|------|------------|
+| header | `String` | The header value to format.|
+
+
+##### Example
+
+This example format several HTTP header values.
+
+###### Source
+
+```dataweave
+%dw 2.0
+output application/json
+import * from dw::io::http::utils::HttpHeaders
+---
+{
+  a: normalizeHeader("Authorization"),
+  b: normalizeHeader("Content-Type"),
+  c: normalizeHeader("cache-control"),
+  d: normalizeHeader("Accept-ENCODING"),
+  e: normalizeHeader("Set-Cookie"),
+  f: normalizeHeader("x-uow")
+}
+```
+
+###### Output
+
+```json
+{
+  "a": "Authorization",
+  "b": "Content-Type",
+  "c": "Cache-Control",
+  "d": "Accept-Encoding",
+  "e": "Set-Cookie",
+  "f": "X-Uow"
+}
+```
+__________________________________________
+
+
+## **normalizeHeaders**
+
+### _normalizeHeaders&#40;headers: HttpHeaders&#41;: HttpHeaders_
+
+Normalize the name of the given `HttpHeaders` value following the `normalizeHeader` function rules.
+
+##### Parameters
+
+| Name | Type | Description|
+|------|------|------------|
+| headers | `HttpHeaders` | The HTTP header value to normalize.|
+
+
+##### Example
+
+This example normalize several HTTP header values.
+
+###### Source
+
+```dataweave
+%dw 2.0
+output application/json
+import * from dw::io::http::utils::HttpHeaders
+---
+normalizeHeaders({
+  "Authorization": "authorization value",
+  "Content-Type": "application/xml",
+  "cache-control": "no-cache",
+  "Accept-ENCODING": "gzip",
+  "Set-Cookie": "value",
+  "x-uow": "uow"})
+```
+
+###### Output
+
+```json
+{
+  "Authorization": "authorization value",
+  "Content-Type": "application/xml",
+  "Cache-Control": "no-cache",
+  "Accept-Encoding": "gzip",
+  "Set-Cookie": "value",
+  "X-Uow": "uow"
+}
+```
+__________________________________________
+
+### _normalizeHeaders<H <: HttpHeaders&#62;&#40;headers: Null&#41;: { _?: SimpleType }_
+
+Helper function of `normalizeHeaders` to work with a `null` value.
+__________________________________________
+
+
+## **withHeader**
+
+### _withHeader&#40;headers: HttpHeaders, header: HttpHeaderEntry&#41;: HttpHeaders_
+
+Set an specific HTTP header to a set of `HttpHeaders`.
+
+##### Parameters
+
+| Name | Type | Description|
+|------|------|------------|
+| `headers` | `HttpHeaders` | The HTTP headers.|
+| `header` | `HttpHeader` | The HTTP header to set.|
+
+
+##### Example
+
+This example update the `Content-Type` header.
+
+###### Source
+
+```dataweave
+%dw 2.0
+output application/json
+
+var headers = {
+  'content-type': "application/json",
+  'Content-Length': "128",
+  'Age': "15"
+}
+---
+withHeader(headers, { "name": "Content-Type", "value": "application/xml" })
+
+```
+
+###### Output
+
+```json
+{
+  "Content-Length": "128",
+  "Age": "15",
+  "Content-Type": "application/xml"
+ }
+```
+__________________________________________
 
 
 
@@ -513,6 +754,26 @@ __________________________________________
 
 
 
+
+
+__________________________________________
+
+# Types
+
+### **HttpHeaderEntry**
+
+
+DataWeave type for representing an HTTP Header entry.
+Supports the following fields:
+
+- `name`: The HTTP header name.
+- `value`: The HTTP header value.
+
+#### Definition
+
+```dataweave
+{ name: String, value: SimpleType }
+```
 
 
 

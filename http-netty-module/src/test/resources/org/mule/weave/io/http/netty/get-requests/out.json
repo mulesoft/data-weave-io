@@ -1,0 +1,36 @@
+{
+  "a": {
+    "statusText": "OK",
+    "status": 200,
+    "contentType": "application/json"
+  },
+  "b": {
+    "status": 200,
+    "statusText": "OK",
+    "body": {
+      "body": null,
+      "method": "GET",
+      "path": "/echo/anything/%7Basdasd%7D",
+      "queryParams": {
+        "a": ""
+      },
+      "headers": {
+        "accept": "*/*",
+        "user-agent": "AHC/2.1",
+        "content-length": "0"
+      }
+    },
+    "cookies": {},
+    "contentType": "application/json"
+  },
+  "c": {
+    "statusText": "OK",
+    "status": 200,
+    "contentType": "application/octet-stream",
+    "headers": {
+      "Content-Type": "application/octet-stream",
+      "content-length": "516224"
+    }
+  },
+  "z": true
+}

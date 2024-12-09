@@ -21,9 +21,6 @@ type HttpMethod = "GET" | "HEAD" | "POST" | "PUT" | "DELETE" | "CONNECT" | "OPTI
  * DataWeave type for representing a HTTP headers.
  */
 type HttpHeaders = {
-  "Content-Type"?: String,
-  Authorization?: String,
-  ETag?: SimpleType,
   _*?: SimpleType
 }
 

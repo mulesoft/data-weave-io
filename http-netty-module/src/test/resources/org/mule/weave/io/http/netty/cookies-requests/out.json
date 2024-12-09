@@ -1,0 +1,33 @@
+{
+  "a": {
+    "k1": {
+      "name": "k1",
+      "value": "v1",
+      "maxAge": -1,
+      "httpOnly": false,
+      "secure": false,
+      "domain": null,
+      "comment": null,
+      "path": "/"
+    }
+  },
+  "b": {
+    "cookies": {},
+    "body": {
+      "cookies": null
+    }
+  },
+  "c": {
+    "cookies": {},
+    "body": {
+      "cookies": "Token=_asdf;age=39"
+    }
+  },
+  "d": {
+    "cookies": {},
+    "body": {
+      "cookies": "Token=_asdf;age=39"
+    }
+  },
+  "z": true
+}

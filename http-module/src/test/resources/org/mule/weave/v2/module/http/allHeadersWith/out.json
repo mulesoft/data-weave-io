@@ -1,0 +1,33 @@
+{
+  "a": [
+    {
+      "name": "Content-Type",
+      "value": "application/xml"
+    }
+  ],
+  "b": [
+    {
+      "name": "cache-control",
+      "value": "no-cache"
+    }
+  ],
+  "c": [
+    {
+      "name": "Duplicated",
+      "value": "A"
+    },
+    {
+      "name": "DUPLICATED",
+      "value": "B"
+    }
+  ],
+  "d": [
+
+  ],
+  "e": [
+
+  ],
+  "f": [
+
+  ]
+}

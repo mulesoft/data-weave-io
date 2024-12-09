@@ -1,0 +1,79 @@
+{
+  "a": {
+    "mimeType": "application/json",
+    "body": {
+      "body": null,
+      "method": "POST",
+      "path": "/post",
+      "queryParams": {
+        "asd": "123",
+        "space": "Mariano de Achaval"
+      },
+      "headers": {
+        "accept": "*/*",
+        "user-agent": "AHC/2.1",
+        "content-length": "0"
+      }
+    },
+    "contentType": "application/json"
+  },
+  "b": {
+    "mimeType": "application/json",
+    "body": {
+      "body": null,
+      "method": "POST",
+      "path": "/post",
+      "queryParams": {
+        "asd": "123",
+        "space": "Mariano de Achaval"
+      },
+      "headers": {
+        "accept": "*/*",
+        "user-agent": "AHC/2.1",
+        "content-length": "0"
+      }
+    },
+    "contentType": "application/json"
+  },
+  "c": {
+    "contentType": "application/json",
+    "bodyIsBinary": true,
+    "mimeType": null,
+    "raw": null
+  },
+  "d": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json",
+      "content-length": "470"
+    },
+    "mimeType": "application/json",
+    "body": {
+      "body": {
+        "root": {
+          "child": "Hi"
+        }
+      },
+      "method": "POST",
+      "path": "/post",
+      "queryParams": {
+        "asd": "123",
+        "space": "Mariano de Achaval",
+        "a": "a",
+        "A": "A"
+      },
+      "headers": {
+        "CONTENT-Type": "application/xml",
+        "X-API-TOKEN": "1st Token",
+        "X-Api-Token": "2nd Token",
+        "Cookie": "Cookie1=A;cookie1=b",
+        "accept": "*/*",
+        "user-agent": "AHC/2.1",
+        "content-length": "73"
+      }
+    },
+    "contentType": "application/json"
+  },
+
+  "z": true
+}
