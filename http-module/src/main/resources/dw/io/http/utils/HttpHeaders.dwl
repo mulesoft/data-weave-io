@@ -117,12 +117,12 @@ var ACCESS_CONTROL_MAX_AGE = "Access-Control-Max-Age"
 * import * from dw::io::http::utils::HttpHeaders
 * ---
 * {
-*   a: formatHeader("Authorization"),
-*   b: formatHeader("Content-Type"),
-*   c: formatHeader("cache-control"),
-*   d: formatHeader("Accept-ENCODING"),
-*   e: formatHeader("Set-Cookie"),
-*   f: formatHeader("x-uow")
+*   a: normalizeHeader("Authorization"),
+*   b: normalizeHeader("Content-Type"),
+*   c: normalizeHeader("cache-control"),
+*   d: normalizeHeader("Accept-ENCODING"),
+*   e: normalizeHeader("Set-Cookie"),
+*   f: normalizeHeader("x-uow")
 * }
 * ----
 *
@@ -141,13 +141,13 @@ var ACCESS_CONTROL_MAX_AGE = "Access-Control-Max-Age"
 * ----
 *
 **/
-fun formatHeader(header: String): String =
+fun normalizeHeader(header: String): String =
   lower(header)
     replace /\b([a-z])/
     with upper($[0])
 
 /**
-* Normalize the name of the given `HttpHeaders` value following the `formatHeader` function rules.
+* Normalize the name of the given `HttpHeaders` value following the `normalizeHeader` function rules.
 *
 * === Parameters
 *
@@ -194,7 +194,7 @@ fun formatHeader(header: String): String =
 *
 **/
 fun normalizeHeaders<H <: HttpHeaders>(headers: H): {_?: SimpleType} =
-  headers mapObject ((value, key, index) -> {(formatHeader(key)): value})
+  headers mapObject ((value, key, index) -> {(normalizeHeader(key)): value})
 
 /**
 * Helper function of `normalizeHeaders` to work with a `null` value.

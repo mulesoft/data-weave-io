@@ -13,8 +13,8 @@ DataWeave script.
 | Name | Description|
 |------|------------|
 | [findValuesIgnoreCase](#findvaluesignorecase ) | Gets an `Array` of HTTP header values for a given HTTP header name ignoring case.|
-| [formatHeader](#formatheader ) | Formats the given HTTP header value with the following rules:<br>- The first char of every word is in upper case and the remaining chars are in lower case.|
-| [normalizeHeaders](#normalizeheaders ) | Normalize the name of the given `HttpHeaders` value following the `formatHeader` function rules.|
+| [normalizeHeader](#normalizeheader ) | Formats the given HTTP header value with the following rules:<br>- The first char of every word is in upper case and the remaining chars are in lower case.|
+| [normalizeHeaders](#normalizeheaders ) | Normalize the name of the given `HttpHeaders` value following the `normalizeHeader` function rules.|
 | [updateHeaderValueIgnoreCase](#updateheadervalueignorecase ) | Update an specific HTTP header with the given value for a set of `HttpHeaders` ignoring case.|
 
 
@@ -187,9 +187,9 @@ Helper function of `findValuesIgnoreCase` to work with a `null` value.
 __________________________________________
 
 
-## **formatHeader**
+## **normalizeHeader**
 
-### _formatHeader&#40;header: String&#41;: String_
+### _normalizeHeader&#40;header: String&#41;: String_
 
 Formats the given HTTP header value with the following rules:
 - The first char of every word is in upper case and the remaining chars are in lower case.
@@ -214,12 +214,12 @@ output application/json
 import * from dw::io::http::utils::HttpHeaders
 ---
 {
-  a: formatHeader("Authorization"),
-  b: formatHeader("Content-Type"),
-  c: formatHeader("cache-control"),
-  d: formatHeader("Accept-ENCODING"),
-  e: formatHeader("Set-Cookie"),
-  f: formatHeader("x-uow")
+  a: normalizeHeader("Authorization"),
+  b: normalizeHeader("Content-Type"),
+  c: normalizeHeader("cache-control"),
+  d: normalizeHeader("Accept-ENCODING"),
+  e: normalizeHeader("Set-Cookie"),
+  f: normalizeHeader("x-uow")
 }
 ```
 
@@ -242,7 +242,7 @@ __________________________________________
 
 ### _normalizeHeaders<H <: HttpHeaders&#62;&#40;headers: H&#41;: { _?: SimpleType }_
 
-Normalize the name of the given `HttpHeaders` value following the `formatHeader` function rules.
+Normalize the name of the given `HttpHeaders` value following the `normalizeHeader` function rules.
 
 ##### Parameters
 
