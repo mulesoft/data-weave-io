@@ -3,10 +3,7 @@ package org.mule.weave.v2.module.http.service;
 import static java.util.Objects.requireNonNull;
 
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Representation of an HTTP request. Instances can only be obtained through an {@link HttpClientRequest.Builder}.
@@ -14,8 +11,8 @@ import java.util.Map;
 public class HttpClientRequest {
     private final String url;
     private final String method;
-    private final Map<String, List<String>> headers;
-    private final Map<String, List<String>> queryParams;
+    private final HttpClientHeaders headers;
+    private final HttpClientQueryParams queryParams;
     private final InputStream body;
 
     /** Do we accept header redirections? */
@@ -25,8 +22,8 @@ public class HttpClientRequest {
 
     private HttpClientRequest(String url,
                               String method,
-                              Map<String, List<String>> headers,
-                              Map<String, List<String>> queryParams,
+                              HttpClientHeaders headers,
+                              HttpClientQueryParams queryParams,
                               InputStream body,
                               boolean followRedirects,
                               int readTimeout,
@@ -58,14 +55,14 @@ public class HttpClientRequest {
     /**
      * @return the all the HTTP headers.
      */
-    public Map<String, List<String>> getHeaders() {
+    public HttpClientHeaders getHeaders() {
         return headers;
     }
 
     /**
-     * @return the query parameters.
+     * @return the {@link HttpClientQueryParams}.
      */
-    public Map<String, List<String>> getQueryParams() {
+    public HttpClientQueryParams getQueryParams() {
         return queryParams;
     }
 
@@ -103,8 +100,8 @@ public class HttpClientRequest {
     public static final class Builder {
         private String url;
         private String method;
-        private final Map<String, List<String>> headers = new LinkedHashMap<>();
-        private final Map<String, List<String>> queryParams = new LinkedHashMap<>();
+        private final HttpClientHeaders.Builder headersBuilder = new HttpClientHeaders.Builder();
+        private final HttpClientQueryParams.Builder queryParamsBuilder = new HttpClientQueryParams.Builder();
         private InputStream body = null;
         private boolean followRedirects = false;
         private int readTimeout = 60000;
@@ -140,8 +137,21 @@ public class HttpClientRequest {
          * @return this builder.
          */
         public Builder addHeader(String name, String value) {
-            List<String> values = headers.computeIfAbsent(name, k -> new ArrayList<>());
-            values.add(value);
+            requireNonNull(name, "name cannot be null");
+            requireNonNull(value, "value cannot be null");
+            this.headersBuilder.addHeader(name, value);
+            return this;
+        }
+
+        /**
+         * Includes a new header to be sent in the desired {@link HttpClientRequest}.
+         *
+         * @param header the {@link HttpClientHeaders.HttpHeader} that should be used. Not null.
+         * @return this builder.
+         */
+        public Builder addHeader(HttpClientHeaders.HttpHeader header) {
+            requireNonNull(header, "header cannot be null");
+            this.headersBuilder.addHeader(header);
             return this;
         }
 
@@ -153,7 +163,9 @@ public class HttpClientRequest {
          * @return this builder.
          */
         public Builder addHeaders(String name, List<String> values) {
-            headers.put(name, values);
+            requireNonNull(name, "name cannot be null");
+            requireNonNull(values, "values cannot be null");
+            values.forEach(value -> this.headersBuilder.addHeader(name, value));
             return this;
         }
 
@@ -165,8 +177,21 @@ public class HttpClientRequest {
          * @return this builder.
          */
         public Builder addQueryParam(String name, String value) {
-            List<String> values = queryParams.computeIfAbsent(name, k -> new ArrayList<>());
-            values.add(value);
+            requireNonNull(name, "name cannot be null");
+            requireNonNull(value, "value cannot be null");
+            this.queryParamsBuilder.addQueryParam(name, value);
+            return this;
+        }
+
+        /**
+         * Includes a new queryParam to be sent in the desired {@link HttpClientRequest}.
+         *
+         * @param queryParam the {@link HttpClientQueryParams.HttpQueryParam} that should be used. Not null.
+         * @return this builder.
+         */
+        public Builder addQueryParam(HttpClientQueryParams.HttpQueryParam queryParam) {
+            requireNonNull(queryParam, "queryParam cannot be null");
+            this.queryParamsBuilder.addQueryParam(queryParam);
             return this;
         }
 
@@ -223,7 +248,7 @@ public class HttpClientRequest {
         public HttpClientRequest build() {
             requireNonNull(url, "http client request 'url' must not be null");
             requireNonNull(method, "http client request 'method' must not be null");
-            return new HttpClientRequest(url, method, headers, queryParams, body, followRedirects,
+            return new HttpClientRequest(url, method, headersBuilder.build(), queryParamsBuilder.build(), body, followRedirects,
                     readTimeout, requestTimeout);
         }
     }
