@@ -237,12 +237,20 @@ fun sendRequestAndReadResponse<B <: HttpBody, H <: HttpHeaders>(
   requestConfig: HttpRequestConfig = DEFAULT_HTTP_REQUEST_CONFIG,
   serializationConfig: SerializationConfig = DEFAULT_SERIALIZATION_CONFIG,
   clientConfig: HttpClientConfig = DEFAULT_HTTP_CLIENT_CONFIG): HttpResponse<B, H> = do {
-  var binaryRequest = createBinaryHttpRequest(request, serializationConfig)
-  var httpResponse = sendRequest(binaryRequest, requestConfig, clientConfig)
+  var httpResponse = sendRequestAndReadRawResponse(request, requestConfig, serializationConfig, clientConfig)
   ---
   readHttpResponseBody(httpResponse, serializationConfig)
 }
 
+fun sendRequestAndReadRawResponse<Binary , H <: HttpHeaders>(
+  request: HttpRequest,
+  requestConfig: HttpRequestConfig = DEFAULT_HTTP_REQUEST_CONFIG,
+  serializationConfig: SerializationConfig = DEFAULT_SERIALIZATION_CONFIG,
+  clientConfig: HttpClientConfig = DEFAULT_HTTP_CLIENT_CONFIG): HttpResponse<Binary, H> = do {
+  var binaryRequest = createBinaryHttpRequest(request, serializationConfig)
+  ---
+  sendRequest(binaryRequest, log(requestConfig), clientConfig)
+}
 
 /**
 * Helper function to read a `HttpResponse` with a `Binary` body instance.
