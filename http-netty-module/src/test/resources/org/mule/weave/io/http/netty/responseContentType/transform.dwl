@@ -78,7 +78,7 @@ var server = api(serverConfig,
       status: $.status,
       contentType: $.contentType,
       headers: $.headers,
-      body: log($).body is Binary
+      body: $.body is Binary
     },
   g: server.stop()
 ]

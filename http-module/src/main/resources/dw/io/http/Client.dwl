@@ -249,7 +249,7 @@ fun sendRequestAndReadRawResponse<Binary , H <: HttpHeaders>(
   clientConfig: HttpClientConfig = DEFAULT_HTTP_CLIENT_CONFIG): HttpResponse<Binary, H> = do {
   var binaryRequest = createBinaryHttpRequest(request, serializationConfig)
   ---
-  sendRequest(binaryRequest, log(requestConfig), clientConfig)
+  sendRequest(binaryRequest, requestConfig, clientConfig)
 }
 
 /**
