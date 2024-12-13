@@ -27,6 +27,15 @@ var server = api(serverConfig,
       "GET": (req) -> {
         responseStatus: 200
       }
+    },
+    "/json-content-type": {
+      "GET": (req) -> {
+        responseStatus: 200,
+          headers: {
+              "Content-Type": "application/json"
+          },
+          body: '{"name": "test"}' as Binary
+      }
     }
   })
 ---
@@ -57,6 +66,20 @@ var server = api(serverConfig,
       headers: $.headers,
       body: $.body
     },
-  e: server.stop()
+  e: sendRequestAndReadResponse({method: "GET", url: 'http://$LOCALHOST/json-content-type'})
+    then {
+      status: $.status,
+      contentType: $.contentType,
+      headers: $.headers,
+      body: $.body
+    },
+  f: sendRequestAndReadRawResponse({method: "GET", url: 'http://$LOCALHOST/json-content-type'})
+    then {
+      status: $.status,
+      contentType: $.contentType,
+      headers: $.headers,
+      body: log($).body is Binary
+    },
+  g: server.stop()
 ]
 
