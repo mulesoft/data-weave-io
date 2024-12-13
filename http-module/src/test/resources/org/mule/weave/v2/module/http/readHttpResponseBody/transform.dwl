@@ -1,5 +1,4 @@
 %dw 2.0
-import * from dw::io::http::BodyUtils
 import * from dw::io::http::Client
 import * from dw::io::http::Types
 import * from dw::io::http::utils::HttpHeaders

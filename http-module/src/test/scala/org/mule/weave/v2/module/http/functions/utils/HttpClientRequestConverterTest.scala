@@ -74,11 +74,11 @@ class HttpClientRequestConverterTest extends AnyFreeSpec with Matchers {
 
       clientRequest.getMethod shouldBe method
       clientRequest.getUrl shouldBe url
-      clientRequest.getHeaders.size() shouldBe 2
-      clientRequest.getHeaders.get("header").get(0) shouldBe "value"
-      clientRequest.getHeaders.get("Cookie").get(0) shouldBe "a=A"
-      clientRequest.getQueryParams.size() shouldBe 1
-      clientRequest.getQueryParams.get("param").get(0) shouldBe "value"
+      clientRequest.getHeaders.getHeaders.size() shouldBe 2
+      clientRequest.getHeaders.allValues("header").get(0) shouldBe "value"
+      clientRequest.getHeaders.allValues("Cookie").get(0) shouldBe "a=A"
+      clientRequest.getQueryParams.getQueryParams.size() shouldBe 1
+      clientRequest.getQueryParams.allValues("param").get(0) shouldBe "value"
       clientRequest.getBody should not be null
       clientRequest.isFollowRedirects shouldBe requestConfig.followRedirects
       clientRequest.getRequestTimeout shouldBe requestConfig.requestTimeout.get
