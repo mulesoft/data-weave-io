@@ -1,3 +1,20 @@
+pluginManagement {
+    repositories {
+        maven {
+            name "mule-releases"
+            url "https://repository-master.mulesoft.org/nexus/content/repositories/releases/"
+        }
+        maven {
+            name "mule-snapshots"
+            url "https://repository-master.mulesoft.org/nexus/content/repositories/snapshots/"
+        }
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+//        mavenLocal()
+    }
+}
+
 include 'newrelic-module'
 include 'http-module'
 include 'http-netty-module'

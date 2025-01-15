@@ -1,14 +1,32 @@
 import static java.lang.String.valueOf
 
-subprojects {
+buildscript {
+    dependencies {
+        classpath 'net.linguica.gradle:maven-settings-plugin:0.5', {
+            exclude module: "sisu-guava"
+        }
+    }
+}
 
+plugins {
+    id "maven-publish"
+    id "org.scoverage" version "8.1"
+    id "org.sonarqube" version "4.0.0.2929"
+    id "scala"
+    id "distribution"
+    id 'java-library'
+    id "com.github.hierynomus.scalariform" version "0.4.0"
+}
+
+subprojects {
     apply plugin: 'maven-publish'
+    apply plugin: 'org.scoverage'
+    apply plugin: 'org.sonarqube'
     apply plugin: 'scala'
     apply plugin: 'distribution'
     apply plugin: 'java-library'
     apply plugin: 'net.linguica.maven-settings'
     apply plugin: "com.github.hierynomus.scalariform"
-    apply plugin: 'dataweave'
 
     mavenSettings {
         if (project.hasProperty('maven.settings.location')) {
@@ -140,6 +158,7 @@ subprojects {
         }
         project.tasks.jar.dependsOn 'generatePomFileForMavenJavaPublication'
     }
+
     task pomProperties() {
         Properties props = new Properties();
         File propertiesFile = new File("$project.buildDir/publications/mavenJava/pom.properties")
@@ -154,21 +173,24 @@ subprojects {
         props.store(propertiesFile.newWriter(), null)
     }
 
-    dataweave {
-        template = "markdown,assciidoc"
-    }
-
-    task docs(dependsOn: weavedoc, type: Zip) {
-        archiveClassifier = "weavedocs"
-        from 'build/docs/weavedocs/'
-    }
-
-
     compileScala.dependsOn(formatScala)
-    build.dependsOn("weavedoc")
-
 }
 
+repositories {
+    mavenCentral()
+}
+
+scoverage {
+}
+
+checkScoverage {
+}
+
+sonarqube {
+    properties {
+        property "sonar.scala.coverage.reportPaths", "build/reports/scoverageTest/scoverage.xml"
+    }
+}
 
 def isSnapshot(String version) {
     version.endsWith("-SNAPSHOT")
@@ -224,28 +246,4 @@ static String moduleNameSanitizer(String name) {
     }
     def joined = String.join(".", parts)
     joined
-}
-
-buildscript {
-    repositories {
-        maven {
-            name "mule-releases"
-            url "https://repository.mulesoft.org/nexus/content/repositories/releases/"
-        }
-        maven {
-            name "mule-snapshots"
-            url "https://repository.mulesoft.org/nexus/content/repositories/snapshots/"
-        }
-        mavenCentral()
-        maven {
-            url "https://plugins.gradle.org/m2/"
-        }
-    }
-    dependencies {
-        classpath 'net.linguica.gradle:maven-settings-plugin:0.5', {
-            exclude module: "sisu-guava"
-        }
-        classpath "gradle.plugin.com.hierynomus.gradle.plugins:scalariform-gradle-plugin:0.4.0"
-        classpath "org.mule.weave:weave-gradle-plugin:" + weavedocVersion
-    }
 }
