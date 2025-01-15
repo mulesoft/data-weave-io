@@ -40,6 +40,56 @@
     }
   },
   {
-    "e": true
+    "e": {
+      "status": 200,
+      "contentType": "application/json",
+      "headers": {
+        "Content-Type": "application/json",
+        "transfer-encoding": "chunked"
+      },
+      "body": {
+        "name": "test"
+      }
+    }
+  },
+  {
+    "f": {
+      "status": 200,
+      "contentType": "application/json",
+      "headers": {
+        "transfer-encoding": "chunked",
+        "Content-Type": "application/json"
+      },
+      "body": true
+    }
+  },
+  {
+    "g": {
+      "status": 200,
+      "contentType": "application/json",
+      "headers": {
+        "Content-Type": "application/json",
+        "transfer-encoding": "chunked"
+      },
+      "body": {
+        "name": "test"
+      }
+    }
+  },
+  {
+    "h": {
+      "status": 200,
+      "contentType": "application/json",
+      "headers": {
+        "Content-Type": "application/json",
+        "transfer-encoding": "chunked"
+      },
+      "body": {
+        "name": "test"
+      }
+    }
+  },
+  {
+    "z": true
   }
 ]

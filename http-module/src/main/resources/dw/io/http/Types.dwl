@@ -177,4 +177,27 @@ type OAuth = {token: String}
  */
 type BasicAuth = {username: String, password: String}
 
+/**
+ * DataWeave type for representing a binary HTTP request encoder.
+ *
+ * Supports the following fields:
+ *
+ * * `encode`: A function that receives a `HttpRequest` and returns a `HttpRequest<Binary>`.
+ */
+type BinaryRequestEncoder = {
+  encode: (request: HttpRequest) -> HttpRequest<Binary>
+}
+
+/**
+ * DataWeave type for representing a binary HTTP response decoder.
+ *
+ * Supports the following fields:
+ *
+ * * `decode`: A function that receives a `HttpResponse<Binary, H>` and returns a `HttpResponse<B, H>`.
+ */
+type BinaryResponseDecoder<B <: HttpBody, H <: HttpHeaders> = {
+  decode: (HttpResponse<Binary, H>) -> HttpResponse<B, H>
+}
+
+
 
