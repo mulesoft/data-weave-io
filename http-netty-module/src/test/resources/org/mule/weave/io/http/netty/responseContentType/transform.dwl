@@ -31,10 +31,10 @@ var server = api(serverConfig,
     "/json-content-type": {
       "GET": (req) -> {
         responseStatus: 200,
-          headers: {
-              "Content-Type": "application/json"
-          },
-          body: '{"name": "test"}' as Binary
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: '{"name": "test"}' as Binary
       }
     }
   })
@@ -73,13 +73,42 @@ var server = api(serverConfig,
       headers: $.headers,
       body: $.body
     },
-  f: sendRequestAndReadRawResponse({method: "GET", url: 'http://$LOCALHOST/json-content-type'})
+    // Using binary request encoder
+  f: sendRequest({method: "GET", url: 'http://$LOCALHOST/json-content-type'},
+    { encode: (httpRequest) -> createBinaryHttpRequest(httpRequest, DEFAULT_SERIALIZATION_CONFIG) })
     then {
-      status: $.status,
+     status: $.status,
       contentType: $.contentType,
       headers: $.headers,
       body: $.body is Binary
-    },
-  g: server.stop()
+  },
+  // Using binary response decoder
+  g: do {
+    var httpRequest = { method: "GET", url: 'http://$LOCALHOST/json-content-type'}
+    var binaryRequest = createBinaryHttpRequest(httpRequest, DEFAULT_SERIALIZATION_CONFIG)
+    var response = sendRequest(binaryRequest,
+      { decode: (httpResponse) -> readHttpResponseBody(httpResponse, DEFAULT_SERIALIZATION_CONFIG)})
+    ---
+    {
+      status: response.status,
+      contentType: response.contentType,
+      headers: response.headers,
+      body: response.body
+    }
+  },
+  // Using binary request encoder and  binary response decoder
+  h: do {
+    var response = sendRequest({ method: "GET", url: 'http://$LOCALHOST/json-content-type'},
+      { encode: (httpRequest) -> createBinaryHttpRequest(httpRequest, DEFAULT_SERIALIZATION_CONFIG)},
+      { decode: (httpResponse) -> readHttpResponseBody(httpResponse, DEFAULT_SERIALIZATION_CONFIG)})
+    ---
+    {
+      status: response.status,
+      contentType: response.contentType,
+      headers: response.headers,
+      body: response.body
+    }
+  },
+  z: server.stop()
 ]
 

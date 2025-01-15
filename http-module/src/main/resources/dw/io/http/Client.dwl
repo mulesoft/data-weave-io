@@ -44,6 +44,21 @@ var DEFAULT_SERIALIZATION_CONFIG = {
   writerProperties: {}
 }
 
+/**
+* Helper function to send a `GET` HTTP request.
+*
+* === Parameters
+*
+* [%header, cols="1,1,3"]
+* |===
+* | Name | Type | Description
+* | url | `String &#124; UrlBuilder` | The desired HTTP request url.
+* | headers | `HttpHeaders` | The HTTP request header to send.
+* | requestConfig | `HttpRequestConfig` | The HTTP request configuration to use.
+* | serializationConfig | `SerializationConfig` | The HTTP serialization configuration to use.
+* | clientConfig | `HttpClientConfig` | The HTTP client configuration configuration to use.
+* |===
+*/
 fun get<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder,
   headers: HttpHeaders = {},
   requestConfig: HttpRequestConfig = DEFAULT_HTTP_REQUEST_CONFIG,
@@ -54,6 +69,22 @@ fun get<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder,
   sendRequestAndReadResponse(httpRequest)
 }
 
+/**
+* Helper function to send a `POST` HTTP request.
+*
+* === Parameters
+*
+* [%header, cols="1,1,3"]
+* |===
+* | Name | Type | Description
+* | url | `String &#124; UrlBuilder` | The desired HTTP request url.
+* | headers | `HttpHeaders` | The HTTP request header to send.
+* | body | `HttpBody &#124; Null` | The HTTP request body to send.
+* | requestConfig | `HttpRequestConfig` | The HTTP request configuration to use.
+* | serializationConfig | `SerializationConfig` | The HTTP serialization configuration to use.
+* | clientConfig | `HttpClientConfig` | The HTTP client configuration configuration to use.
+* |===
+*/
 fun post<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder,
   headers: HttpHeaders = {},
   body: HttpBody | Null = null,
@@ -65,6 +96,22 @@ fun post<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder,
   sendRequestAndReadResponse(httpRequest)
 }
 
+/**
+* Helper function to send a `multipart` HTTP request.
+*
+* === Parameters
+*
+* [%header, cols="1,1,3"]
+* |===
+* | Name | Type | Description
+* | url | `String &#124; UrlBuilder` | The desired HTTP request url.
+* | body | `Multipart` | The HTTP request body to send.
+* | headers | `HttpHeaders` | The HTTP request header to send.
+* | requestConfig | `HttpRequestConfig` | The HTTP request configuration to use.
+* | serializationConfig | `SerializationConfig` | The HTTP serialization configuration to use.
+* | clientConfig | `HttpClientConfig` | The HTTP client configuration configuration to use.
+* |===
+*/
 fun postMultipart<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder,
   body: Multipart,
   headers: HttpHeaders = {},
@@ -84,6 +131,21 @@ fun postMultipart<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder,
   sendRequestAndReadResponse(httpRequest)
 }
 
+/**
+* Helper function to send a `HEAD` HTTP request.
+*
+* === Parameters
+*
+* [%header, cols="1,1,3"]
+* |===
+* | Name | Type | Description
+* | url | `String &#124; UrlBuilder` | The desired HTTP request url.
+* | headers | `HttpHeaders` | The HTTP request header to send.
+* | requestConfig | `HttpRequestConfig` | The HTTP request configuration to use.
+* | serializationConfig | `SerializationConfig` | The HTTP serialization configuration to use.
+* | clientConfig | `HttpClientConfig` | The HTTP client configuration configuration to use.
+* |===
+*/
 fun head<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder,
   headers: HttpHeaders = {},
   requestConfig: HttpRequestConfig = DEFAULT_HTTP_REQUEST_CONFIG,
@@ -94,6 +156,22 @@ fun head<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder,
  sendRequestAndReadResponse(httpRequest)
 }
 
+/**
+* Helper function to send a `PUT` HTTP request.
+*
+* === Parameters
+*
+* [%header, cols="1,1,3"]
+* |===
+* | Name | Type | Description
+* | url | `String &#124; UrlBuilder` | The desired HTTP request url.
+* | headers | `HttpHeaders` | The HTTP request header to send.
+* | body | `HttpBody &#124; Null` | The HTTP request body to send.
+* | requestConfig | `HttpRequestConfig` | The HTTP request configuration to use.
+* | serializationConfig | `SerializationConfig` | The HTTP serialization configuration to use.
+* | clientConfig | `HttpClientConfig` | The HTTP client configuration configuration to use.
+* |===
+*/
 fun put<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder,
   headers: HttpHeaders = {},
   body: HttpBody | Null = null,
@@ -105,6 +183,22 @@ fun put<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder,
   sendRequestAndReadResponse(httpRequest)
 }
 
+/**
+* Helper function to send a `DELETE` HTTP request.
+*
+* === Parameters
+*
+* [%header, cols="1,1,3"]
+* |===
+* | Name | Type | Description
+* | url | `String &#124; UrlBuilder` | The desired HTTP request url.
+* | headers | `HttpHeaders` | The HTTP request header to send.
+* | body | `HttpBody &#124; Null` | The HTTP request body to send.
+* | requestConfig | `HttpRequestConfig` | The HTTP request configuration to use.
+* | serializationConfig | `SerializationConfig` | The HTTP serialization configuration to use.
+* | clientConfig | `HttpClientConfig` | The HTTP client configuration configuration to use.
+* |===
+*/
 fun delete<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder,
   headers: HttpHeaders = {},
   body: HttpBody | Null = null,
@@ -116,6 +210,21 @@ fun delete<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder,
   sendRequestAndReadResponse(httpRequest)
 }
 
+/**
+* Helper function to send a `CONNECT` HTTP request.
+*
+* === Parameters
+*
+* [%header, cols="1,1,3"]
+* |===
+* | Name | Type | Description
+* | url | `String &#124; UrlBuilder` | The desired HTTP request url.
+* | headers | `HttpHeaders` | The HTTP request header to send.
+* | requestConfig | `HttpRequestConfig` | The HTTP request configuration to use.
+* | serializationConfig | `SerializationConfig` | The HTTP serialization configuration to use.
+* | clientConfig | `HttpClientConfig` | The HTTP client configuration configuration to use.
+* |===
+*/
 fun connect<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder,
   headers: HttpHeaders = {},
   requestConfig: HttpRequestConfig = DEFAULT_HTTP_REQUEST_CONFIG,
@@ -126,6 +235,21 @@ fun connect<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder,
   sendRequestAndReadResponse(httpRequest)
 }
 
+/**
+* Helper function to send a `OPTIONS` HTTP request.
+*
+* === Parameters
+*
+* [%header, cols="1,1,3"]
+* |===
+* | Name | Type | Description
+* | url | `String &#124; UrlBuilder` | The desired HTTP request url.
+* | headers | `HttpHeaders` | The HTTP request header to send.
+* | requestConfig | `HttpRequestConfig` | The HTTP request configuration to use.
+* | serializationConfig | `SerializationConfig` | The HTTP serialization configuration to use.
+* | clientConfig | `HttpClientConfig` | The HTTP client configuration configuration to use.
+* |===
+*/
 fun options<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder,
   headers: HttpHeaders = {},
   requestConfig: HttpRequestConfig = DEFAULT_HTTP_REQUEST_CONFIG,
@@ -136,6 +260,21 @@ fun options<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder,
   sendRequestAndReadResponse(httpRequest)
 }
 
+/**
+* Helper function to send a `TRACE` HTTP request.
+*
+* === Parameters
+*
+* [%header, cols="1,1,3"]
+* |===
+* | Name | Type | Description
+* | url | `String &#124; UrlBuilder` | The desired HTTP request url.
+* | headers | `HttpHeaders` | The HTTP request header to send.
+* | requestConfig | `HttpRequestConfig` | The HTTP request configuration to use.
+* | serializationConfig | `SerializationConfig` | The HTTP serialization configuration to use.
+* | clientConfig | `HttpClientConfig` | The HTTP client configuration configuration to use.
+* |===
+*/
 fun trace<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder,
   headers: HttpHeaders = {},
   requestConfig: HttpRequestConfig = DEFAULT_HTTP_REQUEST_CONFIG,
@@ -146,6 +285,22 @@ fun trace<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder,
   sendRequestAndReadResponse(httpRequest)
 }
 
+/**
+* Helper function to send a `PATCH` HTTP request.
+*
+* === Parameters
+*
+* [%header, cols="1,1,3"]
+* |===
+* | Name | Type | Description
+* | url | `String &#124; UrlBuilder` | The desired HTTP request url.
+* | headers | `HttpHeaders` | The HTTP request header to send.
+* | body | `HttpBody &#124; Null` | The HTTP request body to send.
+* | requestConfig | `HttpRequestConfig` | The HTTP request configuration to use.
+* | serializationConfig | `SerializationConfig` | The HTTP serialization configuration to use.
+* | clientConfig | `HttpClientConfig` | The HTTP client configuration configuration to use.
+* |===
+*/
 fun patch<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder,
   headers: HttpHeaders = {},
   body: HttpBody | Null = null,
@@ -186,16 +341,6 @@ fun createHttpRequest<T <: HttpBody>(method: HttpMethod, url: String | UrlBuilde
     cookies: cookies
   }
 
-@RuntimePrivilege(requires = "http::Client")
-fun sendRequest<H <: HttpHeaders>(
-  request: HttpRequest<Binary>,
-  requestConfig: HttpRequestConfig = DEFAULT_HTTP_REQUEST_CONFIG,
-  clientConfig: HttpClientConfig = DEFAULT_HTTP_CLIENT_CONFIG): HttpResponse<Binary, H> = do {
-    fun nativeSendRequest(request: HttpRequest<Binary>, requestConfig: HttpRequestConfig, clientConfig: HttpClientConfig): HttpResponse<Binary, H> = native("http::HttpRequestFunction")
-    ---
-    nativeSendRequest(request, requestConfig, clientConfig)
-  }
-
 /**
 * Helper function to create a `HttpRequest` instances with `Binary` request body.
 *
@@ -232,24 +377,135 @@ fun createBinaryHttpRequest(request: HttpRequest, serializationConfig: Serializa
     (cookies: request.cookies!) if (request.cookies?)
   }
 
+/**
+* Sends an HTTP request by using the provided `binaryRequestEncoder` to convert the current request into an `HttpRequest<Binary,H&#62;` instance
+* with the desired configurations (request/client configuration) and returns an HTTP response using the provided `binaryResponseDecoder` to convert
+* the current HTTP response into an `HttpResponse<B, H&#62;>` instance.
+*
+* === Parameters
+*
+* [%header, cols="1,1,3"]
+* |===
+* | Name | Type | Description
+* | request | `HttpRequest` | An HTTP request to send.
+* | binaryRequestEncoder | `BinaryRequestEncoder` | The HTTP request encoder to use.
+* | binaryResponseDecoder | `BinaryResponseDecoder` | The HTTP response decoder to use.
+* | requestConfig | `HttpRequestConfig` | The HTTP request configuration to use.
+* | clientConfig | `HttpClientConfig` | The HTTP client configuration configuration to use.
+* |===
+*/
+fun sendRequest<B <: HttpBody, H <: HttpHeaders>(request: HttpRequest,
+  binaryRequestEncoder: BinaryRequestEncoder,
+  binaryResponseDecoder: BinaryResponseDecoder<B, H>,
+  requestConfig: HttpRequestConfig = DEFAULT_HTTP_REQUEST_CONFIG,
+  clientConfig: HttpClientConfig = DEFAULT_HTTP_CLIENT_CONFIG): HttpResponse<B, H> = do {
+    var binaryRequest = binaryRequestEncoder.encode(request)
+    var httpResponse = sendRequest(binaryRequest, requestConfig, clientConfig)
+    var response = binaryResponseDecoder.decode(httpResponse)
+    ---
+    response
+  }
+
+/**
+* Sends an HttpRequest<Binary,H&#62; instance with the desired configurations (request/client configuration)
+* and returns an HTTP response using the provided `binaryResponseDecoder` to convert the current HTTP response
+* into an `HttpResponse<B, H&#62;>` instance.
+*
+* === Parameters
+*
+* [%header, cols="1,1,3"]
+* |===
+* | Name | Type | Description
+* | request | `HttpRequest<Binary,H&#62;` | An HTTP request to send.
+* | binaryResponseDecoder | `BinaryResponseDecoder` | The HTTP response decoder to use.
+* | requestConfig | `HttpRequestConfig` | The HTTP request configuration to use.
+* | clientConfig | `HttpClientConfig` | The HTTP client configuration configuration to use.
+* |===
+*/
+fun sendRequest<B <: HttpBody, H <: HttpHeaders>(request: HttpRequest<Binary>,
+  binaryResponseDecoder: BinaryResponseDecoder<B, H>,
+  requestConfig: HttpRequestConfig = DEFAULT_HTTP_REQUEST_CONFIG,
+  clientConfig: HttpClientConfig = DEFAULT_HTTP_CLIENT_CONFIG): HttpResponse<B, H> = do {
+    var httpResponse = sendRequest(request, requestConfig, clientConfig)
+    var response = binaryResponseDecoder.decode(httpResponse)
+    ---
+    response
+  }
+
+
+/**
+* Sends an HTTP request by using the provided `binaryRequestEncoder` to convert the current request into an `HttpRequest<Binary,H&#62;` instance
+* with the desired configurations (request/client configuration) and returns an `HttpResponse<Binary, H&#62;>` instance.
+*
+* === Parameters
+*
+* [%header, cols="1,1,3"]
+* |===
+* | Name | Type | Description
+* | request | `HttpRequest` | An HTTP request to send.
+* | binaryRequestEncoder | `BinaryRequestEncoder` | The HTTP request encoder to use.
+* | requestConfig | `HttpRequestConfig` | The HTTP request configuration to use.
+* | clientConfig | `HttpClientConfig` | The HTTP client configuration configuration to use.
+* |===
+*/
+fun sendRequest<H <: HttpHeaders>(request: HttpRequest,
+  binaryRequestEncoder: BinaryRequestEncoder,
+  requestConfig: HttpRequestConfig = DEFAULT_HTTP_REQUEST_CONFIG,
+  clientConfig: HttpClientConfig = DEFAULT_HTTP_CLIENT_CONFIG): HttpResponse<Binary, H> = do {
+    var binaryRequest = binaryRequestEncoder.encode(request)
+    var httpResponse = sendRequest(binaryRequest, requestConfig, clientConfig)
+    ---
+    httpResponse
+}
+
+/**
+* Sends an HTTP request with a `Binary` body instance with the desired configurations (request/client configuration)
+* and returns an `HttpResponse<Binary, H&#62;>` instance.
+*
+* === Parameters
+*
+* [%header, cols="1,1,3"]
+* |===
+* | Name | Type | Description
+* | request | `HttpRequest<Binary,H&#62;` | An HTTP request to send.
+* | requestConfig | `HttpRequestConfig` | The HTTP request configuration to use.
+* | clientConfig | `HttpClientConfig` | The HTTP client configuration configuration to use.
+* |===
+*/
+@RuntimePrivilege(requires = "http::Client")
+fun sendRequest<H <: HttpHeaders>(
+  request: HttpRequest<Binary>,
+  requestConfig: HttpRequestConfig = DEFAULT_HTTP_REQUEST_CONFIG,
+  clientConfig: HttpClientConfig = DEFAULT_HTTP_CLIENT_CONFIG): HttpResponse<Binary, H> = do {
+    fun nativeSendRequest(request: HttpRequest<Binary>, requestConfig: HttpRequestConfig, clientConfig: HttpClientConfig): HttpResponse<Binary, H> = native("http::HttpRequestFunction")
+    ---
+    nativeSendRequest(request, requestConfig, clientConfig)
+}
+
+/**
+* Sends an HTTP request by writing the request body into a `Binary` instance and reading
+* the HTTP response `Binary` body instance.
+*
+* === Parameters
+*
+* [%header, cols="1,1,3"]
+* |===
+* | Name | Type | Description
+* | request | `HttpRequest` | An HTTP request to send.
+* | requestConfig | `HttpRequestConfig` | The HTTP request configuration to use.
+* | serializationConfig | `SerializationConfig` | The HTTP serialization configuration to use.
+* | clientConfig | `HttpClientConfig` | The HTTP client configuration configuration to use.
+* |===
+*/
 fun sendRequestAndReadResponse<B <: HttpBody, H <: HttpHeaders>(
   request: HttpRequest,
   requestConfig: HttpRequestConfig = DEFAULT_HTTP_REQUEST_CONFIG,
   serializationConfig: SerializationConfig = DEFAULT_SERIALIZATION_CONFIG,
   clientConfig: HttpClientConfig = DEFAULT_HTTP_CLIENT_CONFIG): HttpResponse<B, H> = do {
-  var httpResponse = sendRequestAndReadRawResponse(request, requestConfig, serializationConfig, clientConfig)
+  var binaryRequestEncoder = { encode: (httpRequest) -> createBinaryHttpRequest(httpRequest, serializationConfig) }
+  var binaryResponseDecoder = { decode: (httpResponse) -> readHttpResponseBody(httpResponse, serializationConfig) }
   ---
-  readHttpResponseBody(httpResponse, serializationConfig)
-}
-
-fun sendRequestAndReadRawResponse<Binary , H <: HttpHeaders>(
-  request: HttpRequest,
-  requestConfig: HttpRequestConfig = DEFAULT_HTTP_REQUEST_CONFIG,
-  serializationConfig: SerializationConfig = DEFAULT_SERIALIZATION_CONFIG,
-  clientConfig: HttpClientConfig = DEFAULT_HTTP_CLIENT_CONFIG): HttpResponse<Binary, H> = do {
-  var binaryRequest = createBinaryHttpRequest(request, serializationConfig)
-  ---
-  sendRequest(binaryRequest, requestConfig, clientConfig)
+  sendRequest(request, binaryRequestEncoder, binaryResponseDecoder,requestConfig, clientConfig)
 }
 
 /**

@@ -16,6 +16,8 @@ DataWeave script.
 | Name | Description|
 |------|------------|
 |[BasicAuth](#basicauth ) | DataWeave type for representing an basic Authorization.|
+|[BinaryRequestEncoder](#binaryrequestencoder ) | DataWeave type for representing a binary HTTP request encoder.|
+|[BinaryResponseDecoder](#binaryresponsedecoder ) | DataWeave type for representing a binary HTTP response decoder.|
 |[HttpBody](#httpbody ) | DataWeave type for representing a HTTP body.|
 |[HttpClientConfig](#httpclientconfig ) | DataWeave type for representing an HTTP client configuration.<br>Supports the following fields:|
 |[HttpHeaders](#httpheaders ) | DataWeave type for representing a HTTP headers.|
@@ -55,6 +57,38 @@ DataWeave type for representing an basic Authorization.
 
 ```dataweave
 { username: String, password: String }
+```
+
+
+### **BinaryRequestEncoder**
+
+
+DataWeave type for representing a binary HTTP request encoder.
+
+Supports the following fields:
+
+- `encode`: A function that receives a `HttpRequest` and returns a `HttpRequest<Binary>`.
+
+#### Definition
+
+```dataweave
+{ encode: (request: HttpRequest) -> HttpRequest<Binary> }
+```
+
+
+### **BinaryResponseDecoder**
+
+
+DataWeave type for representing a binary HTTP response decoder.
+
+Supports the following fields:
+
+- `decode`: A function that receives a `HttpResponse<Binary, H>` and returns a `HttpResponse<B, H>`.
+
+#### Definition
+
+```dataweave
+{ decode: (HttpResponse<Binary, H>) -> HttpResponse<B, H> }
 ```
 
 

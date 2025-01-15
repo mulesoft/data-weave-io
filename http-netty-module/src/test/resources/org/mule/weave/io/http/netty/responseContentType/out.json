@@ -64,6 +64,32 @@
     }
   },
   {
-    "g": true
+    "g": {
+      "status": 200,
+      "contentType": "application/json",
+      "headers": {
+        "Content-Type": "application/json",
+        "transfer-encoding": "chunked"
+      },
+      "body": {
+        "name": "test"
+      }
+    }
+  },
+  {
+    "h": {
+      "status": 200,
+      "contentType": "application/json",
+      "headers": {
+        "Content-Type": "application/json",
+        "transfer-encoding": "chunked"
+      },
+      "body": {
+        "name": "test"
+      }
+    }
+  },
+  {
+    "z": true
   }
 ]
