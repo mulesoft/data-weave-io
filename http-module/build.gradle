@@ -1,5 +1,6 @@
 plugins {
     id "com.github.maiflai.scalatest" version "${scalaTestPluginVersion}"
+    id 'dataweave' version "${weavedocVersion}"
 }
 
 dependencies {
@@ -17,3 +18,14 @@ dependencies {
 tasks.withType(Copy).all {
     duplicatesStrategy 'exclude'
 }
+
+dataweave {
+    template = "markdown,assciidoc"
+}
+
+task docs(dependsOn: weavedoc, type: Zip) {
+    archiveClassifier = "weavedocs"
+    from 'build/docs/weavedocs/'
+}
+
+build.dependsOn("weavedoc")

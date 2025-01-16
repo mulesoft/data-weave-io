@@ -22,7 +22,7 @@ fi
 if [[ "$_java" ]]; then
     if [[ -z "${TEST_ENVIRONMENT}" ]]; then
       echo "TEST_ENVIRONMENT env variable is not defined using default"
-      ./gradlew -Pmaven.settings.location=$1 test
+      ./gradlew -Pmaven.settings.location=$1 reportScoverage aggregateScoverage
     else
       ./gradlew -Pmaven.settings.location=$1 clean
       ./gradlew -Pmaven.settings.location=$1 build -x test
