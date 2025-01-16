@@ -20,13 +20,12 @@ else
 fi
 
 if [[ "$_java" ]]; then
-    version=$("$_java" -version 2>&1 | awk -F '"' '/version/ {print $2}')
-    echo version "$version"
-    if [[ "$version" < "1.9" ]]; then
-        ./gradlew -Pmaven.settings.location=$1 test
+    if [[ -z "${TEST_ENVIRONMENT}" ]]; then
+      echo "TEST_ENVIRONMENT env variable is not defined using default"
+      ./gradlew -Pmaven.settings.location=$1 reportScoverage aggregateScoverage
     else
-        ./gradlew -Pmaven.settings.location=$1 clean
-        ./gradlew -Pmaven.settings.location=$1 build -x test
-        ./gradlew -Pmaven.settings.location=$1 test
+      ./gradlew -Pmaven.settings.location=$1 clean
+      ./gradlew -Pmaven.settings.location=$1 build -x test
+      ./gradlew -Pmaven.settings.location=$1 test
     fi
 fi
