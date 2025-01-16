@@ -19,6 +19,13 @@ tasks.withType(Copy).all {
     duplicatesStrategy 'exclude'
 }
 
+sonarqube {
+    properties {
+        property "sonar.scala.coverage.reportPaths", "build/reports/scoverageTest/scoverage.xml"
+        property 'sonar.exclusions', 'src/main/java/**/*'
+    }
+}
+
 dataweave {
     template = "markdown,assciidoc"
 }
