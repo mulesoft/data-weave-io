@@ -53,6 +53,10 @@ class NettyHttpClient(client: AsyncHttpClient) extends HttpClient {
   def close(): Unit = {
     client.close()
   }
+
+  def isClosed(): Boolean = {
+    client.isClosed
+  }
 }
 
 class NettyHttpClientResponse(response: Response, stopWatch: StopWatch) extends HttpClientResponse {
