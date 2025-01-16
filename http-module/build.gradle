@@ -13,10 +13,19 @@ dependencies {
         exclude group: 'org.scala-lang', module: 'scala-library'
     }
     testRuntimeOnly 'com.vladsch.flexmark:flexmark-all:0.62.2'
+
+    testImplementation project(":http-netty-module")
 }
 
 tasks.withType(Copy).all {
     duplicatesStrategy 'exclude'
+}
+
+sonarqube {
+    properties {
+        property "sonar.scala.coverage.reportPaths", "build/reports/scoverageTest/scoverage.xml"
+        property 'sonar.exclusions', 'src/main/java/**/*'
+    }
 }
 
 dataweave {
