@@ -7,7 +7,6 @@ enableSlackSuccessNotifications: true
 enableSlackFailedTestsNotifications: true
 junitTestResults: '**/build/test-results/test/*.xml, **/build/test-results/*.xml'
 enableAllureTestReportStage: false
-enableSonarQubeStage: false
 enableNexusIqStage: false
 enableScheduleTrigger: true
 scheduleTriggerCommand : "@daily"

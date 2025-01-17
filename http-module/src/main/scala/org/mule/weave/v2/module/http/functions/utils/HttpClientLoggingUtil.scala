@@ -13,15 +13,20 @@ object HttpClientLoggingUtil {
   def appendClientConfiguration(buffer: StringBuilder, clientConfiguration: HttpClientConfiguration): StringBuilder = {
     buffer.append(s"connectionTimeout: ${clientConfiguration.getConnectionTimeout} (ms), ")
     buffer.append(s"compressionHeader: ${clientConfiguration.isCompressionHeader}, ")
-    buffer.append(s"decompress: ${clientConfiguration.isDecompress}, ")
-    appendTlsConfiguration(buffer, clientConfiguration.getTlsConfiguration)
+    buffer.append(s"decompress: ${clientConfiguration.isDecompress}")
+    if (clientConfiguration.getTlsConfiguration != null) {
+      buffer.append(", ")
+      appendTlsConfiguration(buffer, clientConfiguration.getTlsConfiguration)
+    }
     buffer
   }
 
   private def appendTlsConfiguration(buffer: StringBuilder, tlsConfiguration: TlsConfiguration): Unit = {
-    buffer.append("tls: {")
-    buffer.append(s"insecure: ${tlsConfiguration.isInsecure}")
-    buffer.append("}")
+    if (tlsConfiguration != null) {
+      buffer.append("tls: {")
+      buffer.append(s"insecure: ${tlsConfiguration.isInsecure}")
+      buffer.append("}")
+    }
   }
 
   def appendRequest(buffer: StringBuilder, httpClientRequest: HttpClientRequest): StringBuilder = {

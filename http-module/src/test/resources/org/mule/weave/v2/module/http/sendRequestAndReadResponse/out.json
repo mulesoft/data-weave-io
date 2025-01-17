@@ -1,0 +1,36 @@
+{
+  "a": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json",
+      "content-length": "470"
+    },
+    "mimeType": "application/json",
+    "body": {
+      "body": {
+        "root": {
+          "child": "Hi"
+        }
+      },
+      "method": "POST",
+      "path": "/echo",
+      "queryParams": {
+        "asd": "123",
+        "space": "Mariano de Achaval",
+        "a": "a",
+        "A": "A"
+      },
+      "headers": {
+        "X-API-TOKEN": "1st Token",
+        "X-Api-Token": "2nd Token",
+        "CONTENT-Type": "application/xml",
+        "Cookie": "Cookie1=A;cookie1=b",
+        "accept": "*/*",
+        "user-agent": "AHC/2.1",
+        "content-length": "73"
+      }
+    },
+    "contentType": "application/json"
+  },
+  "z": true
+}
