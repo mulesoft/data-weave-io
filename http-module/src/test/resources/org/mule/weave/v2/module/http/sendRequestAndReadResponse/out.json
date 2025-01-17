@@ -21,9 +21,9 @@
         "A": "A"
       },
       "headers": {
-        "X-API-TOKEN": "1st Token",
+        "X-Api-Token": "1st Token",
         "X-Api-Token": "2nd Token",
-        "CONTENT-Type": "application/xml",
+        "Content-Type": "application/xml",
         "Cookie": "Cookie1=A;cookie1=b",
         "accept": "*/*",
         "user-agent": "AHC/2.1",

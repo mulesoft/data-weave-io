@@ -10,7 +10,7 @@ buildscript {
 
 plugins {
     id "maven-publish"
-    id "org.scoverage" version "8.1"
+    id "org.scoverage" version "7.0.0"
     id "org.sonarqube" version "4.0.0.2929"
     id "scala"
     id "distribution"
@@ -161,6 +161,10 @@ subprojects {
         props.setProperty('groupId', valueOf(project.group))
         props.setProperty('artifactId', project.name)
         props.store(propertiesFile.newWriter(), null)
+    }
+
+    scoverage {
+        scoverageVersion = "1.4.9"
     }
 
     compileScala.dependsOn(formatScala)

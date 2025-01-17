@@ -1,9 +1,8 @@
 package org.mule.weave.v2.module.http.functions.utils
 
+import org.mule.weave.v2.module.http.SimpleHttpClientHeaders
 import org.mule.weave.v2.module.http.SimpleHttpClientResponse
 import org.mule.weave.v2.module.http.service.HttpClientConfiguration
-import org.mule.weave.v2.module.http.service.HttpClientHeaders
-import org.mule.weave.v2.module.http.service.HttpClientHeaders.HttpHeader
 import org.mule.weave.v2.module.http.service.HttpClientRequest
 import org.mule.weave.v2.module.http.service.HttpClientResponse
 import org.mule.weave.v2.module.http.service.TlsConfiguration
@@ -37,7 +36,7 @@ class HttpClientLoggingUtilTest extends AnyFreeSpec with Matchers {
         .setUrl("http://domain")
         .setMethod("GET")
         .addQueryParam("p", "value")
-        .addHeader(HttpHeader.of("Content-Type", "application/json"))
+        .addHeader("Content-Type", "application/json")
         .build()
 
       val buffer = new StringBuilder()
@@ -58,7 +57,7 @@ class HttpClientLoggingUtilTest extends AnyFreeSpec with Matchers {
       headers.put("header", Collections.singletonList("value"))
       headers.put("Content-Length", Collections.singletonList(content.length.toString))
       headers.put(HttpClientResponse.SET_COOKIE, Collections.singletonList("cookie=value"))
-      val httpClientResponse = SimpleHttpClientResponse(status, statusText, HttpClientHeaders.of(headers), contentType, body)
+      val httpClientResponse = SimpleHttpClientResponse(status, statusText, new SimpleHttpClientHeaders(headers), contentType, body)
 
       val buffer = new StringBuilder()
       HttpClientLoggingUtil.appendResponse(buffer, httpClientResponse)
