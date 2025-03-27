@@ -83,6 +83,7 @@ class HttpClientRequestConverterTest extends AnyFreeSpec with Matchers {
       clientRequest.isFollowRedirects shouldBe requestConfig.followRedirects
       clientRequest.getRequestTimeout shouldBe requestConfig.requestTimeout.get
       clientRequest.getReadTimeout shouldBe requestConfig.readTimeout.get
+      clientRequest.isStreamResponse shouldBe requestConfig.streamResponse
     }
 
     "should fail with duplicate 'cookie' field" in {

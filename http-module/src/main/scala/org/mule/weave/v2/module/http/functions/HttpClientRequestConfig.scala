@@ -8,17 +8,20 @@ import org.mule.weave.v2.model.structure.ObjectSeq
 case class HttpClientRequestConfig(
   followRedirects: Boolean,
   readTimeout: Option[Int],
-  requestTimeout: Option[Int])
+  requestTimeout: Option[Int],
+  streamResponse: Boolean)
 
 object HttpClientRequestConfig {
   private val FOLLOW_REDIRECTS = "followRedirects"
   private val READ_TIMEOUT = "readTimeout"
   private val REQUEST_TIMEOUT = "requestTimeout"
+  private val STREAM_RESPONSE = "streamResponse"
 
   def parse(config: ObjectSeq)(implicit ctx: EvaluationContext): HttpClientRequestConfig = {
     val followRedirects = selectBoolean(config, FOLLOW_REDIRECTS).getOrElse(false)
     val maybeReadTimeout = selectInt(config, READ_TIMEOUT)
     val maybeRequestTimeout = selectInt(config, REQUEST_TIMEOUT)
-    HttpClientRequestConfig(followRedirects, maybeReadTimeout, maybeRequestTimeout)
+    val streamResponse = selectBoolean(config, STREAM_RESPONSE).getOrElse(false)
+    HttpClientRequestConfig(followRedirects, maybeReadTimeout, maybeRequestTimeout, streamResponse)
   }
 }

@@ -3,6 +3,8 @@ package org.mule.weave.v2.module.http.netty
 import org.asynchttpclient.AsyncHttpClient
 import org.asynchttpclient.RequestBuilder
 import org.asynchttpclient.Response
+import org.asynchttpclient.handler.BodyDeferringAsyncHandler
+import org.asynchttpclient.handler.BodyDeferringAsyncHandler.BodyDeferringInputStream
 import org.mule.weave.v2.module.http.functions.utils.StopWatch
 import org.mule.weave.v2.module.http.service.HttpClient
 import org.mule.weave.v2.module.http.service.HttpClientHeaders
@@ -12,6 +14,8 @@ import org.mule.weave.v2.module.http.service.metadata.NumberMetadataValue
 import org.mule.weave.v2.module.http.service.metadata.ObjectMetadataValue
 
 import java.io.InputStream
+import java.io.PipedInputStream
+import java.io.PipedOutputStream
 import java.util.Optional
 
 class NettyHttpClient(client: AsyncHttpClient) extends HttpClient {
@@ -43,12 +47,19 @@ class NettyHttpClient(client: AsyncHttpClient) extends HttpClient {
     builder.setReadTimeout(request.getReadTimeout)
     builder.setRequestTimeout(request.getRequestTimeout)
 
-    client.executeRequest(builder, StopWatchCompletionHandler(stopWatch))
-      .toCompletableFuture
-      .thenApply[HttpClientResponse](response => {
-        new NettyHttpClientResponse(response, stopWatch)
-      })
-      .get()
+
+    val pipedOutputStream = new PipedOutputStream()
+    val pipedInputStream = new PipedInputStream(pipedOutputStream)
+    val bodyDeferringHandler = StopWatchCompletionHandler(stopWatch, pipedOutputStream)
+    val responseFuture = client.prepareRequest(builder).execute(bodyDeferringHandler)
+    val response = bodyDeferringHandler.getResponse
+    val inputStream = new BodyDeferringInputStream(responseFuture, bodyDeferringHandler, pipedInputStream) {
+      override def read(b: Array[Byte], off: Int, len: Int): Int = {
+        System.out.println("***** Read " + off + "****** ")
+        super.read(b, off, len)
+      }
+    }
+    new NettyHttpClientResponse(response, inputStream, stopWatch)
   }
 
   def close(): Unit = {
@@ -60,7 +71,7 @@ class NettyHttpClient(client: AsyncHttpClient) extends HttpClient {
   }
 }
 
-class NettyHttpClientResponse(response: Response, stopWatch: StopWatch) extends HttpClientResponse {
+class NettyHttpClientResponse(response: Response, bodyStream: InputStream, stopWatch: StopWatch) extends HttpClientResponse {
 
   private val TIMERS_KEY = "timers"
 
@@ -94,11 +105,7 @@ class NettyHttpClientResponse(response: Response, stopWatch: StopWatch) extends 
   }
 
   override def getBody: Optional[InputStream] = {
-    if (response.hasResponseBody) {
-      Optional.ofNullable(response.getResponseBodyAsStream)
-    } else {
-      Optional.empty()
-    }
+    Optional.ofNullable(bodyStream)
   }
 
   override def getMetadata: Optional[ObjectMetadataValue] = {

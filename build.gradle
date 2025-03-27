@@ -86,6 +86,7 @@ subprojects {
 //        if(Boolean.getBoolean("mavenLocal")) {
 //            mavenLocal()
 //        }
+        mavenLocal()
         mavenCentral()
         maven {
             name "mule-releases"

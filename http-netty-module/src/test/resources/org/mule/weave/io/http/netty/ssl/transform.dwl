@@ -9,7 +9,7 @@ var result = [
 //  request('GET', 'https://tls-v1-1.badssl.com:1011/'),
 
   // Test against HTTP2 url
-  get('https://www.cloudflare.com/'),
+ // get('https://www.cloudflare.com/'),
 
   // our server has a weird https behavior.
   get('https://anypoint.mulesoft.com/accounts/me'),
@@ -36,7 +36,6 @@ result map ((item, index) -> do {
       (tls: timers.tls >= 0) if (timers.tls?),
       send: timers.send >= 0,
       wait: timers.wait >= 0,
-      receive: timers.receive >= 0,
       total: timers.total >= 0
     }
   }

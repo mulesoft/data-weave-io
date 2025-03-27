@@ -1,10 +1,12 @@
 package org.mule.weave.v2.module.http.netty
 
 import io.netty.channel.Channel
-import org.asynchttpclient.AsyncCompletionHandler
+import io.netty.handler.codec.http.HttpHeaders
 import org.asynchttpclient.AsyncHandler
+import org.asynchttpclient.HttpResponseBodyPart
 import org.asynchttpclient.HttpResponseStatus
 import org.asynchttpclient.Response
+import org.asynchttpclient.handler.BodyDeferringAsyncHandler
 import org.asynchttpclient.netty.request.NettyRequest
 import org.mule.weave.v2.module.http.functions.utils.StopWatch
 import org.mule.weave.v2.module.http.netty.StopWatchCompletionHandler.CONNECT
@@ -14,11 +16,12 @@ import org.mule.weave.v2.module.http.netty.StopWatchCompletionHandler.SEND
 import org.mule.weave.v2.module.http.netty.StopWatchCompletionHandler.TLS
 import org.mule.weave.v2.module.http.netty.StopWatchCompletionHandler.WAIT
 
+import java.io.OutputStream
 import java.net.InetSocketAddress
 import java.util
 import javax.net.ssl.SSLSession
 
-class StopWatchCompletionHandler(stopWatch: StopWatch) extends AsyncCompletionHandler[Response] {
+class StopWatchCompletionHandler(stopWatch: StopWatch, outputStream: OutputStream) extends BodyDeferringAsyncHandler(outputStream) {
 
   override def onHostnameResolutionSuccess(name: String, addresses: util.List[InetSocketAddress]): Unit = {
     stopWatch.registerTime(DNS)
@@ -50,10 +53,16 @@ class StopWatchCompletionHandler(stopWatch: StopWatch) extends AsyncCompletionHa
     super.onStatusReceived(status)
   }
 
-  override def onCompleted(response: Response): Response = {
+  override def onHeadersReceived(httpHeaders: HttpHeaders): AsyncHandler.State = super.onHeadersReceived(httpHeaders)
+
+  override def onBodyPartReceived(httpResponseBodyPart: HttpResponseBodyPart): AsyncHandler.State = super.onBodyPartReceived(httpResponseBodyPart)
+
+  override def onThrowable(throwable: Throwable): Unit = super.onThrowable(throwable)
+
+  override def onCompleted(): Response = {
     stopWatch.registerTime(RECEIVE)
     stopWatch.stop()
-    response
+    super.onCompleted()
   }
 }
 
@@ -65,5 +74,5 @@ object StopWatchCompletionHandler {
   val WAIT = "wait"
   val RECEIVE = "receive"
 
-  def apply(stopWatch: StopWatch): StopWatchCompletionHandler = new StopWatchCompletionHandler(stopWatch)
+  def apply(stopWatch: StopWatch, outputStream: OutputStream): StopWatchCompletionHandler = new StopWatchCompletionHandler(stopWatch, outputStream)
 }
