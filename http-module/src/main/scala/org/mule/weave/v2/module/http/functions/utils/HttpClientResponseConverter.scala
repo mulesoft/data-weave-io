@@ -112,8 +112,8 @@ class HttpClientResponseConverter(response: HttpClientResponse, stopWatch: StopW
     }
 
     if (addBodyField) {
-      val sourceProvider = SourceProvider(SeekableStream(body))
-      builder.addPair(BODY, BinaryValue(sourceProvider.asInputStream))
+      ctx.registerCloseable(body)
+      builder.addPair(BODY, BinaryValue(body))
     }
   }
 

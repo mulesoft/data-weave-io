@@ -19,6 +19,7 @@ import org.mule.weave.v2.module.http.service.HttpClientService
 import org.mule.weave.v2.parser.exception.WeaveRuntimeException
 import org.mule.weave.v2.parser.location.UnknownLocation
 
+import java.io.IOException
 import java.net.ConnectException
 import java.net.UnknownHostException
 import java.util.concurrent.ExecutionException
@@ -92,6 +93,11 @@ class HttpRequestFunction extends SecureTernaryFunctionValue {
         throw new UrlConnectionException(request.getUrl, ce.getMessage, this.location())
       case ee: ExecutionException =>
         ee.getCause match {
+          case ce: Exception =>
+            throw new UrlConnectionException(request.getUrl, ce.getMessage, this.location())
+        }
+      case io: IOException =>
+        io.getCause match {
           case ce: Exception =>
             throw new UrlConnectionException(request.getUrl, ce.getMessage, this.location())
         }

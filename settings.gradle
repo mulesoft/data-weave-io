@@ -12,6 +12,10 @@ pluginManagement {
         maven {
             url "https://plugins.gradle.org/m2/"
         }
+<<<<<<< HEAD
+=======
+        mavenLocal()
+>>>>>>> fcb49c7 (W-17906937 Http netty streaming test)
     }
 }
 
