@@ -58,6 +58,7 @@ class HttpClientRequestTest extends AnyFreeSpec with Matchers {
         .setFollowRedirect(followRedirects)
         .setRequestTimeout(requestTimeout)
         .setReadTimeout(readTimeout)
+        .setStreamResponse(streamResponse)
         .build()
 
       request.getMethod shouldBe method

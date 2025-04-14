@@ -47,7 +47,6 @@ class NettyHttpClient(client: AsyncHttpClient) extends HttpClient {
     builder.setReadTimeout(request.getReadTimeout)
     builder.setRequestTimeout(request.getRequestTimeout)
 
-
     val pipedOutputStream = new PipedOutputStream()
     val pipedInputStream = new PipedInputStream(pipedOutputStream)
     val bodyDeferringHandler = StopWatchCompletionHandler(stopWatch, pipedOutputStream)
