@@ -26,7 +26,7 @@ class HttpClientRequestConfigTest extends AnyFreeSpec with Matchers {
           KeyValuePair(KeyValue("readTimeout"), NumberValue(readTimeout)),
           KeyValuePair(KeyValue("requestTimeout"), NumberValue(requestTimeout)),
           KeyValuePair(KeyValue("streamResponse"), BooleanValue(streamResponse))
-        )
+        ))
 
       val requestConfig = HttpClientRequestConfig.parse(config)
 

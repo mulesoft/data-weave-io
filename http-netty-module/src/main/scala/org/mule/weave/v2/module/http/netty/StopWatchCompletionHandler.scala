@@ -2,6 +2,7 @@ package org.mule.weave.v2.module.http.netty
 
 import io.netty.channel.Channel
 import io.netty.handler.codec.http.HttpHeaders
+import org.asynchttpclient.AsyncCompletionHandler
 import org.asynchttpclient.AsyncHandler
 import org.asynchttpclient.HttpResponseBodyPart
 import org.asynchttpclient.HttpResponseStatus
@@ -75,4 +76,55 @@ object StopWatchCompletionHandler {
   val RECEIVE = "receive"
 
   def apply(stopWatch: StopWatch, outputStream: OutputStream): StopWatchCompletionHandler = new StopWatchCompletionHandler(stopWatch, outputStream)
+}
+
+
+object SyncStopWatchCompletionHandler {
+  val DNS = "dns"
+  val CONNECT = "connect"
+  val TLS = "tls"
+  val SEND = "send"
+  val WAIT = "wait"
+  val RECEIVE = "receive"
+
+  def apply(stopWatch: StopWatch): SyncStopWatchCompletionHandler = new SyncStopWatchCompletionHandler(stopWatch)
+}
+
+class SyncStopWatchCompletionHandler(stopWatch: StopWatch) extends AsyncCompletionHandler[Response] {
+
+  override def onHostnameResolutionSuccess(name: String, addresses: util.List[InetSocketAddress]): Unit = {
+    stopWatch.registerTime(DNS)
+    super.onHostnameResolutionSuccess(name, addresses)
+  }
+
+  override def onTcpConnectSuccess(remoteAddress: InetSocketAddress, connection: Channel): Unit = {
+    stopWatch.registerTime(CONNECT)
+    super.onTcpConnectSuccess(remoteAddress, connection)
+  }
+
+  override def onConnectionPooled(connection: Channel): Unit = {
+    stopWatch.registerTime(CONNECT)
+    super.onConnectionPooled(connection)
+  }
+
+  override def onTlsHandshakeSuccess(sslSession: SSLSession): Unit = {
+    stopWatch.registerTime(TLS)
+    super.onTlsHandshakeSuccess(sslSession)
+  }
+
+  override def onRequestSend(request: NettyRequest): Unit = {
+    stopWatch.registerTime(SEND)
+    super.onRequestSend(request)
+  }
+
+  override def onStatusReceived(status: HttpResponseStatus): AsyncHandler.State = {
+    stopWatch.registerTime(WAIT)
+    super.onStatusReceived(status)
+  }
+
+  override def onCompleted(response: Response): Response = {
+    stopWatch.registerTime(RECEIVE)
+    stopWatch.stop()
+    response
+  }
 }

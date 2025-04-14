@@ -21,7 +21,7 @@ class HttpClientRequestConverterTest extends AnyFreeSpec with Matchers {
 
     val readTimeout = 1000
     val requestTimeout = 2000
-    val requestConfig = HttpClientRequestConfig(followRedirects = true, Some(readTimeout), Some(requestTimeout))
+    val requestConfig = HttpClientRequestConfig(followRedirects = true, Some(readTimeout), Some(requestTimeout), streamResponse = false)
 
     "should fail if 'method' or 'url' is not configure" in {
       var caught = intercept[WeaveRuntimeException] {
