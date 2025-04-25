@@ -50,8 +50,8 @@ subprojects {
             if (branchParts.size() == 3) {
                 weaveVersion = branchParts[2]
             }
-            if (isSnapshot(weaveVersion) || isSnapshot(projectVersion) || isSnapshot(weavedocVersion)) {
-                throw new GradleException("Cannot release with snapshot dependencies.  \nWeaveVersion: " + weaveVersion + "\nVersion: " + projectVersion + "\nWeaveDocVersion: " + weavedocVersion)
+            if (isSnapshot(weaveVersion) || isSnapshot(projectVersion) || isSnapshot(weaveGradlePluginVersion)) {
+                throw new GradleException("Cannot release with snapshot dependencies.  \nWeaveVersion: " + weaveVersion + "\nVersion: " + projectVersion + "\nWeaveGradlePluginVersion: " + weaveGradlePluginVersion)
             }
 
         } else if (!isSnapshot(projectVersion)) {

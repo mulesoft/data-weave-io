@@ -1,6 +1,6 @@
 plugins {
     id "com.github.maiflai.scalatest" version "${scalaTestPluginVersion}"
-    id 'dataweave' version "${weavedocVersion}"
+    id 'dataweave' version "${weaveGradlePluginVersion}"
 }
 
 dependencies {
@@ -31,5 +31,9 @@ task docs(dependsOn: weavedoc, type: Zip) {
 
 build.dependsOn("weavedoc")
 
+processResources {
+    dependsOn "weavecompile"
+    from "$project.buildDir/generated/weavecompile"
+}
 
-
+build.dependsOn("weavecompile")
