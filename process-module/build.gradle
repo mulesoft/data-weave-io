@@ -37,10 +37,3 @@ task docs(dependsOn: weavedoc, type: Zip) {
 }
 
 build.dependsOn("weavedoc")
-
-processResources {
-    dependsOn "weavecompile"
-    from "$project.buildDir/generated/weavecompile"
-}
-
-build.dependsOn("weavecompile")

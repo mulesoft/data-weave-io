@@ -41,7 +41,5 @@ build.dependsOn("weavedoc")
 
 processResources {
     dependsOn "weavecompile"
-    from "$project.buildDir/generated/weavecompile"
+    from "build/generated/weavecompile"
 }
-
-build.dependsOn("weavecompile")
