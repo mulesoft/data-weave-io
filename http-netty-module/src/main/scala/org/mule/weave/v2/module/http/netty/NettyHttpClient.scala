@@ -17,6 +17,17 @@ import java.io.InputStream
 import java.io.PipedInputStream
 import java.io.PipedOutputStream
 import java.util.Optional
+import java.util.concurrent.CompletableFuture
+import org.asynchttpclient.AsyncHandler
+import org.asynchttpclient.AsyncCompletionHandler
+import org.asynchttpclient.HttpResponseStatus
+import org.asynchttpclient.HttpResponseBodyPart
+import org.asynchttpclient.netty.request.NettyRequest
+import java.net.InetSocketAddress
+import java.util
+import javax.net.ssl.SSLSession
+import io.netty.channel.Channel
+import io.netty.handler.codec.http.HttpHeaders
 
 class NettyHttpClient(client: AsyncHttpClient) extends HttpClient {
 
@@ -47,18 +58,23 @@ class NettyHttpClient(client: AsyncHttpClient) extends HttpClient {
     builder.setReadTimeout(request.getReadTimeout)
     builder.setRequestTimeout(request.getRequestTimeout)
 
-    val pipedOutputStream = new PipedOutputStream()
-    val pipedInputStream = new PipedInputStream(pipedOutputStream)
-    val bodyDeferringHandler = StopWatchCompletionHandler(stopWatch, pipedOutputStream)
-    val responseFuture = client.prepareRequest(builder).execute(bodyDeferringHandler)
-    val response = bodyDeferringHandler.getResponse
-    val inputStream = new BodyDeferringInputStream(responseFuture, bodyDeferringHandler, pipedInputStream) {
-      override def read(b: Array[Byte], off: Int, len: Int): Int = {
-        System.out.println("***** Read " + off + "****** ")
-        super.read(b, off, len)
-      }
+    if (request.isStreamResponse) {
+      // Streaming response
+      val pipedOutputStream = new PipedOutputStream()
+      val pipedInputStream = new PipedInputStream(pipedOutputStream)
+      val bodyDeferringHandler = StopWatchCompletionHandler(stopWatch, pipedOutputStream)
+      val responseFuture = client.prepareRequest(builder).execute(bodyDeferringHandler)
+      val response = bodyDeferringHandler.getResponse
+      val inputStream = new BodyDeferringInputStream(responseFuture, bodyDeferringHandler, pipedInputStream)
+      new NettyHttpClientResponse(response, inputStream, stopWatch)
+    } else {
+      // Non-streaming response - lazy consumption
+      val handler = new StopWatchResponseHandler(stopWatch)
+      val responseFuture = client.prepareRequest(builder).execute(handler)
+      val response = responseFuture.get()
+      val inputStream = new LazyResponseInputStream(response, stopWatch)
+      new NettyHttpClientResponse(response, inputStream, stopWatch)
     }
-    new NettyHttpClientResponse(response, inputStream, stopWatch)
   }
 
   def close(): Unit = {
@@ -67,6 +83,31 @@ class NettyHttpClient(client: AsyncHttpClient) extends HttpClient {
 
   def isClosed(): Boolean = {
     client.isClosed
+  }
+}
+
+class LazyResponseInputStream(response: Response, stopWatch: StopWatch) extends InputStream {
+  private var responseStream: InputStream = _
+
+  private def getStream: InputStream = {
+    if (responseStream == null) {
+      stopWatch.registerTime("response_body_start")
+      responseStream = response.getResponseBodyAsStream
+      stopWatch.registerTime("response_body_end")
+    }
+    responseStream
+  }
+
+  override def read(): Int = getStream.read()
+
+  override def read(b: Array[Byte], off: Int, len: Int): Int = getStream.read(b, off, len)
+
+  override def available(): Int = getStream.available()
+
+  override def close(): Unit = {
+    if (responseStream != null) {
+      responseStream.close()
+    }
   }
 }
 

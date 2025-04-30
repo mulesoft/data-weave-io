@@ -75,56 +75,62 @@ object StopWatchCompletionHandler {
   val WAIT = "wait"
   val RECEIVE = "receive"
 
-  def apply(stopWatch: StopWatch, outputStream: OutputStream): StopWatchCompletionHandler = new StopWatchCompletionHandler(stopWatch, outputStream)
+  def apply(stopWatch: StopWatch, stream: OutputStream): StopWatchCompletionHandler = new StopWatchCompletionHandler(stopWatch, stream)
 }
 
-
-object SyncStopWatchCompletionHandler {
-  val DNS = "dns"
-  val CONNECT = "connect"
-  val TLS = "tls"
-  val SEND = "send"
-  val WAIT = "wait"
-  val RECEIVE = "receive"
-
-  def apply(stopWatch: StopWatch): SyncStopWatchCompletionHandler = new SyncStopWatchCompletionHandler(stopWatch)
-}
-
-class SyncStopWatchCompletionHandler(stopWatch: StopWatch) extends AsyncCompletionHandler[Response] {
+class StopWatchResponseHandler(stopWatch: StopWatch) extends AsyncCompletionHandler[Response] {
+  private var response: Response = _
 
   override def onHostnameResolutionSuccess(name: String, addresses: util.List[InetSocketAddress]): Unit = {
-    stopWatch.registerTime(DNS)
+    stopWatch.registerTime("dns")
     super.onHostnameResolutionSuccess(name, addresses)
   }
 
   override def onTcpConnectSuccess(remoteAddress: InetSocketAddress, connection: Channel): Unit = {
-    stopWatch.registerTime(CONNECT)
+    stopWatch.registerTime("connect")
     super.onTcpConnectSuccess(remoteAddress, connection)
   }
 
   override def onConnectionPooled(connection: Channel): Unit = {
-    stopWatch.registerTime(CONNECT)
+    stopWatch.registerTime("connect")
     super.onConnectionPooled(connection)
   }
 
   override def onTlsHandshakeSuccess(sslSession: SSLSession): Unit = {
-    stopWatch.registerTime(TLS)
+    stopWatch.registerTime("tls")
     super.onTlsHandshakeSuccess(sslSession)
   }
 
   override def onRequestSend(request: NettyRequest): Unit = {
-    stopWatch.registerTime(SEND)
+    stopWatch.registerTime("send")
     super.onRequestSend(request)
   }
 
   override def onStatusReceived(status: HttpResponseStatus): AsyncHandler.State = {
-    stopWatch.registerTime(WAIT)
+    stopWatch.registerTime("wait")
     super.onStatusReceived(status)
   }
 
+  override def onHeadersReceived(httpHeaders: HttpHeaders): AsyncHandler.State = {
+    super.onHeadersReceived(httpHeaders)
+  }
+
+  override def onBodyPartReceived(bodyPart: HttpResponseBodyPart): AsyncHandler.State = {
+    super.onBodyPartReceived(bodyPart)
+  }
+
   override def onCompleted(response: Response): Response = {
-    stopWatch.registerTime(RECEIVE)
+    stopWatch.registerTime("receive")
     stopWatch.stop()
+    this.response = response
     response
   }
+
+  override def onThrowable(t: Throwable): Unit = {
+    stopWatch.registerTime("error")
+    stopWatch.stop()
+    super.onThrowable(t)
+  }
+
+  def getResponse: Response = response
 }
