@@ -38,5 +38,5 @@ build.dependsOn("weavedoc")
 
 processResources {
     dependsOn "weavecompile"
-    from "build/generated/weavecompile"
+    from "build/generated/dataweave"
 }
