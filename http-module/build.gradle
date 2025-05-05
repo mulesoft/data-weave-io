@@ -5,6 +5,9 @@ plugins {
 
 dependencies {
     api project(":file-module")
+    // Add the jar file to compileOnly as it requires to access resources (also generated ones)
+    compileOnly files(project(":file-module").tasks.jar.outputs.files)
+    
     implementation group: 'org.mule.weave', name: 'runtime', version: weaveVersion
     implementation group: 'org.mule.weave', name: 'core-modules', version: weaveVersion
 
