@@ -1,10 +1,13 @@
 plugins {
     id "com.github.maiflai.scalatest" version "${scalaTestPluginVersion}"
-    id 'dataweave' version "${weavedocVersion}"
+    id 'dataweave' version "${weaveGradlePluginVersion}"
 }
 
 dependencies {
     api project(":file-module")
+    // Add the jar file to compileOnly as it requires to access resources (also generated ones)
+    compileOnly files(project(":file-module").tasks.jar.outputs.files)
+    
     implementation group: 'org.mule.weave', name: 'runtime', version: weaveVersion
     implementation group: 'org.mule.weave', name: 'core-modules', version: weaveVersion
 
@@ -38,3 +41,8 @@ task docs(dependsOn: weavedoc, type: Zip) {
 }
 
 build.dependsOn("weavedoc")
+
+processResources {
+    dependsOn "weavecompile"
+    from "build/generated/dataweave"
+}
