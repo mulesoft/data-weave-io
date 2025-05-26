@@ -20,11 +20,13 @@ import org.mule.weave.v2.model.types.ObjectType
 import org.mule.weave.v2.model.values.NullValue
 import org.mule.weave.v2.model.values.{ BooleanValue, KeyValue, NumberValue, ObjectValue, StringValue, Value, ValuesHelper }
 import org.mule.weave.v2.module.DataFormatManager
+import org.mule.weave.v2.module.core.multipart.MultiPartDataFormat
 import org.mule.weave.v2.module.http.HttpHeader
 import org.mule.weave.v2.module.http.HttpHeader.CONTENT_LENGTH_HEADER
 import org.mule.weave.v2.module.http.HttpHeader.CONTENT_TYPE_HEADER
 import org.mule.weave.v2.module.http.functions.HttpServerFunction._
 import org.mule.weave.v2.module.http.functions.exceptions.InvalidHttpBodyException
+import org.mule.weave.v2.module.http.functions.utils.MimeTypeUtil
 import org.mule.weave.v2.module.reader.AutoPersistedOutputStream
 import org.mule.weave.v2.module.http.service.FailedStatus
 import org.mule.weave.v2.module.http.service.HttpServerConfig
@@ -133,7 +135,6 @@ class HttpServerFunction extends SecureBinaryFunctionValue {
   }
 
   def toHttpResponse(value: Value[_], closeCallback: () => Unit)(implicit ctx: EvaluationContext): HttpServerResponse = {
-
     val httpResponseObject = ObjectType.coerce(value).evaluate.materialize()
     var headers: Map[String, String] = selectStringMap(httpResponseObject, HEADERS_KEY_NAME).getOrElse(Map())
     val headersMap = new util.TreeMap[String, String](String.CASE_INSENSITIVE_ORDER)
@@ -152,6 +153,17 @@ class HttpServerFunction extends SecureBinaryFunctionValue {
             DataFormatManager.byContentType(contentType) match {
               case Some(dataFormat) => {
                 val writer = dataFormat.writer(None)
+                // Configure boundary
+                if (dataFormat.isInstanceOf[MultiPartDataFormat]) {
+                  val maybeMimeType = MimeTypeUtil.fromSimpleString(contentType)
+                  if (maybeMimeType.isDefined) {
+                    val mimeType = maybeMimeType.get
+                    val boundary = mimeType.parameters.get("boundary")
+                    if (boundary.isDefined) {
+                      writer.setOption(location, "boundary", boundary.get)
+                    }
+                  }
+                }
                 writer.startDocument(value)
                 writer.writeValue(body)
                 writer.endDocument(value)
