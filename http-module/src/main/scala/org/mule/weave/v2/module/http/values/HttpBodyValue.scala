@@ -12,7 +12,6 @@ import org.mule.weave.v2.module.http.HttpHeader.CONTENT_TYPE_HEADER
 import org.mule.weave.v2.module.http.service.HttpServerRequest
 import org.mule.weave.v2.module.reader.Reader
 import org.mule.weave.v2.module.reader.SourceProvider
-import org.mule.weave.v2.module.reader.SourceProvider
 import org.mule.weave.v2.parser.location.Location
 import org.mule.weave.v2.parser.location.SimpleLocation
 import org.mule.weave.v2.parser.module.MimeType

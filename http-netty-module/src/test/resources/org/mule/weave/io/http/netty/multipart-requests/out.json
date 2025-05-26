@@ -48,7 +48,9 @@
       },
       "method": "POST",
       "path": "/multipart",
-      "queryParams": {}
+      "queryParams": {
+        
+      }
     },
     "contentType": "application/json"
   },
@@ -101,7 +103,9 @@
       },
       "method": "POST",
       "path": "/multipart",
-      "queryParams": {}
+      "queryParams": {
+        
+      }
     },
     "contentType": "application/json"
   },
@@ -154,9 +158,21 @@
       },
       "method": "POST",
       "path": "/multipart",
-      "queryParams": {}
+      "queryParams": {
+        
+      }
     },
     "contentType": "application/json"
+  },
+  "d": {
+    "mimeType": "multipart/form-data;boundary=---------------------------9051914041544843365972754266",
+    "body": {
+      "body": null,
+      "method": null,
+      "path": null,
+      "queryParams": null
+    },
+    "contentType": "multipart/form-data;boundary=---------------------------9051914041544843365972754266"
   },
   "z": true
 }
