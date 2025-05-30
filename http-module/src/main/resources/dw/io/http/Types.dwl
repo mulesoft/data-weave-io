@@ -70,7 +70,8 @@ type HttpRequestConfig = {
   followRedirects?: Boolean,
   readTimeout?: Number,
   requestTimeout?: Number,
-  streamResponse?: Boolean
+  streamResponse?: Boolean,
+  enableMetrics?: Boolean
 }
 
 /**

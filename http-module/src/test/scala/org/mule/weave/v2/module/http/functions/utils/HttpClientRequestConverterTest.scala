@@ -21,7 +21,7 @@ class HttpClientRequestConverterTest extends AnyFreeSpec with Matchers {
 
     val readTimeout = 1000
     val requestTimeout = 2000
-    val requestConfig = HttpClientRequestConfig(followRedirects = true, Some(readTimeout), Some(requestTimeout), streamResponse = false)
+    val requestConfig = HttpClientRequestConfig(followRedirects = true, Some(readTimeout), Some(requestTimeout), streamResponse = false, enableMetrics = false)
 
     "should fail if 'method' or 'url' is not configure" in {
       var caught = intercept[WeaveRuntimeException] {
@@ -84,6 +84,7 @@ class HttpClientRequestConverterTest extends AnyFreeSpec with Matchers {
       clientRequest.getRequestTimeout shouldBe requestConfig.requestTimeout.get
       clientRequest.getReadTimeout shouldBe requestConfig.readTimeout.get
       clientRequest.isStreamResponse shouldBe requestConfig.streamResponse
+      clientRequest.isEnableMetrics shouldBe requestConfig.enableMetrics
     }
 
     "should fail with duplicate 'cookie' field" in {

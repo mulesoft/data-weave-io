@@ -6,8 +6,4 @@ import java.io.File
 
 class HttpModuleTest extends AbstractEngineTest {
 
-
-  override def isTestToRun(file: File): Boolean = {
-    file.getName.contains("readBody")
-  }
 }

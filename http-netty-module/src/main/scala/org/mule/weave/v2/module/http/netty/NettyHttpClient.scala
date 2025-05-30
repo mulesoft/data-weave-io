@@ -21,7 +21,7 @@ import java.util.Optional
 class NettyHttpClient(client: AsyncHttpClient) extends HttpClient {
 
   override def request(request: HttpClientRequest): HttpClientResponse = {
-    val stopWatch = StopWatch(on = true)
+    val stopWatch = StopWatch(on = request.isEnableMetrics)
 
     val builder = new RequestBuilder()
     builder.setUrl(request.getUrl)

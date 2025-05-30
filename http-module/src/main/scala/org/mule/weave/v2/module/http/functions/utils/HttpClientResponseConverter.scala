@@ -1,6 +1,5 @@
 package org.mule.weave.v2.module.http.functions.utils
 
-import org.mule.weave.v2.core.io.SeekableStream
 import org.mule.weave.v2.model.EvaluationContext
 import org.mule.weave.v2.model.structure.KeyValuePair
 import org.mule.weave.v2.model.values.BinaryValue
@@ -19,11 +18,11 @@ import org.mule.weave.v2.module.http.functions.utils.HttpClientResponseConverter
 import org.mule.weave.v2.module.http.functions.utils.HttpClientResponseConverter.STATUS_TEXT
 import org.mule.weave.v2.module.http.service.HttpClientHeaders
 import org.mule.weave.v2.module.http.service.HttpClientResponse
-import org.mule.weave.v2.module.reader.SourceProvider
 
 import java.io.InputStream
 import java.lang.Long.parseLong
 import java.net.HttpCookie
+import java.util.Optional
 import scala.collection.JavaConverters._
 
 class HttpClientResponseConverter(response: HttpClientResponse, stopWatch: StopWatch) {
@@ -62,7 +61,7 @@ class HttpClientResponseConverter(response: HttpClientResponse, stopWatch: StopW
 
     // Schema
     stopWatch.stop()
-    val schema = MetadataConverter(response.getMetadata, stopWatch.getTotal).convert()
+    val schema = MetadataConverter(response.getMetadata).convert()
     builder.withSchema(schema)
   }
 
