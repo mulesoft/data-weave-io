@@ -85,6 +85,10 @@ class HttpClientRequestConverter(
       builder.setRequestTimeout(requestConfig.requestTimeout.get)
     }
 
+    builder.setStreamResponse(requestConfig.streamResponse)
+
+    builder.setEnableMetrics(requestConfig.enableMetrics)
+
     builder.build()
   }
 

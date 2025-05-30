@@ -16,14 +16,19 @@ var server = api(serverConfig,
 ---
 [
   a: do {
-    var response = sendRequestAndReadResponse({method: "GET", url: 'http://$LOCALHOST/sample'})
+    var response = sendRequestAndReadResponse({method: "GET", url: 'http://$LOCALHOST/sample'},{
+                                                                                              followRedirects: false,
+                                                                                              readTimeout: 60000,
+                                                                                              requestTimeout: 60000,
+                                                                                              streamResponse: false,
+                                                                                              enableMetrics: true
+                                                                                            })
     var schema = response.^
     var timers = schema.timers default {}
     ---
     response
       then {
         status: $.status,
-        total: schema.total >= 0,
         timers: {
           dns: timers.dns >= 0,
           connect: timers.connect >= 0,
@@ -35,14 +40,19 @@ var server = api(serverConfig,
       }
     },
   b: do {
-    var response =  sendRequest({method: "GET", url: 'http://$LOCALHOST/sample'})
+    var response =  sendRequest({method: "GET", url: 'http://$LOCALHOST/sample'},{
+                                                                                   followRedirects: false,
+                                                                                   readTimeout: 60000,
+                                                                                   requestTimeout: 60000,
+                                                                                   streamResponse: false,
+                                                                                   enableMetrics: true
+                                                                                 })
     var schema = response.^
     var timers = schema.timers default {}
     ---
     response
       then {
         status: $.status,
-        total: schema.total >= 0,
         timers: {
           connect: timers.connect >= 0,
           send: timers.send >= 0,

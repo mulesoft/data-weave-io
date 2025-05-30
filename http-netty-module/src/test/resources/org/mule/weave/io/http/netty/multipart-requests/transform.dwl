@@ -11,6 +11,19 @@ var LOCALHOST = '$(serverConfig.host):$(serverConfig.port)'
 var server = api(serverConfig,
   {
     "/multipart": {
+      "GET": (req: HttpServerRequest) -> do {
+       {
+         responseStatus: 200,
+         headers: {
+           "Content-Type": "multipart/form-data;boundary=---------------------------9051914041544843365972754266"
+         },
+         body: form([
+           field('field', 'value'),
+           field({name: 'field2', value:'value2'}),
+           file({name: 'fileX', path: 'MyApi.dwl' }),
+           file('fileY','MyApi.dwl')])
+       }
+      },
       "POST": (req: HttpServerRequest) -> do {
         {
           responseStatus: 200,
@@ -23,7 +36,7 @@ var server = api(serverConfig,
 ---
 {
   a: do {
-    var response = post( 'http://$LOCALHOST/multipart', { "Content-Type": "multipart/form-data"},form([
+    var response = post('http://$LOCALHOST/multipart', { "Content-Type": "multipart/form-data"},form([
       field('field', 'value'),
       field({name: 'field2', value:'value2'}),
       file({name: 'fileX', path: 'MyApi.dwl' }),
@@ -42,7 +55,7 @@ var server = api(serverConfig,
     }
   },
   b: do {
-    var response = postMultipart( 'http://$LOCALHOST/multipart', form([
+    var response = postMultipart('http://$LOCALHOST/multipart', form([
       field('field', 'value'),
       field({name: 'field2', value:'value2'}),
       file({name: 'fileX', path: 'MyApi.dwl' }),
@@ -61,11 +74,26 @@ var server = api(serverConfig,
     }
   },
   c: do {
-    var response = postMultipart( 'http://$LOCALHOST/multipart', form([
+    var response = postMultipart('http://$LOCALHOST/multipart', form([
       field('field', 'value'),
       field({name: 'field2', value:'value2'}),
       file({name: 'fileX', path: 'MyApi.dwl' }),
       file('fileY','MyApi.dwl')]))
+    var body = response.body
+    ---
+    {
+      mimeType: body.^mimeType,
+      body: {
+        body: body.body,
+        method: body.method,
+        path: body.path,
+        queryParams: body.queryParams,
+      },
+      contentType: response.contentType
+    }
+  },
+  d: do {
+    var response = get('http://$LOCALHOST/multipart')
     var body = response.body
     ---
     {

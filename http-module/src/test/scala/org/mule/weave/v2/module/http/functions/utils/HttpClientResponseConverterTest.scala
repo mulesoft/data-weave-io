@@ -72,12 +72,6 @@ class HttpClientResponseConverterTest extends AnyFreeSpec with Matchers {
       // Metadata
       val maybeSchema = response.schema
       maybeSchema.isDefined shouldBe true
-
-      val props = maybeSchema.get.properties()
-      val maybeTotal = props.find(p => p.name.evaluate == "total")
-      maybeTotal.isDefined shouldBe true
-      val totalNumber = maybeTotal.get.value.materialize.asInstanceOf[NumberValue]
-      assert(totalNumber.evaluate.toLong >= sleep)
     }
 
     "should ignore body field when content-length header is 0" in {

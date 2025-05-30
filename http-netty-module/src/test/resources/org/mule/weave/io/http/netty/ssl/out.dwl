@@ -2,7 +2,6 @@
   {
     status: 200,
     statusText: "OK",
-    total: true,
     timers: {
       dns: true,
       connect: true,
@@ -16,7 +15,6 @@
   {
     status: 200,
     statusText: "OK",
-    total: true,
     timers: {
       dns: true,
       connect: true,
@@ -30,7 +28,6 @@
   {
     status: 401,
     statusText: "Unauthorized",
-    total: true,
     timers: {
       connect: true,
       send: true,
@@ -42,7 +39,6 @@
   {
     status: 200,
     statusText: "OK",
-    total: true,
     timers: {
       dns: true,
       connect: true,
@@ -56,7 +52,6 @@
   {
     status: 301,
     statusText: "Moved Permanently",
-    total: true,
     timers: {
       dns: true,
       connect: true,

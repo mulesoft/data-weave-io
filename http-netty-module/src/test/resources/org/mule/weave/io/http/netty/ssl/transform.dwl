@@ -1,7 +1,13 @@
  %dw 2.0
 import * from dw::io::http::Client
 
-
+var testRequestConfig = {
+                         followRedirects: false,
+                         readTimeout: 60000,
+                         requestTimeout: 60000,
+                         streamResponse: false,
+                         enableMetrics: true
+                       }
 
 var result = [
 
@@ -9,16 +15,16 @@ var result = [
 //  request('GET', 'https://tls-v1-1.badssl.com:1011/'),
 
   // Test against HTTP2 url
-  get('https://www.cloudflare.com/'),
+  get('https://www.cloudflare.com/', {}, testRequestConfig),
 
   // our server has a weird https behavior.
-  get('https://anypoint.mulesoft.com/accounts/me'),
+  get('https://anypoint.mulesoft.com/accounts/me', {}, testRequestConfig),
 
-  post('https://anypoint.mulesoft.com/accounts/login', {}, { user: 'data-weave', password: 'data-weave' }),
+  post('https://anypoint.mulesoft.com/accounts/login', {}, { user: 'data-weave', password: 'data-weave' },testRequestConfig),
 
-  sendRequestAndReadResponse({ method: 'GET', url: 'https://github.com/'}),
+  sendRequestAndReadResponse({ method: 'GET', url: 'https://github.com/'}, testRequestConfig),
 
-  sendRequestAndReadResponse({ method: 'GET', url: 'https://google.com/'})
+  sendRequestAndReadResponse({ method: 'GET', url: 'https://google.com/'}, testRequestConfig)
 ]
 
 ---
@@ -29,7 +35,6 @@ result map ((item, index) -> do {
   {
     status: item.status,
     statusText: item.statusText,
-    total: schema.total >= 0,
     timers: {
       (dns: timers.dns >= 0) if (timers.dns?),
       connect: timers.connect >= 0,

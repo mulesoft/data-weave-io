@@ -32,7 +32,9 @@ var DEFAULT_HTTP_CLIENT_CONFIG = {
 var DEFAULT_HTTP_REQUEST_CONFIG = {
   followRedirects: false,
   readTimeout: 60000,
-  requestTimeout: 60000
+  requestTimeout: 60000,
+  streamResponse: false,
+  enableMetrics: false
 }
 
 /**
@@ -66,7 +68,7 @@ fun get<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder,
   clientConfig: HttpClientConfig = DEFAULT_HTTP_CLIENT_CONFIG): HttpResponse<B, H> = do {
   var httpRequest =  createHttpRequest("GET", url, headers)
   ---
-  sendRequestAndReadResponse(httpRequest)
+  sendRequestAndReadResponse(httpRequest, requestConfig, serializationConfig, clientConfig)
 }
 
 /**
@@ -93,7 +95,7 @@ fun post<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder,
   clientConfig: HttpClientConfig = DEFAULT_HTTP_CLIENT_CONFIG): HttpResponse<B, H> = do {
   var httpRequest =  createHttpRequest("POST", url, headers, body)
   ---
-  sendRequestAndReadResponse(httpRequest)
+  sendRequestAndReadResponse(httpRequest, requestConfig, serializationConfig, clientConfig)
 }
 
 /**
@@ -128,7 +130,7 @@ fun postMultipart<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder,
     headers
   var httpRequest =  createHttpRequest("POST", url, newHeaders, body)
   ---
-  sendRequestAndReadResponse(httpRequest)
+  sendRequestAndReadResponse(httpRequest, requestConfig, serializationConfig, clientConfig)
 }
 
 /**
@@ -153,7 +155,7 @@ fun head<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder,
   clientConfig: HttpClientConfig = DEFAULT_HTTP_CLIENT_CONFIG): HttpResponse<B, H> = do {
  var httpRequest =  createHttpRequest("HEAD", url, headers)
  ---
- sendRequestAndReadResponse(httpRequest)
+ sendRequestAndReadResponse(httpRequest, requestConfig, serializationConfig, clientConfig)
 }
 
 /**
@@ -207,7 +209,7 @@ fun delete<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder,
   clientConfig: HttpClientConfig = DEFAULT_HTTP_CLIENT_CONFIG): HttpResponse<B, H> = do {
   var httpRequest =  createHttpRequest("DELETE", url, headers, body)
   ---
-  sendRequestAndReadResponse(httpRequest)
+  sendRequestAndReadResponse(httpRequest, requestConfig, serializationConfig, clientConfig)
 }
 
 /**
@@ -232,7 +234,7 @@ fun connect<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder,
   clientConfig: HttpClientConfig = DEFAULT_HTTP_CLIENT_CONFIG): HttpResponse<B, H> = do {
   var httpRequest =  createHttpRequest("CONNECT", url, headers)
   ---
-  sendRequestAndReadResponse(httpRequest)
+  sendRequestAndReadResponse(httpRequest, requestConfig, serializationConfig, clientConfig)
 }
 
 /**
@@ -257,7 +259,7 @@ fun options<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder,
   clientConfig: HttpClientConfig = DEFAULT_HTTP_CLIENT_CONFIG): HttpResponse<B, H> = do {
   var httpRequest =  createHttpRequest("OPTIONS", url, headers)
   ---
-  sendRequestAndReadResponse(httpRequest)
+  sendRequestAndReadResponse(httpRequest, requestConfig, serializationConfig, clientConfig)
 }
 
 /**
@@ -282,7 +284,7 @@ fun trace<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder,
   clientConfig: HttpClientConfig = DEFAULT_HTTP_CLIENT_CONFIG): HttpResponse<B, H> = do {
   var httpRequest =  createHttpRequest("TRACE", url, headers)
   ---
-  sendRequestAndReadResponse(httpRequest)
+  sendRequestAndReadResponse(httpRequest, requestConfig, serializationConfig, clientConfig)
 }
 
 /**
@@ -309,7 +311,7 @@ fun patch<B <: HttpBody, H <: HttpHeaders>(url: String | UrlBuilder,
   clientConfig: HttpClientConfig = DEFAULT_HTTP_CLIENT_CONFIG): HttpResponse<B, H> = do {
   var httpRequest = createHttpRequest("PATCH", url, headers, body)
   ---
-  sendRequestAndReadResponse(httpRequest)
+  sendRequestAndReadResponse(httpRequest, requestConfig, serializationConfig, clientConfig)
 }
 
 /**
