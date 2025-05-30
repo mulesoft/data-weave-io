@@ -1,6 +1,6 @@
 plugins {
     id "com.github.maiflai.scalatest" version "${scalaTestPluginVersion}"
-    id 'dataweave' version "${weavedocVersion}"
+    id 'dataweave' version "${weaveGradlePluginVersion}"
 }
 
 dependencies {
