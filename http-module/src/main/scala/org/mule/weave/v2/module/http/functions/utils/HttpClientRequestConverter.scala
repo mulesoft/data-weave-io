@@ -87,6 +87,8 @@ class HttpClientRequestConverter(
 
     builder.setStreamResponse(requestConfig.streamResponse)
 
+    builder.setEnableMetrics(requestConfig.enableMetrics)
+
     builder.build()
   }
 

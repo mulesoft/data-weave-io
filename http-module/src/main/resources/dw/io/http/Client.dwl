@@ -33,7 +33,8 @@ var DEFAULT_HTTP_REQUEST_CONFIG = {
   followRedirects: false,
   readTimeout: 60000,
   requestTimeout: 60000,
-  streamResponse: false
+  streamResponse: false,
+  enableMetrics: false
 }
 
 /**

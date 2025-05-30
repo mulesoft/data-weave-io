@@ -33,10 +33,12 @@ class StopWatch(on: Boolean) {
   }
 
   def registerTime(metric: String): Unit = {
-    val now = System.currentTimeMillis()
-    val duration = now - _checkpoint
-    _checkpoint = now
-    _times :+= (metric, duration)
+    if (_started) {
+      val now = System.currentTimeMillis()
+      val duration = now - _checkpoint
+      _checkpoint = now
+      _times :+= (metric, duration)
+    }
   }
 
   def isStarted: Boolean = _started

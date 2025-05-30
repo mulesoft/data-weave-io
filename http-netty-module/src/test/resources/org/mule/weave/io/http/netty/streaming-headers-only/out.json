@@ -1,0 +1,12 @@
+{
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "text/plain",
+      "X-Custom-Header": "test-value",
+      "transfer-encoding": "chunked"
+    },
+    "customHeader": "test-value"
+  },
+  "cleanup": true
+}

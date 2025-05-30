@@ -22,20 +22,6 @@ class MetadataConverterTest extends AnyFreeSpec with Matchers{
   "MetadataConverter" - {
     implicit val ctx: EvaluationContext = EvaluationContext()
 
-    "should create schema with total field" in {
-      val expectedTotal = 100
-      val metadata = Optional.empty[ObjectMetadataValue]()
-
-      val converter = MetadataConverter(metadata, expectedTotal)
-      val schema = converter.convert()
-
-      schema should not be null
-
-      val schemaProperties = schema.properties()
-      schemaProperties.size shouldBe 1
-      assertTotalProperty(schemaProperties, expectedTotal)
-    }
-
     "should work with different metadata values" in {
       val expectedTotal = 101
       val expectedNumberValue = 100
@@ -54,15 +40,13 @@ class MetadataConverterTest extends AnyFreeSpec with Matchers{
 
       val objectMetadataValue = Optional.ofNullable(metadata)
 
-      val converter = MetadataConverter(objectMetadataValue, expectedTotal)
+      val converter = MetadataConverter(objectMetadataValue)
       val schema = converter.convert()
 
       schema should not be null
 
       val schemaProperties = schema.properties()
-      schemaProperties.size shouldBe 2
-
-      assertTotalProperty(schemaProperties, expectedTotal)
+      schemaProperties.size shouldBe 1
 
       val objectProperties = findProperty(schemaProperties, "object")
       objectProperties.isDefined shouldBe true
