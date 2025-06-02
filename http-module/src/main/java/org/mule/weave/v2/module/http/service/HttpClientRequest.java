@@ -19,6 +19,8 @@ public class HttpClientRequest {
     private final boolean followRedirects;
     private final int readTimeout;
     private final int requestTimeout;
+    private final boolean streamResponse;
+    private final boolean enableMetrics;
 
     private HttpClientRequest(String url,
                               String method,
@@ -27,7 +29,9 @@ public class HttpClientRequest {
                               InputStream body,
                               boolean followRedirects,
                               int readTimeout,
-                              int requestTimeout) {
+                              int requestTimeout,
+                              boolean streamResponse,
+                              boolean enableMetrics) {
         this.url = url;
         this.method = method;
         this.headers = headers;
@@ -36,6 +40,8 @@ public class HttpClientRequest {
         this.followRedirects = followRedirects;
         this.readTimeout = readTimeout;
         this.requestTimeout = requestTimeout;
+        this.streamResponse = streamResponse;
+        this.enableMetrics = enableMetrics;
     }
 
     /**
@@ -95,6 +101,18 @@ public class HttpClientRequest {
     }
 
     /**
+     * @return if this request is to stream response.
+     */
+    public boolean isStreamResponse(){
+        return streamResponse;
+    }
+
+    /**
+     * @return if this request has metrics enabled.
+     */
+    public boolean isEnableMetrics(){return enableMetrics;}
+
+    /**
      * Builder of {@link HttpClientRequest}s.
      */
     public static final class Builder {
@@ -106,6 +124,8 @@ public class HttpClientRequest {
         private boolean followRedirects = false;
         private int readTimeout = 60000;
         private int requestTimeout = 60000;
+        private boolean streamResponse = false;
+        private boolean enableMetrics = false;
 
         /**
          * Declares the url where this {@link HttpClientRequest} will be sent. Required configuration.
@@ -241,6 +261,28 @@ public class HttpClientRequest {
         }
 
         /**
+         * Set the HTTP request streamingResponse of the {@link HttpClientRequest} desired.
+         *
+         * @param streamResponse if this request response should be streamed.
+         * @return this builder.
+         */
+        public Builder setStreamResponse(boolean streamResponse) {
+            this.streamResponse = streamResponse;
+            return this;
+        }
+
+        /**
+         * Set the HTTP request enableMetrics of the {@link HttpClientRequest} desired.
+         *
+         * @param enableMetrics if this request response should be measured.
+         * @return this builder.
+         */
+        public Builder setEnableMetrics(boolean enableMetrics) {
+            this.enableMetrics = enableMetrics;
+            return this;
+        }
+
+        /**
          * Creates an instance of {@link HttpClientRequest}.
          *
          * @return an {@link HttpClientRequest} as described.
@@ -249,7 +291,7 @@ public class HttpClientRequest {
             requireNonNull(url, "http client request 'url' must not be null");
             requireNonNull(method, "http client request 'method' must not be null");
             return new HttpClientRequest(url, method, headersBuilder.build(), queryParamsBuilder.build(), body, followRedirects,
-                    readTimeout, requestTimeout);
+                    readTimeout, requestTimeout, streamResponse, enableMetrics);
         }
     }
 }

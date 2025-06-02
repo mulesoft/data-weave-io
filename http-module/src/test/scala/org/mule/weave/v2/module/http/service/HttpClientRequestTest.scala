@@ -37,12 +37,14 @@ class HttpClientRequestTest extends AnyFreeSpec with Matchers {
       request.isFollowRedirects shouldBe false
       request.getRequestTimeout shouldBe 60000
       request.getReadTimeout shouldBe 60000
+      request.isStreamResponse shouldBe false
     }
 
     "custom configuration should work" in {
       val method = "GET"
       val url = "http://domain"
       val followRedirects = true
+      val streamResponse = true
       val requestTimeout = 10000
       val readTimeout = 2000
       val bytes = new Array[Byte](0)
@@ -56,6 +58,7 @@ class HttpClientRequestTest extends AnyFreeSpec with Matchers {
         .setFollowRedirect(followRedirects)
         .setRequestTimeout(requestTimeout)
         .setReadTimeout(readTimeout)
+        .setStreamResponse(streamResponse)
         .build()
 
       request.getMethod shouldBe method
@@ -68,6 +71,7 @@ class HttpClientRequestTest extends AnyFreeSpec with Matchers {
       request.isFollowRedirects shouldBe followRedirects
       request.getRequestTimeout shouldBe requestTimeout
       request.getReadTimeout shouldBe readTimeout
+      request.isStreamResponse shouldBe streamResponse
     }
   }
 }

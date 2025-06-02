@@ -19,6 +19,7 @@ import org.mule.weave.v2.module.http.service.HttpClientService
 import org.mule.weave.v2.parser.exception.WeaveRuntimeException
 import org.mule.weave.v2.parser.location.UnknownLocation
 
+import java.io.IOException
 import java.net.ConnectException
 import java.net.UnknownHostException
 import java.util.concurrent.ExecutionException
@@ -34,7 +35,6 @@ class HttpRequestFunction extends SecureTernaryFunctionValue {
   override val Third: ObjectType = ObjectType
 
   override protected def onSecureExecution(requestValue: Value[ObjectSeq], requestConfigurationValue: Value[ObjectSeq], clientConfigurationValue: Value[ObjectSeq])(implicit ctx: EvaluationContext): Value[_] = {
-    val stopWatch = StopWatch(on = true)
 
     val requestObjectSeq = requestValue.evaluate.materialize()
     val requestConfigurationObjectSeq = requestConfigurationValue.evaluate.materialize()
@@ -43,6 +43,8 @@ class HttpRequestFunction extends SecureTernaryFunctionValue {
     val requestConfig = HttpClientRequestConfig.parse(requestConfigurationObjectSeq)
     val request = HttpClientRequestConverter(requestObjectSeq, requestConfig, this).convert()
     val clientConfiguration = HttpClientConfigurationConverter(clientConfigurationObjectSeq).convert()
+
+    val stopWatch = StopWatch(on = requestConfig.enableMetrics)
 
     val httpClientService = ctx.serviceManager
       .lookupCustomService(classOf[HttpClientService])
@@ -92,6 +94,11 @@ class HttpRequestFunction extends SecureTernaryFunctionValue {
         throw new UrlConnectionException(request.getUrl, ce.getMessage, this.location())
       case ee: ExecutionException =>
         ee.getCause match {
+          case ce: Exception =>
+            throw new UrlConnectionException(request.getUrl, ce.getMessage, this.location())
+        }
+      case io: IOException =>
+        io.getCause match {
           case ce: Exception =>
             throw new UrlConnectionException(request.getUrl, ce.getMessage, this.location())
         }
