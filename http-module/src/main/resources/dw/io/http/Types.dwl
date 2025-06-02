@@ -64,7 +64,8 @@ type HttpClientConfig = {
  * * `followRedirects`: Indicates if the HTTP request is to follow redirects. (default: false)
  * * `readTimeout`: The desired HTTP request read timeout in millisecond. (default: 60000)
  * * `requestTimeout`: The desired HTTP request timeout in millisecond. (default: 60000)
- * * `streamResponse`: Whether the response of this reqeust should be streamed. (default: false)
+ * * `streamResponse`: Whether the response of this request should be streamed. (default: false)
+ * * `enableMetrics`: Whether the response of this request should contain metrics inside the schema of the response. (default: false)
  */
 type HttpRequestConfig = {
   followRedirects?: Boolean,
