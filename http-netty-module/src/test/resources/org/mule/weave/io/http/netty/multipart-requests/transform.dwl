@@ -97,12 +97,8 @@ var server = api(serverConfig,
     var body = response.body
     ---
     {
-      mimeType: body.^mimeType,
       body: {
-        body: body.body,
-        method: body.method,
-        path: body.path,
-        queryParams: body.queryParams,
+        parts: body.parts
       },
       contentType: response.contentType
     }
